@@ -1,6 +1,18 @@
 package com.example.pizzadash.entity;
 import java.math.BigDecimal;
-public class order
+import java.util.HashSet;
+import java.util.Set;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "orders")
+
+public class Order
 {
 	private int orderID;
 	public int getorderID()
@@ -63,7 +75,8 @@ public class order
 	}
 
 
-	public order(int orderID_,String customerID_,String storeID_,java.sql.Date orderDate_,int nItems_,BigDecimal total_)
+	public Order(int orderID_,String customerID_,String storeID_,java.sql.Date orderDate_,int nItems_,BigDecimal total_)
+
 	{
 		this.orderID = orderID_;
 		this.customerID = customerID_;
@@ -72,4 +85,13 @@ public class order
 		this.nItems = nItems_;
 		this.total = total_;
 	}
+
+	@ManyToMany
+    @JoinTable(
+        name = "orderitems",
+        joinColumns = @JoinColumn(name = "orderID"),
+        inverseJoinColumns = @JoinColumn(name = "productID")
+    )
+    private Set<Product> products = new HashSet<>();
 }
+

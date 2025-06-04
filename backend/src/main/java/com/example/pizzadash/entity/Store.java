@@ -1,7 +1,12 @@
 package com.example.pizzadash.entity;
 import java.math.BigDecimal;
 
-public class store
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "stores")
+public class Store
 {
 	private String storeID;
 	public String getstoreID()
@@ -84,7 +89,7 @@ public class store
 	}
 
 
-	public store(String storeID_,String zipcode_,String state_abbr_,BigDecimal latitude_,BigDecimal longitude_,String city_,String state_,BigDecimal distance_)
+	public Store(String storeID_,String zipcode_,String state_abbr_,BigDecimal latitude_,BigDecimal longitude_,String city_,String state_,BigDecimal distance_)
 	{
 		this.storeID = storeID_;
 		this.zipcode = zipcode_;
