@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-PizzadashApplication<pizzadash>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.example.pizzadash.PizzadashApplication",
+            "projectName": "pizzadash",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

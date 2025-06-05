@@ -1,0 +1,30 @@
+.topbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  height: 60px;
+  padding: 0 2rem;
+  background-color: #fff;
+  border-bottom: 1px solid #eee;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background-color: #ffe9d5;
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+}
+
+.avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+}
+
+.username {
+  font-weight: 500;
+  color: #334155;
+  font-size: 14px;
+}
