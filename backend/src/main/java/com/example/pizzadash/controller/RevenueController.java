@@ -8,23 +8,20 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.pizzadash.service.RevenueService;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+
 import com.example.pizzadash.dto.RevenueDTO;
 
 
 @RestController
-@RequestMapping("/api/revenue")
+@RequestMapping("/revenue")
 public class RevenueController {
 
     @Autowired
     private RevenueService revenueService;
 
-    @GetMapping("path")
-    public String getMethodName(@RequestParam String param) {
-        return new String();
-    }
-    
+    @GetMapping
     public List<RevenueDTO> getRevenue() {
         return revenueService.getMonthlyRevenue();
     }
 }
+

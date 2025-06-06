@@ -1,14 +1,16 @@
 import React from 'react';
-import Sidebar from '../components/sidebar.jsx';
-import Topbar from '../components/topbar.jsx';
+import Sidebar from '../components/Sidebar';
+import Topbar from '../components/Topbar';
+import '../styles/Layout.css';
 
-
-const Layout = ({ children }) => { 
+const Layout = ({ children }) => {
   return (
     <div className="app-layout">
       <Sidebar />
-      <Topbar/>
-      <main className="main-content">{children}</main>
+      <div className="main-area">
+        <Topbar />
+        <main className="main-content">{children}</main>
+      </div>
     </div>
   );
 };

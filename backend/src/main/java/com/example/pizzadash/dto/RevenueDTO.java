@@ -18,4 +18,6 @@ public class RevenueDTO {
     public BigDecimal getRevenue() {
         return revenue;
     }
+
+public RevenueDTO() {} 
 }
