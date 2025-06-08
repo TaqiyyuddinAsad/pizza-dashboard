@@ -13,7 +13,7 @@ const Sidebar = () => {
       <p className="menu-title">MENU</p>
 
       <nav className="nav-links">
-        <NavLink to="/finanzen" className="nav-item">📊 Finanzen</NavLink>
+        <NavLink to="/umsatz" className="nav-item">📊 Finanzen</NavLink>
         <NavLink to="/kunden" className="nav-item">🛒 Kunden</NavLink>
         <NavLink to="/analyse" className="nav-item">📄 Waren – Analyse</NavLink>
         <NavLink to="/bestellungen" className="nav-item">🌀 Bestellungen</NavLink>

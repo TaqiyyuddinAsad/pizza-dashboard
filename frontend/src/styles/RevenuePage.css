@@ -26,6 +26,7 @@
   justify-content: space-between;
   align-items: flex-start;
   flex-wrap: wrap;
+  width: 80%;
 }
 
 /* left side = label + number */
@@ -64,8 +65,9 @@
   color: #333;
 }
 
-/* chart */
 .revenue-chart {
   width: 100%;
-  min-height: 300px;
+  flex: 1;
+  padding: 0 1rem;
+  max-height: 500px;
 }

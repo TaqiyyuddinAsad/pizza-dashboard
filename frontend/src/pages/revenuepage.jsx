@@ -1,39 +1,39 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Line } from "react-chartjs-2";
 import "chart.js/auto";
 import "../styles/RevenuePage.css";
-import DateFilter  from "../components/datefilter"
-import { parseDate } from "@internationalized/date";
-
-
+import { fetchRevenueData } from "../services/revenue";
+import FilterBar from "../components/filterbar";
 
 const RevenuePage = () => {
   const [data, setData] = useState([]);
-  const [dateRange, setDateRange] = useState({
-    start: parseDate("2024-01-01"),
-    end: parseDate("2024-12-31"),
-  });
 
-  const fetchRevenue = (startDate, endDate) => {
-    if (!startDate || !endDate) return;
+  const handleApplyFilters = (filters) => {
+    const params = new URLSearchParams();
 
-    const start = startDate.toString(); // yyyy-MM-dd
-    const end = endDate.toString();
+    if (filters.start && filters.end) {
+      params.append("start", filters.start.toString());
+      params.append("end", filters.end.toString());
+    }
+    if (filters.stores?.length) {
+      params.append("stores", filters.stores.join(","));
+    }
+    if (filters.categories?.length) {
+      params.append("categories", filters.categories.join(","));
+    }
+    if (filters.sizes?.length) {
+      params.append("sizes", filters.sizes.join(","));
+    }
 
-    fetch(`http://localhost:8080/api/revenue?start=${start}&end=${end}`)
+    fetchRevenueData(params.toString())
       .then((res) => res.json())
       .then((data) => setData(data))
       .catch((err) => console.error("Failed to load revenue data:", err));
+      console.log(params.toString())
   };
 
-  useEffect(() => {
-    if (dateRange.start && dateRange.end) {
-      fetchRevenue(dateRange.start, dateRange.end);
-    }
-  }, [dateRange]);
-
   const chartData = {
-    labels: data.map((entry) => entry.month),
+    labels: data.map((entry) => entry.label),
     datasets: [
       {
         label: "Umsatz (€)",
@@ -48,7 +48,6 @@ const RevenuePage = () => {
   const totalRevenue = data.reduce((sum, d) => sum + Number(d.revenue), 0);
 
   return (
-   
     <div className="revenue-container">
       <h1 className="page-title">Finanzen</h1>
 
@@ -61,22 +60,15 @@ const RevenuePage = () => {
             </p>
           </div>
 
-      
-    <div className="filters">
-      <DateFilter/>
-      <select><option>Größe</option></select>
-      <select><option>Alle Filialen</option></select>
-      <select><option>Kategorie</option></select>
-  </div>
-
-    </div>      
+          <FilterBar onApplyFilters={handleApplyFilters} />
+        </div>
 
         <div className="revenue-chart">
           <Line data={chartData} />
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default RevenuePage;

@@ -1,23 +1,27 @@
 package com.example.pizzadash.dto;
-
 import java.math.BigDecimal;
-
 public class RevenueDTO {
-    private String month;
+    private String label;
     private BigDecimal revenue;
 
-    public RevenueDTO(String month, BigDecimal revenue) {
-        this.month = month;
+    public RevenueDTO(String label, BigDecimal revenue) {
+        this.label = label;
         this.revenue = revenue;
     }
 
-    public String getMonth() {
-        return month;
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     public BigDecimal getRevenue() {
         return revenue;
     }
 
-public RevenueDTO() {} 
+    public void setRevenue(BigDecimal revenue) {
+        this.revenue = revenue;
+    }
 }
