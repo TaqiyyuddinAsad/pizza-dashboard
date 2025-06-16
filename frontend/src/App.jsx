@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import LoginPage from './pages/loginpage.jsx';
 import Layout from './layout/layout.jsx';
 import RevenuePage from './pages/revenuepage.jsx';
+import OrdersPage from './pages/ordersPage.jsx';
 
 
 // etc.
@@ -12,8 +13,8 @@ function App() {
       <Routes>
         <Route path="/" element={<LoginPage />} />
         <Route path="/umsatz" element={<Layout><RevenuePage/></Layout>} />
-        
-        {/* Add more here */}
+        <Route path="/bestellungen" element={<Layout><OrdersPage/></Layout>}/>
+
       </Routes>
     </BrowserRouter>
   );
