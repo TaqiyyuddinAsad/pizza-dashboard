@@ -13,6 +13,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import com.example.pizzadash.dto.OrdersDTO;
 import com.example.pizzadash.dto.RankedProduct;
 import com.example.pizzadash.dto.RankingEntry;
+import com.example.pizzadash.dto.StoreDTO;
+import com.example.pizzadash.dto.StoreRankingEntry;
 
 @Service
 public class OrderService {
@@ -152,4 +154,50 @@ public List<RankedProduct> compareRankings(List<RankingEntry> previous, List<Ran
     return result;
 }
 
+
+public List<StoreRankingEntry> getStoreRanking(LocalDate start, LocalDate end) {
+    String sql = """
+        SELECT s.city AS store, COUNT(*) AS orders
+        FROM orders o
+        JOIN stores s ON o.storeID = s.storeID
+        WHERE o.orderDate BETWEEN ? AND ?
+        GROUP BY s.city
+        ORDER BY orders DESC
+        LIMIT 5
+    """;
+
+    return jdbcTemplate.query(sql, new Object[]{start, end}, (rs, rowNum) ->
+        new StoreRankingEntry(
+            rs.getString("store"),
+            rs.getInt("orders")
+        )
+    );
+}
+
+public List<StoreDTO> compareStoreRankings(List<StoreRankingEntry> previous, List<StoreRankingEntry> current) {
+    Map<String, Integer> previousMap = new HashMap<>();
+    for (int i = 0; i < previous.size(); i++) {
+        previousMap.put(previous.get(i).store, i);
+    }
+
+    List<StoreDTO> result = new ArrayList<>();
+    for (int i = 0; i < current.size(); i++) {
+        StoreRankingEntry item = current.get(i);
+        Integer prevIndex = previousMap.get(item.store);
+
+        String trend;
+        Integer rankBefore = null;
+
+        if (prevIndex == null) {
+            trend = "new";
+        } else {
+            rankBefore = prevIndex + 1;
+            trend = prevIndex > i ? "up" : prevIndex < i ? "down" : "same";
+        }
+
+        result.add(new StoreDTO(item.store, item.orders, i + 1, rankBefore, trend));
+    }
+
+    return result;
+}
 }
