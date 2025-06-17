@@ -109,20 +109,17 @@ public class OrderService {
 
 public List<RankingEntry> getProductRanking(LocalDate start, LocalDate end) {
     String sql = """
-        SELECT p.Name AS product, COUNT(*) AS orders
-        FROM orders o
-        JOIN orderitems oi ON o.orderID = oi.orderID
-        JOIN products p ON oi.productID = p.SKU
-        WHERE o.orderDate BETWEEN ? AND ?
-        GROUP BY p.Name
-        ORDER BY orders DESC
+        SELECT product, SUM(orders) AS total_orders
+        FROM product_orders_daily
+        WHERE day BETWEEN ? AND ?
+        GROUP BY product
+        ORDER BY total_orders DESC
         LIMIT 5
     """;
-
     return jdbcTemplate.query(sql, new Object[]{start, end}, (rs, rowNum) ->
         new RankingEntry(
             rs.getString("product"),
-            rs.getInt("orders")
+            rs.getInt("total_orders")
         )
     );
 }
