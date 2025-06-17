@@ -22,10 +22,10 @@ const InactiveCustomerTable = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(7);
 
- // useEffect(() => {
+  useEffect(() => {
     
-   // setRows(dummyData);
- // }, []);
+    setRows(dummyData);
+  }, []);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
