@@ -1,9 +1,11 @@
 package com.example.pizzadash.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import com.example.pizzadash.service.OrderService;
+
+import java.time.LocalDate;
 import java.util.*;
 
 @RestController
@@ -11,53 +13,23 @@ import java.util.*;
 public class KpiController {
 
     @Autowired
-    private JdbcTemplate jdbc;
+    private OrderService orderService;
 
     @GetMapping
     public Map<String, Object> getKpis(
         @RequestParam String start,
         @RequestParam String end,
-        @RequestParam(required = false) List<String> stores,
-        @RequestParam(required = false) List<String> categories,
-        @RequestParam(required = false) List<String> sizes
+        @RequestParam(required = false) String stores,
+        @RequestParam(required = false) String categories,
+        @RequestParam(required = false) String sizes
     ) {
-        StringBuilder sql = new StringBuilder("""
-            SELECT 
-              COUNT(DISTINCT o.orderID) AS totalOrders,
-              SUM(o.total) AS revenue,
-              SUM(o.nItems) AS totalItems
-            FROM orders o
-            JOIN orderitems oi ON o.orderID = oi.orderID
-            JOIN products p ON oi.productID = p.SKU
-            WHERE o.orderDate BETWEEN ? AND ?
-        """);
+       LocalDate startDate = LocalDate.parse(start.trim());
+       LocalDate endDate = LocalDate.parse(end.trim());
+        List<String> storeList = split(stores);
+        List<String> categoryList = split(categories);
+        List<String> sizeList = split(sizes);
 
-        List<Object> params = new ArrayList<>();
-        params.add(start);
-        params.add(end);
-
-        if (stores != null && !stores.isEmpty()) {
-            sql.append(" AND o.storeID IN (")
-               .append("?,".repeat(stores.size()).replaceAll(",$", ""))
-               .append(")");
-            params.addAll(stores);
-        }
-
-        if (categories != null && !categories.isEmpty()) {
-            sql.append(" AND p.Category IN (")
-               .append("?,".repeat(categories.size()).replaceAll(",$", ""))
-               .append(")");
-            params.addAll(categories);
-        }
-
-        if (sizes != null && !sizes.isEmpty()) {
-            sql.append(" AND p.Size IN (")
-               .append("?,".repeat(sizes.size()).replaceAll(",$", ""))
-               .append(")");
-            params.addAll(sizes);
-        }
-
-        Map<String, Object> row = jdbc.queryForMap(sql.toString(), params.toArray());
+        Map<String, Object> row = orderService.getKpiSummary(startDate, endDate, storeList, categoryList, sizeList);
 
         double revenue = row.get("revenue") != null ? ((Number) row.get("revenue")).doubleValue() : 0;
         int totalOrders = row.get("totalOrders") != null ? ((Number) row.get("totalOrders")).intValue() : 0;
@@ -71,5 +43,10 @@ public class KpiController {
         result.put("Total Items", totalItems);
 
         return result;
+    }
+
+    private List<String> split(String raw) {
+        if (raw == null || raw.isBlank()) return Collections.emptyList();
+        return Arrays.stream(raw.split(",")).map(String::trim).filter(s -> !s.isEmpty()).toList();
     }
 }

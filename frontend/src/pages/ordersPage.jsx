@@ -2,8 +2,9 @@ import { parseDate } from "@internationalized/date";
 import { useState } from "react";
 import OrdersChart from "../components/orderchart";
 import FilterBar from "../components/filterbar";
-import KpiGrid from "../components/KpiGrid"; // ← dynamic KPIs
-import "../styles/OrdersPage.css"; // your layout CSS
+import KpiGrid from "../components/KpiGrid";
+import ProductRanking from "../components/productranking"; // ← hinzufügen
+import "../styles/OrdersPage.css";
 
 const OrdersPage = () => {
   const [filters, setFilters] = useState({
@@ -25,10 +26,17 @@ const OrdersPage = () => {
           <OrdersChart filters={filters} />
         </div>
 
-        {/* Replace static cards with dynamic KPI grid */}
         <div className="orders-kpi-wrapper">
           <KpiGrid filters={filters} />
         </div>
+      </div>
+
+      {/* Produkt-Ranking darunter */}
+      <div className="orders-ranking-wrapper">
+        <ProductRanking
+          start={filters.start.toString().slice(0, 10).trim()}
+          end={filters.end.toString().slice(0, 10).trim()}
+        />
       </div>
     </div>
   );

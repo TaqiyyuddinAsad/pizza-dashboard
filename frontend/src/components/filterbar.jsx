@@ -17,7 +17,7 @@ const FilterBar = ({ onApplyFilters }) => {
     sizes: [],
   });
 
-  // 🔄 Lade Optionen aus dem Backend
+ 
   useEffect(() => {
     fetch("http://localhost:8080/filters")
       .then((res) => res.json())
