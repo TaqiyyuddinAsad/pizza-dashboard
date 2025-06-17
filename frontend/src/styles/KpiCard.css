@@ -1,0 +1,51 @@
+.kpi-card {
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  transition: box-shadow 0.2s ease;
+}
+
+.kpi-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.kpi-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.kpi-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #666;
+}
+
+.kpi-percentage {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.kpi-change.green {
+  color: #10b981; /* Tailwind emerald-500 */
+}
+
+.kpi-change.red {
+  color: #ef4444; /* Tailwind red-500 */
+}
+
+.kpi-price {
+  font-size: 24px;
+  font-weight: bold;
+  color: #1f2937; /* Tailwind gray-800 */
+}

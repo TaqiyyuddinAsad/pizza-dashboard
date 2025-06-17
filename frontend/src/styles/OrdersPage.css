@@ -1,0 +1,27 @@
+.orders-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .orders-container {
+    flex-direction: row;
+  }
+
+  .orders-chart-wrapper {
+    width: 66.66%;
+  }
+
+  .orders-kpi-wrapper {
+    width: 33.33%;
+  }
+}
+
+.orders-chart-wrapper,
+.orders-kpi-wrapper {
+  padding: 1rem;
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
