@@ -1,9 +1,12 @@
+import { useEffect, useState } from "react";
+import { fetchProductRanking } from "../services/productService";
+import { fetchStoreRanking } from "../services/storeService";
 import { parseDate } from "@internationalized/date";
-import { useState } from "react";
 import OrdersChart from "../components/orderchart";
 import FilterBar from "../components/filterbar";
 import KpiGrid from "../components/KpiGrid";
-import ProductRanking from "../components/productranking"; // ← hinzufügen
+import ProductLeaderboard from "../components/ProductLeaderboard"; 
+import StoreLeaderboard from "../components/StoreLeaderboard";
 import "../styles/OrdersPage.css";
 
 const OrdersPage = () => {
@@ -15,29 +18,49 @@ const OrdersPage = () => {
     sizes: [],
   });
 
+  // --- State für Rankings ---
+  const [productRanking, setProductRanking] = useState([]);
+  const [storeRanking, setStoreRanking] = useState([]);
+
+  // --- Fetch Rankings bei Filter-Änderung ---
+  useEffect(() => {
+    const start = filters.start.toString();
+    const end = filters.end.toString();
+
+    fetchProductRanking(start, end).then(setProductRanking);
+
+    fetchStoreRanking(start, end).then(setStoreRanking);
+  }, [filters]);
+
   return (
     <div className="orders-page">
-      {/* Filter above all */}
       <FilterBar onApplyFilters={setFilters} />
-
-      {/* Chart and KPI layout container */}
       <div className="orders-container">
         <div className="orders-chart-wrapper">
           <OrdersChart filters={filters} />
         </div>
-
         <div className="orders-kpi-wrapper">
           <KpiGrid filters={filters} />
         </div>
       </div>
+      <div className="down-part">
+      <div className="orders-ranking-wrapper" style={{
+  display: "flex",
+  gap: "32px",
+  justifyContent: "flex-start",   
+  alignItems: "flex-start",
+  flexWrap: "wrap"
+}}>
+  <div style={{ flex: 1, maxWidth: 340 }}>
+    <ProductLeaderboard ranking={productRanking} />
+  </div>
+  <div style={{ flex: 1, maxWidth: 340 }}>
+    <StoreLeaderboard ranking={storeRanking} />
+  </div>
+  
+  </div>
+</div>
 
-      {/* Produkt-Ranking darunter */}
-      <div className="orders-ranking-wrapper">
-        <ProductRanking
-          start={filters.start.toString().slice(0, 10).trim()}
-          end={filters.end.toString().slice(0, 10).trim()}
-        />
-      </div>
     </div>
   );
 };
