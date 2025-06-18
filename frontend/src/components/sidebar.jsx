@@ -17,6 +17,7 @@ const Sidebar = () => {
         <NavLink to="/kunden" className="nav-item">🛒 Kunden</NavLink>
         <NavLink to="/analyse" className="nav-item">📄 Waren – Analyse</NavLink>
         <NavLink to="/bestellungen" className="nav-item">🌀 Bestellungen</NavLink>
+        
         <NavLink to="/logout" className="nav-item">🔒 Abmelden</NavLink>
       </nav>
     </aside>

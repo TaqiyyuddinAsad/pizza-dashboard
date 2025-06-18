@@ -18,7 +18,7 @@ function App() {
         <Route path="/umsatz" element={<Layout><RevenuePage/></Layout>} />
         <Route path="/bestellungen" element={<Layout><OrdersPage/></Layout>}/>
         <Route path="/kunden" element={<Layout><CustomerPage /></Layout>} />
-        <Route path="/waren" element={<ProductPage />} />
+        <Route path="/analyse" element={<ProductPage />} />
 
       </Routes>
     </BrowserRouter>
