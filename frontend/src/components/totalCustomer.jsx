@@ -12,7 +12,7 @@ import {
 
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Tooltip, Legend);
 
-const TotalCustomersCard = () => {
+const TotalCustomersCard = ({ onClick }) => {
   const [year, setYear] = useState('2023');
   const [branch, setBranch] = useState('Alle Filialen');
 
@@ -53,7 +53,10 @@ const TotalCustomersCard = () => {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-md p-6 w-full max-w-2xl">
+    <div
+      onClick={onClick}
+      className="bg-white rounded-xl shadow-md p-6 w-full max-w-2xl cursor-pointer hover:shadow-lg transition"
+    >
       <div className="flex justify-between items-start mb-4">
         <div>
           <h2 className="text-lg font-semibold text-black">Gesamtkunden</h2>
