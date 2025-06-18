@@ -56,8 +56,8 @@ const TotalCustomersCard = () => {
     <div className="bg-white rounded-xl shadow-md p-6 w-full max-w-2xl">
       <div className="flex justify-between items-start mb-4">
         <div>
-          <h2 className="text-lg font-semibold text-gray-700">Gesamtkunden</h2>
-          <p className="text-3xl font-bold text-gray-900">{totalCustomers.toLocaleString()} Kunden</p>
+          <h2 className="text-lg font-semibold text-black">Gesamtkunden</h2>
+          <p className="text-3xl font-bold text-black">{totalCustomers.toLocaleString()} Kunden</p>
           <p className="text-sm text-green-600 mt-1">+{changeRate}% vs 2022</p>
         </div>
         <div className="flex space-x-2">
