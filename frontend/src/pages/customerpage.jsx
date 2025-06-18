@@ -14,7 +14,6 @@ const CustomerPage = () => {
         Kundenanalyse
       </Typography>
 
-      {/* Obere Reihe: große Card (volle Breite) */}
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <Box className="bg-white rounded-xl shadow-md p-6 h-full">
@@ -24,7 +23,6 @@ const CustomerPage = () => {
               <AverageRevenueCard />
             )}
 
-            {/* Umschaltpunkte */}
             <Box
               mt={3}
               display="flex"
@@ -48,7 +46,6 @@ const CustomerPage = () => {
           </Box>
         </Grid>
 
-        {/* Untere Reihe: Kreisdiagramm links, Tabelle rechts */}
         <Grid item xs={12} md={4}>
           <Box className="bg-white rounded-xl shadow-md p-6 h-full">
             <RevenuePieChart />
