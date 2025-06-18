@@ -3,6 +3,8 @@ import { Box, Typography } from "@mui/material";
 import InactiveCustomer from "../components/inactiveCustomerTable";
 import TotalCustomersCard from "../components/totalCustomer";
 import AverageRevenueCard from "../components/averageRevenue";
+import RevenuePieChart from "../components/revenuePieChart";
+
 
 const CustomerPage = () => {
   const [activeCard, setActiveCard] = useState("totalCustomers");
@@ -34,6 +36,10 @@ const CustomerPage = () => {
           gap={2}
           style={{ minHeight: "24px" }}
         >
+          <Box mt={4}>
+  <RevenuePieChart />
+</Box>
+
           <div
             onClick={() => setActiveCard("totalCustomers")}
             className={`w-3 h-3 rounded-full cursor-pointer transition ${
