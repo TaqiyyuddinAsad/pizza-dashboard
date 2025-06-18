@@ -1,6 +1,8 @@
 package com.example.pizzadash.controller;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.pizzadash.service.OrderService;
-
+import com.example.pizzadash.dto.OrderTimeDTO;
 import com.example.pizzadash.dto.OrdersDTO;
 
 @RestController
@@ -30,4 +32,31 @@ public class OrderController {
         LocalDate endDate = LocalDate.parse(end);
         return orderService.getOrdersGroupedByWeekday(startDate, endDate, stores, categories, sizes);
 }
+
+@GetMapping("/orders/times")
+public List<OrderTimeDTO> getOrderTimes(
+        @RequestParam String start,
+        @RequestParam String end,
+        @RequestParam(required = false) String stores,
+        @RequestParam(required = false) String categories,
+        @RequestParam(required = false) String sizes) {
+
+    return orderService.getOrderTimes(
+        LocalDate.parse(start != null ? start.trim() : ""),
+        LocalDate.parse(end != null ? end.trim() : ""),
+        splitCsv(stores),
+        splitCsv(categories),
+        splitCsv(sizes)
+    );
+}
+
+// Hilfsmethode für Komma-getrennte Strings zu Listen:
+private List<String> splitCsv(String csv) {
+    if (csv == null || csv.isEmpty()) {
+        return new ArrayList<>();
+    }
+    return Arrays.asList(csv.split(","));
+}
+
+
 }

@@ -2,6 +2,7 @@ package com.example.pizzadash.service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import com.example.pizzadash.dto.OrderTimeDTO;
 import com.example.pizzadash.dto.OrdersDTO;
 import com.example.pizzadash.dto.RankedProduct;
 import com.example.pizzadash.dto.RankingEntry;
@@ -197,4 +199,71 @@ public List<StoreDTO> compareStoreRankings(List<StoreRankingEntry> previous, Lis
 
     return result;
 }
+
+
+
+
+public List<OrderTimeDTO> getOrderTimes(
+        LocalDate start, LocalDate end,
+        List<String> stores, List<String> categories, List<String> sizes) {
+
+    StringBuilder sql = new StringBuilder(
+        "SELECT " +
+        "  CASE " +
+        "    WHEN HOUR(o.orderDate) BETWEEN 0 AND 5 THEN 'nachts' " +
+        "    WHEN HOUR(o.orderDate) BETWEEN 6 AND 11 THEN 'morgens' " +
+        "    WHEN HOUR(o.orderDate) BETWEEN 12 AND 14 THEN 'mittags' " +
+        "    WHEN HOUR(o.orderDate) BETWEEN 15 AND 17 THEN 'nachmittags' " +
+        "    WHEN HOUR(o.orderDate) BETWEEN 18 AND 22 THEN 'abends' " +
+        "    ELSE 'spätabends' " +
+        "  END AS zeitpunkt, " +
+        "  COUNT(*) AS anzahl " +
+        "FROM orders o " +
+        "LEFT JOIN orderitems oi ON o.orderID = oi.orderID " +
+        "LEFT JOIN products p ON oi.productID = p.SKU " +
+        "WHERE o.orderDate BETWEEN ? AND ? "
+    );
+
+    List<Object> params = new ArrayList<>();
+    params.add(start.atStartOfDay());
+    params.add(end.plusDays(1).atStartOfDay());
+
+    if (stores != null && !stores.isEmpty()) {
+        sql.append(" AND o.storeID IN (")
+           .append(String.join(",", Collections.nCopies(stores.size(), "?")))
+           .append(")");
+        params.addAll(stores);
+    }
+    if (categories != null && !categories.isEmpty()) {
+        sql.append(" AND p.Category IN (")
+           .append(String.join(",", Collections.nCopies(categories.size(), "?")))
+           .append(")");
+        params.addAll(categories);
+    }
+    if (sizes != null && !sizes.isEmpty()) {
+        sql.append(" AND p.Size IN (")
+           .append(String.join(",", Collections.nCopies(sizes.size(), "?")))
+           .append(")");
+        params.addAll(sizes);
+    }
+
+    sql.append(" GROUP BY zeitpunkt");
+    sql.append(" ORDER BY FIELD(zeitpunkt, 'nachts', 'morgens', 'mittags', 'nachmittags', 'abends', 'spätabends')");
+
+    // Debug-Logging (optional)
+    System.out.println("🔎 OrderTimes SQL:\n" + sql);
+    System.out.println("🔎 PARAMS: " + params);
+
+    return jdbcTemplate.query(
+        sql.toString(),
+        params.toArray(),
+        (rs, rowNum) -> {
+            OrderTimeDTO dto = new OrderTimeDTO();
+            dto.setZeitpunkt(rs.getString("zeitpunkt"));
+            dto.setAnzahl(rs.getLong("anzahl"));
+            return dto;
+        }
+    );
+}
+
 }

@@ -28,6 +28,17 @@
 
 .orders-page {
   height: 100vh;
+  width: 100%;
   display: flex;
   flex-direction: column;
 }
+
+.dashboard-row {
+  display: flex;
+  flex-direction: row;
+  gap: 32px;
+  width: 100%;
+  min-height: 410px;
+  align-items: stretch;
+}
+

@@ -7,6 +7,7 @@ import "../styles/OrdersChart.css";
 const OrdersChart = ({ filters }) => {
   const [data, setData] = useState([]);
 
+  
   useEffect(() => {
     if (filters.start && filters.end) {
       const params = new URLSearchParams();
