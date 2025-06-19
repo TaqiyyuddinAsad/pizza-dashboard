@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
-import ProductLeaderboard from "../components/ProductLeaderboard";
+import ProductBestsellerList from "../components/productsBestseller.jsx";
 
 const ProductPage = () => {
   return (
@@ -9,9 +9,9 @@ const ProductPage = () => {
         Waren – Analyse
       </Typography>
 
-      <Box className="bg-white rounded-xl shadow-md p-6">
-        <ProductLeaderboard />
-      </Box>
+<Box className="bg-white rounded-xl shadow-md p-6">
+  <ProductBestsellerList />
+</Box>
     </Box>
   );
 };

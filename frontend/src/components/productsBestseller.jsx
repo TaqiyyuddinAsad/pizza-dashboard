@@ -1,31 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
+import "./ProductBestsellerList.css"; // falls du CSS hast
 
 const ProductBestsellerList = () => {
   const [products, setProducts] = useState([]);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await fetch("http://localhost:8080/products/ranking");
-        if (!response.ok) {
-          throw new Error("Netzwerkfehler beim Laden der Produkte");
-        }
-        const data = await response.json();
-        setProducts(data || []);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProducts();
+    // MOCK-DATEN statt API-Request
+    const mockData = [
+      { name: "Pizza Margherita", size: "Medium", price: 7.0, orders: 83, revenue: 679 },
+      { name: "Pizza Veggie", size: "Large", price: 8.5, orders: 85, revenue: 569 },
+      { name: "Sicilian Pizza", size: "Small", price: 9.5, orders: 64, revenue: 453 }
+    ];
+    setProducts(mockData);
   }, []);
-
-  if (loading) return <p>Lade Bestseller...</p>;
-  if (error) return <p style={{ color: "red" }}>Fehler: {error}</p>;
 
   return (
     <div className="product-list-container">
@@ -47,9 +34,9 @@ const ProductBestsellerList = () => {
                 <br />
                 <span className="size-info">{p.size}</span>
               </td>
-              <td>{p.price}€</td>
+              <td>{p.price.toFixed(2)} €</td>
               <td>{p.orders}</td>
-              <td>{p.revenue}€</td>
+              <td>{p.revenue.toFixed(0)} €</td>
             </tr>
           ))}
         </tbody>
