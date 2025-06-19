@@ -14,24 +14,38 @@ const ProductBestsellerList = () => {
   }, []);
 
   return (
-    <div className="product-list-container">
-      <h3>Bestseller</h3>
-      <table className="product-table">
+    <div
+      style={{
+        backgroundColor: "#fff",
+        color: "#111",
+        padding: "24px",
+        borderRadius: "12px",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+        width: "100%",
+        maxWidth: "900px",
+        margin: "auto"
+      }}
+    >
+      <h3 style={{ fontSize: "1.5rem", fontWeight: "600", marginBottom: "1rem" }}>
+        Bestseller
+      </h3>
+
+      <table style={{ width: "100%", borderCollapse: "collapse", color: "#111" }}>
         <thead>
           <tr>
-            <th>Produkt</th>
-            <th>Preis</th>
-            <th>Bestellungen</th>
-            <th>Umsatz</th>
+            <th style={{ textAlign: "left", paddingBottom: "8px" }}>Produkt</th>
+            <th style={{ textAlign: "left", paddingBottom: "8px" }}>Preis</th>
+            <th style={{ textAlign: "left", paddingBottom: "8px" }}>Bestellungen</th>
+            <th style={{ textAlign: "left", paddingBottom: "8px" }}>Umsatz</th>
           </tr>
         </thead>
         <tbody>
           {products.map((p, index) => (
-            <tr key={index}>
-              <td>
+            <tr key={index} style={{ borderBottom: "1px solid #ddd" }}>
+              <td style={{ padding: "12px 0" }}>
                 <strong>{p.name}</strong>
                 <br />
-                <span className="size-info">{p.size}</span>
+                <span style={{ fontSize: "0.85rem", color: "#666" }}>{p.size}</span>
               </td>
               <td>{p.price.toFixed(2)} €</td>
               <td>{p.orders}</td>
