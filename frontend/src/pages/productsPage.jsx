@@ -6,25 +6,24 @@ import Layout from "../layout/layout";
 const ProductPage = () => {
   return (
     <Layout>
-      <div className="p-6">
+      <div className="p-6" style={{ maxWidth: "1400px", margin: "0 auto" }}>
         <h2 className="text-2xl font-semibold mb-4">Waren – Analyse</h2>
 
-        
         <div
           style={{
             display: "flex",
-            flexWrap: "wrap",
             gap: "24px",
-            alignItems: "flex-start"
+            alignItems: "flex-start",
+            flexWrap: "nowrap"
           }}
         >
-          
-          <div style={{ flex: 1, minWidth: "500px" }}>
+          {/* Linke Box: Bestseller */}
+          <div style={{ flex: 1, minWidth: "0", maxWidth: "850px" }}>
             <ProductBestsellerList />
           </div>
 
-          
-          <div style={{ width: "100%", maxWidth: "500px" }}>
+          {/* Rechte Box: Kombinationen */}
+          <div style={{ width: "420px", flexShrink: 0 }}>
             <PopularCombinations />
           </div>
         </div>
