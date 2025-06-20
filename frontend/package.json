@@ -29,6 +29,7 @@
     "react-chartjs-2": "^5.3.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.6.2",
+    "recharts": "^2.15.3",
     "rsuite": "^5.82.0"
   },
   "devDependencies": {
