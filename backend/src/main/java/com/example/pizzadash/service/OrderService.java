@@ -106,7 +106,8 @@ public class OrderService {
     System.out.println("📊 PARAMS:");
     System.out.println(params);
 
-    return jdbcTemplate.queryForMap(sql.toString(), params.toArray());
+    Map<String, Object> result = jdbcTemplate.queryForMap(sql.toString(), params.toArray());
+    return result;
 }
 
 public List<RankingEntry> getProductRanking(LocalDate start, LocalDate end) {

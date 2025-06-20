@@ -50,6 +50,7 @@ const RevenuePage = () => {
   return (
     <div className="revenue-container">
       <h1 className="page-title">Finanzen</h1>
+      
 
       <div className="revenue-card">
         <div className="card-header">
@@ -60,7 +61,7 @@ const RevenuePage = () => {
             </p>
           </div>
 
-          <FilterBar onApplyFilters={handleApplyFilters} />
+          
         </div>
 
         <div className="revenue-chart">

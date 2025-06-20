@@ -4,6 +4,7 @@ import Layout from './layout/layout.jsx';
 import RevenuePage from './pages/revenuepage.jsx';
 import OrdersPage from './pages/ordersPage.jsx';
 import CustomerPage from './pages/customerpage.jsx';
+import './index.css';
 
 
 // etc.

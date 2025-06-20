@@ -5,8 +5,8 @@ import dayjs from 'dayjs';
 const { RangePicker } = DatePicker;
 
 const DateFilter = ({ onDateChange }) => {
-  const defaultStart = dayjs('2024-01-01');
-  const defaultEnd = dayjs('2024-12-31');
+  const defaultStart = dayjs('2020-03-01');
+  const defaultEnd = dayjs('2020-07-01');
 
   return (
     <Space direction="vertical" size={12}>

@@ -24,6 +24,7 @@ const RevenuePieChart = () => {
 
   const options = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         position: "bottom",
@@ -36,14 +37,8 @@ const RevenuePieChart = () => {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-md p-6 w-full max-w-md">
-      <h2 className="text-sm font-semibold text-gray-800 mb-1">
-        Ø Monatsumsatz pro Kunde (segmentiert)
-      </h2>
-      <p className="text-xs text-gray-500 mb-4">
-        Berechnet auf Basis der aktiven Nutzungsdauer je Kunde
-      </p>
-      <Pie data={data} options={options} />
+    <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+      <Pie data={data} options={options} style={{ maxWidth: '100%', maxHeight: '100%' }} />
     </div>
   );
 };

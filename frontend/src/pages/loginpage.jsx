@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import '../styles/LoginPage.css';
 import pizzaIcon from '../assets/pizzaicon.png';
+import TextPressure from "../components/textpressure.jsx"
 
 const LoginPage = () => {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -48,8 +49,21 @@ const LoginPage = () => {
       {/* RIGHT: LOGO */}
       <div className="login-right">
         <div className='title'>
-        <img src={pizzaIcon} id= "pizza" alt="Pizza" />
-        <h1>PIZZA EXPRESS</h1></div>
+        <img src={pizzaIcon} id= "pizza" alt="Pizza" /><TextPressure
+    text="PIZZA EXPRESS"
+    flex={true}
+    alpha={false}
+    stroke={false}
+    width={false}
+    weight={true}
+    italic={false}
+    textColor="#ffffff"
+    strokeColor="#ff0000"
+    minFontSize={10}
+  />
+        <div style={{position: 'relative', height: '300px'}}>
+  
+</div></div>
       </div>
     </div>
   );

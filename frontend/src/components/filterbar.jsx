@@ -25,7 +25,7 @@ const FilterBar = ({ onApplyFilters }) => {
       .catch((err) => console.error("Failed to load filter options:", err));
   }, []);
 
-  // 📅 Date-Handler
+  
   const handleDateChange = (start, end) => {
     setFilters((prev) => ({ ...prev, start, end }));
   };
@@ -34,35 +34,46 @@ const FilterBar = ({ onApplyFilters }) => {
     onApplyFilters(filters);
   };
 
-  return (
-    <div className="filter-bar" style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
-      {/* Optional: Datumsauswahl */}
-      <DateFilter onDateChange={handleDateChange} />
+ return (
+  <div className="bg-white rounded-2xl p-4 flex flex-wrap items-center gap-4 shadow-lg shadow-gray-300/40 mt-2">
+    <DateFilter onDateChange={handleDateChange} />
 
-      <MultiSelectFilter
-        label="Kategorie"
-        options={options.categories}
-        selectedValues={filters.categories}
-        onChange={(newValues) => setFilters((prev) => ({ ...prev, categories: newValues }))}
-      />
+    <MultiSelectFilter
+      label="Kategorie"
+      options={options.categories}
+      selectedValues={filters.categories}
+      onChange={(newValues) =>
+        setFilters((prev) => ({ ...prev, categories: newValues }))
+      }
+    />
 
-      <MultiSelectFilter
-        label="Größe"
-        options={options.sizes}
-        selectedValues={filters.sizes}
-        onChange={(newValues) => setFilters((prev) => ({ ...prev, sizes: newValues }))}
-      />
+    <MultiSelectFilter
+      label="Größe"
+      options={options.sizes}
+      selectedValues={filters.sizes}
+      onChange={(newValues) =>
+        setFilters((prev) => ({ ...prev, sizes: newValues }))
+      }
+    />
 
-      <MultiSelectFilter
-        label="Filiale"
-        options={options.stores}
-        selectedValues={filters.stores}
-        onChange={(newValues) => setFilters((prev) => ({ ...prev, stores: newValues }))}
-      />
+    <MultiSelectFilter
+      label="Filiale"
+      options={options.stores}
+      selectedValues={filters.stores}
+      onChange={(newValues) =>
+        setFilters((prev) => ({ ...prev, stores: newValues }))
+      }
+    />
 
-      <button onClick={handleApply}>Apply</button>
-    </div>
-  );
+    <button
+      onClick={handleApply}
+      className="ml-auto px-6 py-2 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 text-white font-semibold shadow-lg hover:scale-105 hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
+    >
+      Anfrage schicken
+    </button>
+  </div>
+);
+
 };
 
 export default FilterBar;

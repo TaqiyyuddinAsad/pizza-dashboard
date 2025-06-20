@@ -14,13 +14,12 @@
   flex-shrink: 0;
 }
 
-/* Right side: topbar and content */
 .main-area {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  height: 100vh;
-  overflow: hidden;
+  min-height: 100vh;      /* <--- min-height statt height */
+  overflow: visible;      /* <--- KEIN overflow: hidden */
 }
 
 /* Topbar */
