@@ -43,6 +43,7 @@
     "react-leaflet": "^5.0.0",
     "react-leaflet-markercluster": "^5.0.0-rc.0",
     "react-router-dom": "^7.6.2",
+    "recharts": "^2.15.3",
     "rsuite": "^5.82.0",
     "tailwind-merge": "^3.3.1",
     "tailwind-scrollbar": "^4.0.2"

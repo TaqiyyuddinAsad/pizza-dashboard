@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import FilterBar from "../components/filterbar";
+import ProductBestsellerList from "../components/ProductBestsellerList";
 // Platzhalter für neue Komponenten:
 // import ProductBestsellerList from "../components/ProductBestsellerList";
 // import ProductCombinationsList from "../components/ProductCombinationsList";
@@ -24,8 +25,7 @@ const ProductPage = () => {
       <div className="product-analysis-grid" style={{ display: 'grid', gridTemplateColumns: '2fr 2fr', gap: 24, marginTop: 24 }}>
         {/* Bestseller-Liste */}
         <div style={{ gridColumn: '1/2' }}>
-          {/* <ProductBestsellerList filters={filters} /> */}
-          <div className="card">Bestseller-Liste (Platzhalter)</div>
+          <ProductBestsellerList filters={filters} />
         </div>
         {/* Kombinationen-Liste */}
         <div style={{ gridColumn: '2/3' }}>

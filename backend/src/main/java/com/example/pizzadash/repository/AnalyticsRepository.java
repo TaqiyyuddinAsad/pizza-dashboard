@@ -62,4 +62,8 @@ public class AnalyticsRepository {
         if (stores != null) out.addAll(stores);
         return out.toArray();
     }
+
+    public JdbcTemplate getJdbcTemplate() {
+        return jdbcTemplate;
+    }
 }
