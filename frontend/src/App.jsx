@@ -5,6 +5,8 @@ import RevenuePage from './pages/revenuepage.jsx';
 import OrdersPage from './pages/ordersPage.jsx';
 import CustomerPage from './pages/customerpage.jsx';
 import './index.css';
+import ProductPage from "./pages/productsPage.jsx";
+
 
 
 // etc.
@@ -17,6 +19,7 @@ function App() {
         <Route path="/umsatz" element={<Layout><RevenuePage/></Layout>} />
         <Route path="/bestellungen" element={<Layout><OrdersPage/></Layout>}/>
         <Route path="/kunden" element={<Layout><CustomerPage /></Layout>} />
+        <Route path="/analyse" element={<ProductPage />} />
 
       </Routes>
     </BrowserRouter>
