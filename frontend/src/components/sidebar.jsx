@@ -21,7 +21,7 @@ export const Sidebar = () => {
   return (
     <motion.nav
       layout
-      className="sticky top-0 h-screen shrink-0 border-r border-slate-300 bg-white p-2"
+      className="fixed left-0 top-0 h-screen shrink-0 border-r border-slate-300 bg-white p-2 z-40"
       style={{
         width: open ? "225px" : "fit-content",
       }}

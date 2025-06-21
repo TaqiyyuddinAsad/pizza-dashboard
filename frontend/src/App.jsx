@@ -19,7 +19,7 @@ function App() {
         <Route path="/umsatz" element={<Layout><RevenuePage/></Layout>} />
         <Route path="/bestellungen" element={<Layout><OrdersPage/></Layout>}/>
         <Route path="/kunden" element={<Layout><CustomerPage /></Layout>} />
-        <Route path="/analyse" element={<ProductPage />} />
+        <Route path="/waren" element={<Layout><ProductPage/></Layout>} />
 
       </Routes>
     </BrowserRouter>

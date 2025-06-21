@@ -20,6 +20,7 @@
   flex-grow: 1;
   min-height: 100vh;      /* <--- min-height statt height */
   overflow: visible;      /* <--- KEIN overflow: hidden */
+  padding-left: 225px;    /* Platz für die feste Sidebar */
 }
 
 /* Topbar */
