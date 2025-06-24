@@ -1,34 +1,28 @@
 import React from "react";
 import { Card, CardContent, Typography, Table, TableHead, TableRow, TableCell, TableBody } from "@mui/material";
 
-const ProductBestsellerList = ({ data }) => (
+const ProductCombinationsList = ({ data }) => (
   <Card sx={{ marginBottom: 2 }}>
     <CardContent>
-      <Typography variant="h6" gutterBottom>Bestseller</Typography>
+      <Typography variant="h6" gutterBottom>Beliebteste Kombinationen</Typography>
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell>Name</TableCell>
-            <TableCell>Preis</TableCell>
-            <TableCell>Größe</TableCell>
-            <TableCell>Bestellungen</TableCell>
-            <TableCell>Umsatz</TableCell>
+            <TableCell>Kombination</TableCell>
+            <TableCell>Anzahl Bestellungen</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {data && data.length > 0 ? (
             data.map((row, idx) => (
               <TableRow key={idx}>
-                <TableCell>{row.name}</TableCell>
-                <TableCell>{row.price}€</TableCell>
-                <TableCell>{row.size}</TableCell>
+                <TableCell>{row.combination}</TableCell>
                 <TableCell>{row.orders}</TableCell>
-                <TableCell>{row.revenue}€</TableCell>
               </TableRow>
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={5}>Keine Daten</TableCell>
+              <TableCell colSpan={2}>Keine Daten</TableCell>
             </TableRow>
           )}
         </TableBody>
@@ -37,4 +31,4 @@ const ProductBestsellerList = ({ data }) => (
   </Card>
 );
 
-export default ProductBestsellerList; 
+export default ProductCombinationsList; 

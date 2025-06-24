@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import FilterBar from "../components/filterbar";
+// import FilterBar from "../components/filterbar"; // Removed, now global
 import ProductBestsellerList from "../components/ProductBestsellerList";
 import ProductCombinationsList from "../components/ProductCombinationsList";
 import ProductPerformanceChart from "../components/productPerformanceChart";
@@ -7,11 +7,14 @@ import CategorySalesBarChart from "../components/CategorySalesBarChart";
 import ProductSizePieChart from "../components/ProductSizePieChart";
 import { fetchBestsellers, fetchCombinations, fetchPerformance, fetchPieBySize, fetchCategorySales } from "../services/productservice";
 
+const defaultStart = "2021-01-01";
+const defaultEnd = "2021-12-31";
+
 const ProductsPage = () => {
   // Filter state
   const [filters, setFilters] = useState({
-    start: "2024-01-01",
-    end: "2024-12-31",
+    start: defaultStart,
+    end: defaultEnd,
     stores: [],
     categories: [],
     sizes: [],
@@ -25,20 +28,29 @@ const ProductsPage = () => {
 
   // Fetch data on filter change
   useEffect(() => {
-    fetchBestsellers(filters).then(res => setBestsellers(res.data));
-    fetchCombinations(filters).then(res => setCombinations(res.data));
-    fetchCategorySales(filters).then(res => setCategorySales(res.data));
-    fetchPieBySize(filters).then(res => setPieBySize(res.data));
+    if (!filters.start || !filters.end) return;
+    fetchBestsellers(filters)
+      .then(res => setBestsellers(Array.isArray(res.data) ? res.data : []))
+      .catch(() => setBestsellers([]));
+    fetchCombinations(filters)
+      .then(res => setCombinations(Array.isArray(res.data) ? res.data : []))
+      .catch(() => setCombinations([]));
+    fetchCategorySales(filters)
+      .then(res => setCategorySales(Array.isArray(res.data) ? res.data : []))
+      .catch(() => setCategorySales([]));
+    fetchPieBySize(filters)
+      .then(res => setPieBySize(Array.isArray(res.data) ? res.data : []))
+      .catch(() => setPieBySize([]));
     // For performance, you may want to pass a specific SKU
     // fetchPerformance({ ...filters, sku: "SKU123" }).then(res => setPerformance(res.data));
   }, [filters]);
 
   return (
     <div className="product-analysis-page">
-      <FilterBar filters={filters} setFilters={setFilters} />
+      {/* FilterBar removed from here, should be global */}
       <div className="top-section" style={{ display: "flex", gap: "2rem" }}>
-        <ProductBestsellerList data={bestsellers} filters={filters} setFilters={setFilters} />
-        <ProductCombinationsList data={combinations} filters={filters} setFilters={setFilters} />
+        <ProductBestsellerList data={bestsellers || []} filters={filters} setFilters={setFilters} />
+        <ProductCombinationsList data={combinations || []} filters={filters} setFilters={setFilters} />
       </div>
       <div className="bottom-section" style={{ display: "flex", gap: "2rem", marginTop: "2rem" }}>
         <div style={{ flex: 2 }}>
@@ -47,13 +59,13 @@ const ProductsPage = () => {
             <button onClick={() => setShowPerformance(false)}>Sales by Category</button>
           </div>
           {showPerformance ? (
-            <ProductPerformanceChart data={performance} filters={filters} />
+            <ProductPerformanceChart data={performance || []} filters={filters} />
           ) : (
-            <CategorySalesBarChart data={categorySales} filters={filters} />
+            <CategorySalesBarChart data={categorySales || []} filters={filters} />
           )}
         </div>
         <div style={{ flex: 1 }}>
-          <ProductSizePieChart data={pieBySize} filters={filters} />
+          <ProductSizePieChart data={pieBySize || []} filters={filters} />
         </div>
       </div>
     </div>

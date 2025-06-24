@@ -1,44 +1,60 @@
-import React, { useEffect, useState } from 'react';
-import { fetchCategorySales } from '../services/productservice';
+import React from "react";
+import { Bar } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
 
-const CategorySalesBarChart = ({ start, end, stores = [], sizes = [] }) => {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-  useEffect(() => {
-    setLoading(true);
-    fetchCategorySales(start, end, stores, sizes)
-      .then(setData)
-      .catch(setError)
-      .finally(() => setLoading(false));
-  }, [start, end, stores, sizes]);
-
-  if (loading) return <div>Lädt...</div>;
-  if (error) return <div>Fehler beim Laden der Daten.</div>;
-  if (!data.length) return <div>Keine Daten verfügbar.</div>;
-
-  // Simple bar chart rendering
-  const max = Math.max(...data.map(d => d.quantity));
-
+const CategorySalesBarChart = ({ data }) => {
+  if (!data || data.length === 0) return <div>Keine Daten</div>;
+  const chartData = {
+    labels: data.map((row) => row.category),
+    datasets: [
+      {
+        label: "Verkäufe",
+        data: data.map((row) => row.quantity),
+        backgroundColor: "rgba(153, 102, 255, 0.6)",
+      },
+    ],
+  };
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      title: { display: true, text: 'Sales by Category' },
+    },
+    scales: {
+      y: { beginAtZero: true },
+    },
+  };
   return (
     <div>
-      <h2>Verkäufe nach Kategorien</h2>
-      <div style={{ display: 'flex', alignItems: 'flex-end', gap: '1rem', height: 200 }}>
-        {data.map(d => (
-          <div key={d.category} style={{ textAlign: 'center' }}>
-            <div style={{
-              background: '#4f46e5',
-              width: 40,
-              height: `${(d.quantity / max) * 180}px`,
-              borderRadius: 4,
-              marginBottom: 8
-            }} />
-            <div style={{ fontSize: 12 }}>{d.category}</div>
-            <div style={{ fontSize: 12, color: '#555' }}>{d.quantity}</div>
-          </div>
-        ))}
-      </div>
+      <Bar data={chartData} options={options} />
+      <table style={{ marginTop: 16 }}>
+        <thead>
+          <tr>
+            <th>Kategorie</th>
+            <th>Verkäufe</th>
+            <th>Umsatz</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.map((row, idx) => (
+            <tr key={idx}>
+              <td>{row.category}</td>
+              <td>{row.quantity}</td>
+              <td>{row.revenue}€</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };

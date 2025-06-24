@@ -1,52 +1,63 @@
 import React from "react";
+import { Line } from "react-chartjs-2";
 import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
   Tooltip,
-  CartesianGrid,
-  ResponsiveContainer
-} from "recharts";
+  Legend,
+} from "chart.js";
 
-const ProductPerformanceChart = () => {
-  // Dummy-Daten 
-  const data = [
-    { week: "KW 1", sales: 400 },
-    { week: "KW 2", sales: 600 },
-    { week: "KW 3", sales: 900 },
-    { week: "KW 4", sales: 850 },
-    { week: "KW 5", sales: 1200 },
-    { week: "KW 6", sales: 950 }
-  ];
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
+const ProductPerformanceChart = ({ data }) => {
+  if (!data || data.length === 0) return <div>Keine Daten</div>;
+  const chartData = {
+    labels: data.map((row) => row.period),
+    datasets: [
+      {
+        label: "Bestellungen",
+        data: data.map((row) => row.quantity),
+        borderColor: "#36a2eb",
+        backgroundColor: "rgba(54,162,235,0.2)",
+        tension: 0.3,
+      },
+    ],
+  };
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: { display: true },
+      title: { display: true, text: 'Performance nach Launch' },
+    },
+    scales: {
+      y: { beginAtZero: true },
+    },
+  };
   return (
-    <div
-      style={{
-        backgroundColor: "#fff",
-        padding: "24px",
-        borderRadius: "12px",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-        color: "#111",
-        width: "100%",
-        marginTop: "32px"
-      }}
-    >
-      <h3 style={{ fontSize: "1.2rem", fontWeight: "600", marginBottom: "12px" }}>
-        Performance nach Launch
-      </h3>
-
-      <div style={{ width: "100%", height: 300 }}>
-        <ResponsiveContainer>
-          <LineChart data={data}>
-            <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
-            <XAxis dataKey="week" />
-            <YAxis />
-            <Tooltip />
-            <Line type="monotone" dataKey="sales" stroke="#8884d8" strokeWidth={2} />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
+    <div>
+      <Line data={chartData} options={options} />
+      <table style={{ marginTop: 16 }}>
+        <thead>
+          <tr>
+            <th>Woche</th>
+            <th>Bestellungen</th>
+            <th>Umsatz</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.map((row, idx) => (
+            <tr key={idx}>
+              <td>{row.period}</td>
+              <td>{row.quantity}</td>
+              <td>{row.revenue}€</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };

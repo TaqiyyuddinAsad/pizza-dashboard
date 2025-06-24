@@ -2,10 +2,13 @@ import React, { useEffect, useState, memo, useMemo } from "react";
 import MultiSelectFilter from "./multiselect";
 import DateFilter from "./DateFilter"; // Optional – falls du den nutzt
 
+const today = new Date().toISOString().slice(0, 10);
+const thirtyDaysAgo = new Date(Date.now() - 29 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+
 const FilterBar = memo(({ onApplyFilters }) => {
   const [filters, setFilters] = useState({
-    start: null,
-    end: null,
+    start: thirtyDaysAgo,
+    end: today,
     stores: [],
     categories: [],
     sizes: [],
@@ -28,12 +31,22 @@ const FilterBar = memo(({ onApplyFilters }) => {
   }, []);
 
   const handleDateChange = (start, end) => {
-    setFilters((prev) => ({ ...prev, start, end }));
+    setFilters((prev) => ({
+      ...prev,
+      start: start || thirtyDaysAgo,
+      end: end || today,
+    }));
   };
 
   const handleApply = () => {
-    console.log("🔍 Filter angewendet:", filters);
-    onApplyFilters(filters);
+    // Always send valid dates
+    const safeFilters = {
+      ...filters,
+      start: filters.start || thirtyDaysAgo,
+      end: filters.end || today,
+    };
+    console.log("🔍 Filter angewendet:", safeFilters);
+    onApplyFilters(safeFilters);
   };
 
   return (
