@@ -28,6 +28,13 @@ public class OrderController {
         @RequestParam(required = false) List<String> categories,
         @RequestParam(required = false) List<String> sizes
 ) {
+        System.out.println("📊 Orders Chart Request:");
+        System.out.println("  Start: " + start);
+        System.out.println("  End: " + end);
+        System.out.println("  Stores: " + stores);
+        System.out.println("  Categories: " + categories);
+        System.out.println("  Sizes: " + sizes);
+        
         LocalDate startDate = LocalDate.parse(start);
         LocalDate endDate = LocalDate.parse(end);
         return orderService.getOrdersGroupedByWeekday(startDate, endDate, stores, categories, sizes);

@@ -9,6 +9,7 @@ import com.example.pizzadash.dto.ProductCombinationDTO;
 import com.example.pizzadash.dto.ProductPerformanceDTO;
 import com.example.pizzadash.dto.ProductPieDTO;
 import com.example.pizzadash.dto.ProductSummaryDTO;
+import com.example.pizzadash.dto.CategorySalesDTO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -92,5 +93,15 @@ public class ProductController {
         @RequestParam(required = false) List<String> stores
     ) {
         return productService.getSummary(sku, start, end, stores);
+    }
+
+    @GetMapping("/category-sales")
+    public List<CategorySalesDTO> getCategorySales(
+        @RequestParam String start,
+        @RequestParam String end,
+        @RequestParam(required = false) List<String> stores,
+        @RequestParam(required = false) List<String> sizes
+    ) {
+        return productService.getCategorySales(start, end, stores, sizes);
     }
 }

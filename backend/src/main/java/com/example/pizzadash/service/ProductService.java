@@ -9,6 +9,7 @@ import com.example.pizzadash.dto.ProductCombinationDTO;
 import com.example.pizzadash.dto.ProductPerformanceDTO;
 import com.example.pizzadash.dto.ProductPieDTO;
 import com.example.pizzadash.dto.ProductSummaryDTO;
+import com.example.pizzadash.dto.CategorySalesDTO;
 
 @Service
 public class ProductService {
@@ -22,7 +23,7 @@ public class ProductService {
         int offset = (page - 1) * size;
 
         StringBuilder sql = new StringBuilder(
-            "SELECT p.SKU, p.name, p.imageUrl, p.price, p.Size, COUNT(*) AS orders, SUM(o.total) AS revenue " +
+            "SELECT p.SKU, p.name, p.price, p.Size, COUNT(*) AS orders, SUM(o.total) AS revenue " +
             "FROM orders o " +
             "JOIN orderitems oi ON o.orderID = oi.orderID " +
             "JOIN products p ON oi.productID = p.SKU " +
@@ -43,7 +44,7 @@ public class ProductService {
             sql.append(" AND p.Size IN (").append("?,".repeat(sizes.size()).replaceAll(",$", "")).append(")");
             params.addAll(sizes);
         }
-        sql.append(" GROUP BY p.SKU, p.name, p.imageUrl, p.price, p.Size ");
+        sql.append(" GROUP BY p.SKU, p.name, p.price, p.Size ");
         sql.append(" ORDER BY orders DESC ");
         sql.append(" LIMIT ? OFFSET ?");
         params.add(size);
@@ -55,7 +56,6 @@ public class ProductService {
             (rs, rowNum) -> new ProductBestsellerDTO(
                 rs.getString("SKU"),
                 rs.getString("name"),
-                rs.getString("imageUrl"),
                 rs.getDouble("price"),
                 rs.getString("Size"),
                 rs.getInt("orders"),
@@ -64,19 +64,22 @@ public class ProductService {
         );
     }
     public List<ProductCombinationDTO> getCombinations(String start, String end, List<String> stores) {
-        // TODO: Query für Kombinationen
-        return List.of();
+        // Default pagination: page 1, size 3 (can be parameterized later)
+        int page = 1;
+        int size = 3;
+        return analyticsRepository.getBestCombinations(start, end, stores, page, size);
     }
     public List<ProductPerformanceDTO> getPerformance(String sku, String start, String end, List<String> stores) {
-        // TODO: Query für Performance
-        return List.of();
+        return analyticsRepository.getPerformanceAfterLaunch(sku, start, end, stores);
     }
     public List<ProductPieDTO> getPieBySize(String start, String end, List<String> stores) {
-        // TODO: Query für Piechart nach Größe
-        return List.of();
+        return analyticsRepository.getPieBySize(start, end, stores);
     }
     public ProductSummaryDTO getSummary(String sku, String start, String end, List<String> stores) {
         // TODO: Query für Summary
         return null;
+    }
+    public List<CategorySalesDTO> getCategorySales(String start, String end, List<String> stores, List<String> sizes) {
+        return analyticsRepository.getCategorySales(start, end, stores, sizes);
     }
 }

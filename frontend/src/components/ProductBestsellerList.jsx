@@ -2,18 +2,18 @@ import React, { useEffect, useState } from "react";
 
 const PAGE_SIZE = 3;
 
-export default function ProductBestsellerList({ filters }) {
+export default function ProductBestsellerList({ start, end, stores = [], categories = [], sizes = [] }) {
   const [products, setProducts] = useState([]);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
 
   useEffect(() => {
     const params = new URLSearchParams();
-    params.append("start", filters.start);
-    params.append("end", filters.end);
-    if (filters.stores.length) params.append("stores", filters.stores.join(","));
-    if (filters.categories.length) params.append("categories", filters.categories.join(","));
-    if (filters.sizes.length) params.append("sizes", filters.sizes.join(","));
+    params.append("start", start);
+    params.append("end", end);
+    if (stores.length) params.append("stores", stores.join(","));
+    if (categories.length) params.append("categories", categories.join(","));
+    if (sizes.length) params.append("sizes", sizes.join(","));
     params.append("page", page);
     params.append("size", PAGE_SIZE);
     fetch(`http://localhost:8080/products/bestseller?${params.toString()}`)
@@ -22,7 +22,7 @@ export default function ProductBestsellerList({ filters }) {
         setProducts(data.items || []);
         setTotal(data.total || 0);
       });
-  }, [filters, page]);
+  }, [start, end, stores, categories, sizes, page]);
 
   return (
     <div className="bestseller-list card" style={{ padding: 16 }}>
@@ -33,7 +33,6 @@ export default function ProductBestsellerList({ filters }) {
       <div>
         {products.map((p, i) => (
           <div key={p.sku} style={{ display: "flex", alignItems: "center", marginBottom: 12, gap: 12 }}>
-            <img src={p.imageUrl} alt={p.name} style={{ width: 56, height: 56, borderRadius: 8, objectFit: "cover" }} />
             <div style={{ flex: 1 }}>
               <div style={{ fontWeight: 500 }}>{p.name} <span style={{ color: '#888', fontSize: 13 }}>{p.size}</span></div>
               <div style={{ color: '#666', fontSize: 14 }}>{p.price.toFixed(2)}€ Preis</div>
