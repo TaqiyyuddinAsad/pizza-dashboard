@@ -1,10 +1,12 @@
 import React from "react";
-import { Card, CardContent, Typography, Table, TableHead, TableRow, TableCell, TableBody } from "@mui/material";
+import { Card, CardContent, Typography, Table, TableHead, TableRow, TableCell, TableBody, TablePagination } from "@mui/material";
 
-const ProductCombinationsList = ({ data }) => (
+const ProductCombinationsList = ({ data, total, page, rowsPerPage, onPageChange, onRowsPerPageChange, dateRange, storeLabel }) => (
   <Card sx={{ marginBottom: 2 }}>
     <CardContent>
-      <Typography variant="h6" gutterBottom>Beliebteste Kombinationen</Typography>
+      <Typography variant="h6" gutterBottom>
+        Beliebteste Kombinationen {dateRange ? `| ${dateRange}` : ''} {storeLabel ? `| ${storeLabel}` : ''}
+      </Typography>
       <Table>
         <TableHead>
           <TableRow>
@@ -17,7 +19,7 @@ const ProductCombinationsList = ({ data }) => (
             data.map((row, idx) => (
               <TableRow key={idx}>
                 <TableCell>{row.combination}</TableCell>
-                <TableCell>{row.orders}</TableCell>
+                <TableCell>{row.count}</TableCell>
               </TableRow>
             ))
           ) : (
@@ -27,6 +29,15 @@ const ProductCombinationsList = ({ data }) => (
           )}
         </TableBody>
       </Table>
+      <TablePagination
+        component="div"
+        count={total || 0}
+        page={page}
+        onPageChange={(e, newPage) => onPageChange(newPage)}
+        rowsPerPage={rowsPerPage}
+        onRowsPerPageChange={e => onRowsPerPageChange(Number(e.target.value))}
+        rowsPerPageOptions={[5]}
+      />
     </CardContent>
   </Card>
 );

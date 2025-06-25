@@ -1,6 +1,5 @@
 import { useEffect, useState, useContext, useMemo } from "react";
-import { fetchProductRanking } from "../services/productService";
-import { fetchStoreRanking } from "../services/storeService";
+import { fetchStoreRanking } from "../services/storeservice";
 import { parseDate } from "@internationalized/date";
 import OrdersChart from "../components/orderchart";
 import KpiGridOrders from "../components/KpiGridOrders";
@@ -32,6 +31,7 @@ const OrdersPage = () => {
   
   // Load essential data first (Chart and KPIs)
   useEffect(() => {
+    console.log('ordersPage filters:', filters);
     if (!filters.start || !filters.end) return;
 
     // Only show loading for non-essential data
@@ -46,10 +46,12 @@ const OrdersPage = () => {
       sizes: filters.sizes?.join(",") || "",
     };
 
+    console.log('Calling getBestsellersByOrders with:', filters);
     // Load secondary data (rankings and order times) with delay
     setTimeout(() => {
       Promise.allSettled([
-        fetchProductRanking(filters.start, filters.end),
+        fetch(`http://localhost:8080/products/ranking?start=${filters.start}&end=${filters.end}`)
+          .then(res => res.json()),
         fetchStoreRanking(filters.start, filters.end),
         fetchOrderTimes(params)
       ])
@@ -57,7 +59,7 @@ const OrdersPage = () => {
         const [productResult, storeResult, orderTimesResult] = results;
         
         if (productResult.status === 'fulfilled') {
-          setProductRanking(productResult.value);
+          setProductRanking(productResult.value || []);
         } else {
           console.error("Product ranking failed:", productResult.reason);
         }

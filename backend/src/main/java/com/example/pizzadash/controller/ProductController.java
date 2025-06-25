@@ -10,6 +10,7 @@ import com.example.pizzadash.dto.ProductPerformanceDTO;
 import com.example.pizzadash.dto.ProductPieDTO;
 import com.example.pizzadash.dto.ProductSummaryDTO;
 import com.example.pizzadash.dto.CategorySalesDTO;
+import com.example.pizzadash.dto.PaginatedResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +20,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @RestController
-@RequestMapping("/products")
+@RequestMapping("/api/products")
 public class ProductController {
 
     @Autowired
@@ -47,23 +48,27 @@ public class ProductController {
     }
 
     @GetMapping("/bestseller")
-    public List<ProductBestsellerDTO> getBestseller(
+    public PaginatedResponse<ProductBestsellerDTO> getBestseller(
         @RequestParam String start,
         @RequestParam String end,
         @RequestParam(required = false) List<String> stores,
         @RequestParam(required = false) List<String> categories,
-        @RequestParam(required = false) List<String> sizes
+        @RequestParam(required = false) List<String> sizes,
+        @RequestParam(defaultValue = "1") int page,
+        @RequestParam(defaultValue = "10") int size
     ) {
-        return productService.getBestseller(start, end, stores, categories, sizes);
+        return productService.getBestseller(start, end, stores, categories, sizes, page, size);
     }
 
     @GetMapping("/combinations")
-    public List<ProductCombinationDTO> getCombinations(
+    public PaginatedResponse<ProductCombinationDTO> getCombinations(
         @RequestParam String start,
         @RequestParam String end,
-        @RequestParam(required = false) List<String> stores
+        @RequestParam(required = false) List<String> stores,
+        @RequestParam(defaultValue = "1") int page,
+        @RequestParam(defaultValue = "10") int size
     ) {
-        return productService.getCombinations(start, end, stores);
+        return productService.getCombinations(start, end, stores, page, size);
     }
 
     @GetMapping("/performance")

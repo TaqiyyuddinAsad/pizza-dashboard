@@ -187,4 +187,94 @@ public class AnalyticsRepository {
     public JdbcTemplate getJdbcTemplate() {
         return jdbcTemplate;
     }
+
+    public List<com.example.pizzadash.dto.ProductBestsellerDTO> getBestseller(String start, String end, List<String> stores, List<String> categories, List<String> sizes, int size, int offset) {
+        StringBuilder sql = new StringBuilder(
+            "SELECT p.SKU, p.name, p.price, p.Size, COUNT(*) AS orders, SUM(o.total) AS revenue " +
+            "FROM orders o " +
+            "JOIN orderitems oi ON o.orderID = oi.orderID " +
+            "JOIN products p ON oi.productID = p.SKU " +
+            "WHERE o.orderDate BETWEEN ? AND ? "
+        );
+        java.util.List<Object> params = new java.util.ArrayList<>();
+        params.add(start);
+        params.add(end);
+        if (stores != null && !stores.isEmpty()) {
+            sql.append(" AND o.storeID IN (").append("?,".repeat(stores.size()).replaceAll(",$", "")).append(")");
+            params.addAll(stores);
+        }
+        if (categories != null && !categories.isEmpty()) {
+            sql.append(" AND p.Category IN (").append("?,".repeat(categories.size()).replaceAll(",$", "")).append(")");
+            params.addAll(categories);
+        }
+        if (sizes != null && !sizes.isEmpty()) {
+            sql.append(" AND p.Size IN (").append("?,".repeat(sizes.size()).replaceAll(",$", "")).append(")");
+            params.addAll(sizes);
+        }
+        sql.append(" GROUP BY p.SKU, p.name, p.price, p.Size ");
+        sql.append(" ORDER BY orders DESC ");
+        sql.append(" LIMIT ? OFFSET ?");
+        params.add(size);
+        params.add(offset);
+        return jdbcTemplate.query(
+            sql.toString(),
+            params.toArray(),
+            (rs, rowNum) -> new com.example.pizzadash.dto.ProductBestsellerDTO(
+                rs.getString("SKU"),
+                rs.getString("name"),
+                rs.getDouble("price"),
+                rs.getString("Size"),
+                rs.getInt("orders"),
+                rs.getDouble("revenue")
+            )
+        );
+    }
+
+    public int getBestsellerCount(String start, String end, List<String> stores, List<String> categories, List<String> sizes) {
+        StringBuilder sql = new StringBuilder(
+            "SELECT COUNT(DISTINCT p.SKU, p.name, p.price, p.Size) AS total " +
+            "FROM orders o " +
+            "JOIN orderitems oi ON o.orderID = oi.orderID " +
+            "JOIN products p ON oi.productID = p.SKU " +
+            "WHERE o.orderDate BETWEEN ? AND ? "
+        );
+        java.util.List<Object> params = new java.util.ArrayList<>();
+        params.add(start);
+        params.add(end);
+        if (stores != null && !stores.isEmpty()) {
+            sql.append(" AND o.storeID IN (").append("?,".repeat(stores.size()).replaceAll(",$", "")).append(")");
+            params.addAll(stores);
+        }
+        if (categories != null && !categories.isEmpty()) {
+            sql.append(" AND p.Category IN (").append("?,".repeat(categories.size()).replaceAll(",$", "")).append(")");
+            params.addAll(categories);
+        }
+        if (sizes != null && !sizes.isEmpty()) {
+            sql.append(" AND p.Size IN (").append("?,".repeat(sizes.size()).replaceAll(",$", "")).append(")");
+            params.addAll(sizes);
+        }
+        return jdbcTemplate.queryForObject(sql.toString(), params.toArray(), Integer.class);
+    }
+
+    public int getCombinationsCount(String start, String end, List<String> stores) {
+        StringBuilder sql = new StringBuilder(
+            "SELECT COUNT(*) AS total FROM (" +
+            "SELECT 1 " +
+            "FROM orderitems oi1 " +
+            "JOIN orderitems oi2 ON oi1.orderID = oi2.orderID AND oi1.productID < oi2.productID " +
+            "JOIN products p1 ON oi1.productID = p1.SKU " +
+            "JOIN products p2 ON oi2.productID = p2.SKU " +
+            "JOIN orders o ON oi1.orderID = o.orderID " +
+            "WHERE o.orderDate BETWEEN ? AND ? "
+        );
+        java.util.List<Object> params = new java.util.ArrayList<>();
+        params.add(start);
+        params.add(end);
+        if (stores != null && !stores.isEmpty()) {
+            sql.append(" AND o.storeID IN (").append("?,".repeat(stores.size()).replaceAll(",$", "")).append(")");
+            params.addAll(stores);
+        }
+        sql.append(" GROUP BY CONCAT(p1.Name, ' (', p1.Size, ') + ', p2.Name, ' (', p2.Size, ')')) t");
+        return jdbcTemplate.queryForObject(sql.toString(), params.toArray(), Integer.class);
+    }
 }
