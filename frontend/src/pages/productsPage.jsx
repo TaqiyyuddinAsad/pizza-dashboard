@@ -6,7 +6,7 @@ import ProductPerformanceChart from "../components/productPerformanceChart";
 import CategorySalesBarChart from "../components/CategorySalesBarChart";
 import ProductSizePieChart from "../components/ProductSizePieChart";
 import ProductBestsellersTable from "../components/ProductBestsellersTable";
-import { getBestsellersByOrders, getWorstSellersByOrders, getBestsellersByRevenue, getWorstSellersByRevenue, getProductCombinations, getCategories, getAllProducts } from "../services/productservice";
+import { getBestsellersByOrders, getWorstSellersByOrders, getBestsellersByRevenue, getWorstSellersByRevenue, getProductCombinations, getCategories, getAllProducts, getProductPerformanceAfterLaunch } from "../services/productservice";
 import { ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { useContext } from 'react';
 import { FilterContext } from '../layout/layout';
@@ -38,6 +38,8 @@ const ProductsPage = () => {
   const [pendingProduct, setPendingProduct] = useState("");
   const [pendingDays, setPendingDays] = useState(30);
   const [applyTrigger, setApplyTrigger] = useState(0);
+  const [pendingSize, setPendingSize] = useState("");
+  const [selectedSize, setSelectedSize] = useState("");
 
   // Fetch data on filter or pagination change
   useEffect(() => {
@@ -111,29 +113,28 @@ const ProductsPage = () => {
       .then(products => {
         setProductList(products);
         if (!pendingProduct && products.length > 0) setPendingProduct(products[0].sku);
+        if (!pendingSize && products.length > 0 && products[0].sizes && products[0].sizes.length > 0) setPendingSize(products[0].sizes[0]);
       })
       .catch(() => setProductList([]));
   }, [filters]);
 
-  // When apply is clicked, update selectedProduct and daysAfterLaunch
+  // When apply is clicked, update selectedProduct, daysAfterLaunch, and selectedSize
   const handleApply = () => {
     setSelectedProduct(pendingProduct);
     setDaysAfterLaunch(pendingDays);
+    setSelectedSize(pendingSize);
     setApplyTrigger(t => t + 1);
   };
 
-  // Fetch performance data for selected product and days after launch
+  // Fetch performance data for selected product, size, days after launch
   useEffect(() => {
     if (showPerformance && selectedProduct && filters && filters.start && filters.end) {
-      const launchDate = filters.start;
-      const endDate = new Date(launchDate);
-      endDate.setDate(endDate.getDate() + daysAfterLaunch);
-      const endDateStr = endDate.toISOString().slice(0, 10);
-      getBestsellersByOrders({ ...filters, sku: selectedProduct, startDate: launchDate, endDate: endDateStr }, 0, 100)
-        .then(res => setPerformance(res.data || []))
+      const storeId = (filters.stores && filters.stores.length === 1) ? filters.stores[0] : undefined;
+      getProductPerformanceAfterLaunch(selectedProduct, daysAfterLaunch, selectedSize, storeId)
+        .then(res => setPerformance(res || []))
         .catch(() => setPerformance([]));
     }
-  }, [showPerformance, selectedProduct, daysAfterLaunch, filters, applyTrigger]);
+  }, [showPerformance, selectedProduct, daysAfterLaunch, selectedSize, filters, applyTrigger]);
 
   // Fetch category sales by revenue
   useEffect(() => {
@@ -254,13 +255,27 @@ const ProductsPage = () => {
               <span>Produkt:</span>
               <select
                 value={pendingProduct}
-                onChange={e => setPendingProduct(e.target.value)}
+                onChange={e => {
+                  setPendingProduct(e.target.value);
+                  const prod = productList.find(p => p.sku === e.target.value);
+                  if (prod && prod.sizes && prod.sizes.length > 0) setPendingSize(prod.sizes[0]);
+                }}
                 style={{ background: '#fff', color: '#222', border: '1px solid #ccc', borderRadius: 4, padding: '4px 8px', minWidth: 180 }}
               >
                 {productList.map(p => (
                   <option key={p.sku} value={p.sku}>
                     {p.name}{p.sizes ? ` (${p.sizes.join(', ')})` : ''}
                   </option>
+                ))}
+              </select>
+              <span>Größe:</span>
+              <select
+                value={pendingSize}
+                onChange={e => setPendingSize(e.target.value)}
+                style={{ background: '#fff', color: '#222', border: '1px solid #ccc', borderRadius: 4, padding: '4px 8px', minWidth: 80 }}
+              >
+                {(productList.find(p => p.sku === pendingProduct)?.sizes || []).map(size => (
+                  <option key={size} value={size}>{size}</option>
                 ))}
               </select>
               <span>Tage nach Launch:</span>
@@ -275,7 +290,15 @@ const ProductsPage = () => {
         </div>
         <div style={{ minHeight: 350 }}>
           {showPerformance ? (
-            <ProductPerformanceChart data={performance || []} filters={filters} daysAfterLaunch={daysAfterLaunch} productSku={selectedProduct} />
+            <div style={{ background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.10)', padding: 24, marginBottom: 24 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+                <span style={{ fontSize: 20, fontWeight: 600 }}>Performance nach Launch</span>
+                <span style={{ fontSize: 18, fontWeight: 500, color: '#1976d2' }}>
+                  Umsatz: {performance.reduce((sum, row) => sum + (parseFloat(row.revenue) || 0), 0).toLocaleString('de-DE', { style: 'currency', currency: 'EUR' })}
+                </span>
+              </div>
+              <ProductPerformanceChart data={performance || []} />
+            </div>
           ) : (
             <CategorySalesBarChart data={categorySales || []} filters={filters} />
           )}
