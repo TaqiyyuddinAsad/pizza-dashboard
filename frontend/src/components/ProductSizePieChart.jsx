@@ -1,5 +1,4 @@
 import React from "react";
-import { Card, CardContent, Typography, Box } from "@mui/material";
 import { Pie } from "react-chartjs-2";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import {
@@ -30,28 +29,28 @@ const ProductSizePieChart = ({ data }) => {
   const options = {
     responsive: true,
     plugins: {
-      legend: { position: 'bottom' },
-      title: { display: true, text: 'Verkaufsanteile nach Pizzagröße' },
+      legend: { position: "bottom" },
+      title: { display: false },
       datalabels: {
-        color: '#fff',
-        font: { weight: 'bold', size: 16 },
+        color: "#fff",
+        font: { weight: "bold", size: 16 },
         formatter: (value, ctx) => {
           const total = ctx.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
-          const percent = ((value / total) * 100).toFixed(1) + '%';
+          const percent = ((value / total) * 100).toFixed(1) + "%";
           return percent;
         },
       },
     },
   };
   return (
-    <Card>
-      <CardContent>
-        <Typography variant="h6" gutterBottom>Verkaufsanteile nach Pizzagröße</Typography>
-        <Box sx={{ width: 300, mx: 'auto' }}>
-          <Pie data={chartData} options={options} plugins={[ChartDataLabels]} />
-        </Box>
-      </CardContent>
-    </Card>
+    <Pie
+      data={chartData}
+      options={options}
+      plugins={[ChartDataLabels]}
+      width={340}
+      height={340}
+      style={{ maxWidth: '100%', maxHeight: 340 }}
+    />
   );
 };
 

@@ -50,7 +50,7 @@ const OrdersPage = () => {
     // Load secondary data (rankings and order times) with delay
     setTimeout(() => {
       Promise.allSettled([
-        fetch(`http://localhost:8080/products/ranking?start=${filters.start}&end=${filters.end}`)
+        fetch(`http://localhost:8080/api/products/ranking?start=${filters.start}&end=${filters.end}`)
           .then(res => res.json()),
         fetchStoreRanking(filters.start, filters.end),
         fetchOrderTimes(params)
@@ -59,8 +59,9 @@ const OrdersPage = () => {
         const [productResult, storeResult, orderTimesResult] = results;
         
         if (productResult.status === 'fulfilled') {
-          setProductRanking(productResult.value || []);
+          setProductRanking(Array.isArray(productResult.value) ? productResult.value : []);
         } else {
+          setProductRanking([]);
           console.error("Product ranking failed:", productResult.reason);
         }
         

@@ -158,11 +158,44 @@ export const getProductPerformanceAfterLaunch = async (sku, days, size, storeId)
         params.append('days', days);
         if (size) params.append('size', size);
         if (storeId) params.append('storeId', storeId);
-        const response = await fetch(`${API_BASE_URL}/materialized/performance?${params}`);
+        const url = `${API_BASE_URL}/materialized/performance?${params}`;
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const getCategorySalesTimeline = async (filters) => {
+    try {
+        const params = new URLSearchParams();
+        if (filters.startDate) params.append('start', filters.startDate);
+        if (filters.endDate) params.append('end', filters.endDate);
+        if (filters.store && filters.store.length > 0 && filters.store[0]) params.append('storeId', filters.store[0]);
+        if (filters.size && filters.size.length > 0 && filters.size[0]) params.append('size', filters.size[0]);
+        const response = await fetch(`${API_BASE_URL}/materialized/category-sales-timeline?${params}`);
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         return response.json();
     } catch (error) {
-        console.error('Error fetching product performance after launch:', error);
+        console.error('Error fetching category sales timeline:', error);
+        throw error;
+    }
+};
+
+export const getSalesBySizePie = async (filters) => {
+    try {
+        const params = new URLSearchParams();
+        if (filters.startDate) params.append('start', filters.startDate);
+        if (filters.endDate) params.append('end', filters.endDate);
+        if (filters.store && filters.store.length > 0) {
+            filters.store.forEach(storeId => params.append('stores', storeId));
+        }
+        const response = await fetch(`${API_BASE_URL.replace('/api', '')}/api/products/pie-size?${params}`);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        return response.json();
+    } catch (error) {
         throw error;
     }
 };

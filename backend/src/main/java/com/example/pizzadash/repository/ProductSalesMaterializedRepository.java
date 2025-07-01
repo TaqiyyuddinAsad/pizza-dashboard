@@ -194,4 +194,21 @@ public interface ProductSalesMaterializedRepository extends JpaRepository<Produc
         @Param("size") String size,
         @Param("storeId") String storeId
     );
+
+    @Query(value = "SELECT " +
+           "DATE_FORMAT(pbm.sale_date, '%Y-%u') AS period, " +
+           "pbm.product_category AS category, " +
+           "SUM(pbm.total_revenue) AS revenue " +
+           "FROM product_bestsellers_store_materialized pbm " +
+           "WHERE pbm.sale_date >= :startDate AND pbm.sale_date <= :endDate " +
+           "AND (:storeId IS NULL OR pbm.store_id = :storeId) " +
+           "AND (:size IS NULL OR pbm.product_size = :size) " +
+           "GROUP BY period, category " +
+           "ORDER BY period, category", nativeQuery = true)
+    List<Object[]> getCategorySalesTimeline(
+        @Param("startDate") java.sql.Date startDate,
+        @Param("endDate") java.sql.Date endDate,
+        @Param("storeId") String storeId,
+        @Param("size") String size
+    );
 } 

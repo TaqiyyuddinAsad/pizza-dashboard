@@ -266,4 +266,17 @@ public class ProductSalesMaterializedService {
         }
         return performance;
     }
+    
+    public List<Map<String, Object>> getCategorySalesTimeline(java.sql.Date startDate, java.sql.Date endDate, String storeId, String size) {
+        List<Object[]> results = repository.getCategorySalesTimeline(startDate, endDate, storeId, size);
+        List<Map<String, Object>> timeline = new ArrayList<>();
+        for (Object[] row : results) {
+            Map<String, Object> map = new java.util.HashMap<>();
+            map.put("period", row[0]);
+            map.put("category", row[1]);
+            map.put("revenue", row[2]);
+            timeline.add(map);
+        }
+        return timeline;
+    }
 } 

@@ -84,7 +84,7 @@ const ChartToggleCard = ({ filters }) => {
 
   return (
     <Card style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "flex-start" }}>
-      <CardContent style={{ flex: 1, display: "flex", flexDirection: "column", padding: 24 }}>
+      <CardContent style={{ flex: 1, display: "flex", flexDirection: "column", padding: 16 }}>
         <Typography variant="h6" gutterBottom style={{ marginBottom: 16 }}>{chartTitle}</Typography>
         <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginBottom: 20 }}>
           <button
@@ -117,49 +117,51 @@ const ChartToggleCard = ({ filters }) => {
 const CustomerPage = ({ filters }) => {
   return (
     <div className="orders-page">
-      {/* TOP ROW: Chart (left) and KPIs (right) */}
-      <div className="orders-container">
-        <div className="orders-chart-wrapper">
-          <ChartToggleCard filters={filters} />
+      <div className="main-content-wrapper">
+        {/* TOP ROW: Chart (left) and KPIs (right) */}
+        <div className="orders-container">
+          <div className="orders-chart-wrapper">
+            <ChartToggleCard filters={filters} />
+          </div>
+          <div className="orders-kpi-wrapper">
+            <KpiGrid filters={filters} />
+          </div>
         </div>
-        <div className="orders-kpi-wrapper">
-          <KpiGrid filters={filters} />
+        {/* MAP FULL WIDTH */}
+        <div style={{ width: '100%', marginTop: 32 }}>
+          <Card style={{ width: '100%', height: 600, display: 'flex', flexDirection: 'column', justifyContent: 'center', marginBottom: 32 }}>
+            <CardContent style={{ padding: 16 }}>
+              <Typography variant="h6" gutterBottom style={{ margin: 24 }}>Standorte & Kunden</Typography>
+              <div style={{ width: '100%', height: 540, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <StoreCustomerMap height={540} />
+              </div>
+            </CardContent>
+          </Card>
         </div>
-      </div>
-      {/* MAP FULL WIDTH */}
-      <div style={{ width: '100%', marginTop: 32 }}>
-        <Card style={{ width: '100%', height: 600, display: 'flex', flexDirection: 'column', justifyContent: 'center', marginBottom: 32 }}>
-          <CardContent style={{ padding: 0 }}>
-            <Typography variant="h6" gutterBottom style={{ margin: 24 }}>Standorte & Kunden</Typography>
-            <div style={{ width: '100%', height: 540, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              <StoreCustomerMap height={540} />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-      {/* PIE + TABLE ROW */}
-      <div className="dashboard-row" style={{ marginTop: 0 }}>
-        <div style={{ flex: 1, minWidth: 0, marginRight: 16 }}>
-          <Card style={{ width: '100%', height: 340, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-            <CardContent style={{ padding: 24 }}>
-              <Typography variant="h6" gutterBottom style={{ marginBottom: 16 }}>Kundenumsatz-Verteilung</Typography>
-              <div style={{ width: '100%', height: 220, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                <div style={{ width: 200, height: 200 }}>
-                  <RevenuePieChart filters={filters} />
+        {/* PIE + TABLE ROW */}
+        <div className="dashboard-row" style={{ marginTop: 0 }}>
+          <div style={{ flex: 1, minWidth: 0, marginRight: 16 }}>
+            <Card style={{ width: '100%', height: 340, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              <CardContent style={{ padding: 16 }}>
+                <Typography variant="h6" gutterBottom style={{ marginBottom: 16 }}>Kundenumsatz-Verteilung</Typography>
+                <div style={{ width: '100%', height: 220, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  <div style={{ width: 200, height: 200 }}>
+                    <RevenuePieChart filters={filters} />
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-        <div style={{ flex: 1, minWidth: 0, marginLeft: 16 }}>
-          <Card style={{ width: '100%', height: 340, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-            <CardContent style={{ padding: 24 }}>
-              <Typography variant="h6" gutterBottom>Inaktive Kunden</Typography>
-              <div style={{ width: '100%', height: 220, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                <InactiveCustomerTable filters={filters} />
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </div>
+          <div style={{ flex: 1, minWidth: 0, marginLeft: 16 }}>
+            <Card style={{ width: '100%', height: 340, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              <CardContent style={{ padding: 16 }}>
+                <Typography variant="h6" gutterBottom>Inaktive Kunden</Typography>
+                <div style={{ width: '100%', height: 220, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  <InactiveCustomerTable filters={filters} />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
     </div>

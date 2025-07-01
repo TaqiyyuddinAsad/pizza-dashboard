@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -164,5 +165,20 @@ public class ProductSalesMaterializedController {
         @RequestParam(required = false) String storeId
     ) {
         return ResponseEntity.ok(service.getProductPerformanceAfterLaunch(sku, days, size, storeId));
+    }
+    
+    /**
+     * Get category sales timeline (grouped by week and category)
+     */
+    @GetMapping("/category-sales-timeline")
+    public ResponseEntity<List<Map<String, Object>>> getCategorySalesTimeline(
+        @RequestParam String start,
+        @RequestParam String end,
+        @RequestParam(required = false) String storeId,
+        @RequestParam(required = false) String size
+    ) {
+        java.sql.Date startDate = java.sql.Date.valueOf(start);
+        java.sql.Date endDate = java.sql.Date.valueOf(end);
+        return ResponseEntity.ok(service.getCategorySalesTimeline(startDate, endDate, storeId, size));
     }
 } 

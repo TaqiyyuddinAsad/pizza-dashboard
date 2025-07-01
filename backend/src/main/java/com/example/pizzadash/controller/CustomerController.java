@@ -2,6 +2,8 @@ package com.example.pizzadash.controller;
 
 import com.example.pizzadash.dto.CustomerCountDTO;
 import com.example.pizzadash.dto.RevenuePerCustomerDTO;
+import com.example.pizzadash.dto.InactiveCustomerDTO;
+import com.example.pizzadash.dto.RevenueSegmentDTO;
 import com.example.pizzadash.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -37,5 +39,21 @@ public class CustomerController {
         @RequestParam(required = false) List<String> stores
     ) {
         return analyticsService.getRevenuePerCustomer(start, end, groupBy, categories, sizes, stores);
+    }
+
+    @GetMapping("/inactive-customers")
+    public List<InactiveCustomerDTO> getInactiveCustomers() {
+        return analyticsService.getInactiveCustomers(30);
+    }
+
+    @GetMapping("/revenue-per-customer-segments")
+    public List<RevenueSegmentDTO> getRevenuePerCustomerSegments(
+        @RequestParam String start,
+        @RequestParam String end,
+        @RequestParam(required = false) List<String> categories,
+        @RequestParam(required = false) List<String> sizes,
+        @RequestParam(required = false) List<String> stores
+    ) {
+        return analyticsService.getRevenuePerCustomerSegments(start, end, categories, sizes, stores);
     }
 }

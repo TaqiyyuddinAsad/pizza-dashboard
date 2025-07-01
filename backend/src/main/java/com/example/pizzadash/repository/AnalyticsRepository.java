@@ -277,4 +277,47 @@ public class AnalyticsRepository {
         sql.append(" GROUP BY CONCAT(p1.Name, ' (', p1.Size, ') + ', p2.Name, ' (', p2.Size, ')')) t");
         return jdbcTemplate.queryForObject(sql.toString(), params.toArray(), Integer.class);
     }
+
+    public List<com.example.pizzadash.dto.InactiveCustomerDTO> getInactiveCustomers(int days) {
+        String sql = "SELECT c.customerID, MAX(o.orderDate) AS lastOrder, DATEDIFF(CURDATE(), MAX(o.orderDate)) AS inactiveDays " +
+                "FROM customers c " +
+                "LEFT JOIN orders o ON c.customerID = o.customerID " +
+                "GROUP BY c.customerID " +
+                "HAVING inactiveDays >= ? " +
+                "ORDER BY inactiveDays DESC";
+        return jdbcTemplate.query(sql, new Object[]{days}, (rs, i) ->
+                new com.example.pizzadash.dto.InactiveCustomerDTO(
+                        rs.getString("customerID"),
+                        rs.getDate("lastOrder"),
+                        rs.getInt("inactiveDays")
+                )
+        );
+    }
+
+    public List<com.example.pizzadash.dto.RevenueSegmentDTO> getRevenuePerCustomerSegments(String start, String end, List<String> categories, List<String> sizes, List<String> stores) {
+        StringBuilder sql = new StringBuilder(
+            "SELECT o.customerID, SUM(o.total) AS totalRevenue " +
+            "FROM orders o " +
+            "JOIN orderitems oi ON o.orderID = oi.orderID " +
+            "JOIN products p ON oi.productID = p.SKU " +
+            "WHERE o.orderDate BETWEEN ? AND ? "
+        );
+        if (categories != null && !categories.isEmpty()) sql.append("AND p.Category IN (").append(toInSql(categories.size())).append(") ");
+        if (sizes != null && !sizes.isEmpty()) sql.append("AND p.Size IN (").append(toInSql(sizes.size())).append(") ");
+        if (stores != null && !stores.isEmpty()) sql.append("AND o.storeID IN (").append(toInSql(stores.size())).append(") ");
+        sql.append("GROUP BY o.customerID");
+        Object[] params = buildParams(start, end, categories, sizes, stores);
+        List<Double> revenues = jdbcTemplate.query(sql.toString(), params, (rs, i) -> rs.getDouble("totalRevenue"));
+        int seg1 = 0, seg2 = 0, seg3 = 0;
+        for (double r : revenues) {
+            if (r <= 15) seg1++;
+            else if (r <= 50) seg2++;
+            else seg3++;
+        }
+        List<com.example.pizzadash.dto.RevenueSegmentDTO> result = new java.util.ArrayList<>();
+        result.add(new com.example.pizzadash.dto.RevenueSegmentDTO("≤15€", seg1));
+        result.add(new com.example.pizzadash.dto.RevenueSegmentDTO("15€–50€", seg2));
+        result.add(new com.example.pizzadash.dto.RevenueSegmentDTO(">50€", seg3));
+        return result;
+    }
 }

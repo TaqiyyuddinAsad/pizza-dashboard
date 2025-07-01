@@ -11,21 +11,25 @@ import {
   Typography
 } from "@mui/material";
 
-const dummyData = [
-  { id: "C1537", lastOrder: "2020-03-10", inactiveDays: 571 },
-  { id: "C0721", lastOrder: "2020-03-10", inactiveDays: 571 },
-  { id: "C0422", lastOrder: "2020-03-10", inactiveDays: 571 },
-];
-
-const InactiveCustomerTable = () => {
+const InactiveCustomerTable = ({ filters }) => {
   const [rows, setRows] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(7);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    
-    setRows(dummyData);
-  }, []);
+    setLoading(true);
+    fetch("http://localhost:8080/api/analytics/inactive-customers")
+      .then(res => res.json())
+      .then(data => {
+        setRows(data || []);
+        setLoading(false);
+      })
+      .catch(() => {
+        setRows([]);
+        setLoading(false);
+      });
+  }, [filters]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -35,6 +39,14 @@ const InactiveCustomerTable = () => {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
+
+  if (loading) {
+    return <Typography variant="body2">Lade inaktive Kunden...</Typography>;
+  }
+
+  if (!rows.length) {
+    return <Typography variant="body2">Keine inaktiven Kunden gefunden.</Typography>;
+  }
 
   return (
     <>
@@ -55,8 +67,8 @@ const InactiveCustomerTable = () => {
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row, idx) => (
                 <TableRow key={idx}>
-                  <TableCell>{row.id}</TableCell>
-                  <TableCell>{row.lastOrder}</TableCell>
+                  <TableCell>{row.customerID}</TableCell>
+                  <TableCell>{row.lastOrder ? new Date(row.lastOrder).toLocaleDateString() : "-"}</TableCell>
                   <TableCell>{row.inactiveDays} Tagen</TableCell>
                 </TableRow>
               ))}
