@@ -10,12 +10,18 @@ import {
   FiTag,
   FiUsers,
 } from "react-icons/fi";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import pizzaLogo from '../assets/pizzaicon.png'
 
 export const Sidebar = memo(() => {
   const [open, setOpen] = useState(true);
   const [selected, setSelected] = useState("Dashboard");
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem('auth');
+    navigate('/');
+  };
 
   return (
     <nav
@@ -60,14 +66,20 @@ export const Sidebar = memo(() => {
           setSelected={setSelected}
           open={open}
         />
-        <Option
-          Icon={FiTag}
-          title="Abmelden"
-          to="/"
-          selected={selected}
-          setSelected={setSelected}
-          open={open}
-        />
+        <button
+          className={`relative flex h-10 w-full items-center rounded-md transition-colors duration-200 text-slate-500 hover:bg-slate-100`}
+          style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+          onClick={handleLogout}
+        >
+          <div className="grid h-full w-10 place-content-center text-lg">
+            <FiTag />
+          </div>
+          {open && (
+            <span className="text-xs font-medium transition-opacity duration-200">
+              Abmelden
+            </span>
+          )}
+        </button>
       </div>
 
       <ToggleClose open={open} setOpen={setOpen} />

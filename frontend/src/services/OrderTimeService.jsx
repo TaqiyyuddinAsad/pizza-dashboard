@@ -1,5 +1,10 @@
 const fetchOrderTimes = async (params) => {
-  const res = await fetch(`http://localhost:8080/orders/times?${new URLSearchParams(params)}`);
+  const token = localStorage.getItem('token');
+  const res = await fetch(`http://localhost:8080/orders/times?${new URLSearchParams(params)}`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
 
   // Erst Loggen – aber mit .clone()
   const responseText = await res.clone().text();

@@ -1,22 +1,43 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../styles/LoginPage.css';
 import pizzaIcon from '../assets/pizzaicon.png';
 import TextPressure from "../components/textpressure.jsx";
 
 const LoginPage = () => {
-  const [form, setForm] = useState({ email: '', password: '' });
+  const [form, setForm] = useState({ username: '', password: '' });
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.email || !form.password) {
-      alert('Bitte Email und Passwort eingeben.');
+    setError(null);
+    if (!form.username || !form.password) {
+      setError('Bitte Benutzername und Passwort eingeben.');
       return;
     }
-    console.log('Login:', form);
+    try {
+      const res = await fetch('http://localhost:8080/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username: form.username, password: form.password }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        localStorage.setItem('token', data.token);
+        navigate('/umsatz');
+      } else {
+        setError('Login fehlgeschlagen');
+      }
+    } catch (err) {
+      setError('Fehler beim Login');
+    }
   };
 
   return (
@@ -27,12 +48,13 @@ const LoginPage = () => {
           <h2 id='login'>Log In</h2>
           <form onSubmit={handleSubmit}>
             <input
-              type="email"
-              name="email"
-              placeholder="E-Mail"
-              value={form.email}
+              type="text"
+              name="username"
+              placeholder="Benutzername"
+              value={form.username}
               onChange={handleChange}
               required
+              autoComplete="username"
             />
             <input
               type="password"
@@ -41,9 +63,11 @@ const LoginPage = () => {
               value={form.password}
               onChange={handleChange}
               required
+              autoComplete="current-password"
             />
             <button type="submit">Log In</button>
           </form>
+          {error && <div style={{ color: 'red', marginTop: 12 }}>{error}</div>}
         </div>
       </div>
       {/* RIGHT: LOGO */}

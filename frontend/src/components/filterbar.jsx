@@ -7,8 +7,8 @@ const thirtyDaysAgo = new Date(Date.now() - 29 * 24 * 60 * 60 * 1000).toISOStrin
 
 const FilterBar = memo(({ onApplyFilters }) => {
   const [filters, setFilters] = useState({
-    start: thirtyDaysAgo,
-    end: today,
+    start: '2020-03-01',
+    end: '2020-07-01',
     stores: [],
     categories: [],
     sizes: [],
@@ -24,6 +24,16 @@ const FilterBar = memo(({ onApplyFilters }) => {
   const memoizedOptions = useMemo(() => options, [options]);
 
   useEffect(() => {
+    fetch("http://localhost:8080/filters", { credentials: 'include' })
+      .then((res) => {
+        if (res.status === 401) {
+          window.location.href = '/login';
+          return;
+        }
+        if (!res.ok) throw new Error('Failed to fetch filters');
+        return res.json();
+      })
+      .then((data) => { if (data) setOptions(data); })
     fetch("http://localhost:8080/filters")
       .then((res) => res.json())
       .then((data) => setOptions(data))

@@ -1,3 +1,8 @@
 export const fetchKpiData = (query) => {
-  return fetch(`http://localhost:8080/kpi?${query}`);
+  const token = localStorage.getItem('token');
+  return fetch(`http://localhost:8080/kpi?${query}`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
 };

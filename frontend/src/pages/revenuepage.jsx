@@ -16,13 +16,13 @@ const RevenuePage = () => {
       params.append("end", filters.end);
       
       if (filters.stores?.length) {
-        params.append("stores", filters.stores.join(","));
+        filters.stores.forEach(store => params.append("stores", store));
       }
       if (filters.categories?.length) {
-        params.append("categories", filters.categories.join(","));
+        filters.categories.forEach(category => params.append("categories", category));
       }
       if (filters.sizes?.length) {
-        params.append("sizes", filters.sizes.join(","));
+        filters.sizes.forEach(size => params.append("sizes", size));
       }
 
       console.log("💰 Revenue Request:", params.toString());
