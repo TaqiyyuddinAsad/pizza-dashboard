@@ -42,8 +42,10 @@ public class CustomerController {
     }
 
     @GetMapping("/inactive-customers")
-    public List<InactiveCustomerDTO> getInactiveCustomers() {
-        return analyticsService.getInactiveCustomers(30);
+    public List<InactiveCustomerDTO> getInactiveCustomers(
+        @RequestParam(required = false) String reference
+    ) {
+        return analyticsService.getInactiveCustomers(30, reference);
     }
 
     @GetMapping("/revenue-per-customer-segments")

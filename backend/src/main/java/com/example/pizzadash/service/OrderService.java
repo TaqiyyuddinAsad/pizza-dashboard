@@ -100,12 +100,6 @@ public class OrderService {
         params.addAll(sizes);
     }
 
-    // Logging for debugging
-    System.out.println("📊 FINAL KPI SQL:");
-    System.out.println(sql);
-    System.out.println("📊 PARAMS:");
-    System.out.println(params);
-
     Map<String, Object> result = jdbcTemplate.queryForMap(sql.toString(), params.toArray());
     return result;
 }
@@ -250,10 +244,6 @@ public List<OrderTimeDTO> getOrderTimes(
 
     sql.append(" GROUP BY zeitpunkt");
     sql.append(" ORDER BY FIELD(zeitpunkt, 'nachts', 'morgens', 'mittags', 'nachmittags', 'abends', 'spätabends')");
-
-    // Debug-Logging (optional)
-    System.out.println("🔎 OrderTimes SQL:\n" + sql);
-    System.out.println("🔎 PARAMS: " + params);
 
     return jdbcTemplate.query(
         sql.toString(),

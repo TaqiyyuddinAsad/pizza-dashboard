@@ -153,12 +153,9 @@ const CustomerPage = ({ filters }) => {
             </Card>
           </div>
           <div style={{ flex: 1, minWidth: 0, marginLeft: 16 }}>
-            <Card style={{ width: '100%', height: 340, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+            <Card style={{ width: '100%', display: 'block' }}>
               <CardContent style={{ padding: 16 }}>
-                <Typography variant="h6" gutterBottom>Inaktive Kunden</Typography>
-                <div style={{ width: '100%', height: 220, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                  <InactiveCustomerTable filters={filters} />
-                </div>
+                <InactiveCustomerTable filters={filters} />
               </CardContent>
             </Card>
           </div>

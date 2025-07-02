@@ -57,7 +57,6 @@ public List<OrderTimeDTO> getOrderTimes(
     );
 }
 
-// Hilfsmethode für Komma-getrennte Strings zu Listen:
 private List<String> splitCsv(String csv) {
     if (csv == null || csv.isEmpty()) {
         return new ArrayList<>();

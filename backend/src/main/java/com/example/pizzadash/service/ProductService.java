@@ -37,7 +37,6 @@ public class ProductService {
         return analyticsRepository.getPieBySize(start, end, stores);
     }
     public ProductSummaryDTO getSummary(String sku, String start, String end, List<String> stores) {
-        // TODO: Query für Summary
         return null;
     }
     public List<CategorySalesDTO> getCategorySales(String start, String end, List<String> stores, List<String> sizes) {

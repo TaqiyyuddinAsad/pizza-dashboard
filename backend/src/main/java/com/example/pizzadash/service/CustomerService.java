@@ -24,8 +24,8 @@ public class CustomerService {
         return analyticsRepository.getRevenuePerCustomer(start, end, groupBy, categories, sizes, stores);
     }
 
-    public List<InactiveCustomerDTO> getInactiveCustomers(int days) {
-        return analyticsRepository.getInactiveCustomers(days);
+    public List<InactiveCustomerDTO> getInactiveCustomers(int days, String reference) {
+        return analyticsRepository.getInactiveCustomers(days, reference);
     }
 
     public List<RevenueSegmentDTO> getRevenuePerCustomerSegments(String start, String end, List<String> categories, List<String> sizes, List<String> stores) {

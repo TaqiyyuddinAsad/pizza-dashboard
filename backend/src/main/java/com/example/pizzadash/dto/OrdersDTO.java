@@ -1,6 +1,6 @@
 package com.example.pizzadash.dto;
 public class OrdersDTO {
-    private String label; // e.g. "Mon", "Tue"
+    private String label;
     private int orders;
 
     public OrdersDTO(String label, int orders) {

@@ -278,14 +278,15 @@ public class AnalyticsRepository {
         return jdbcTemplate.queryForObject(sql.toString(), params.toArray(), Integer.class);
     }
 
-    public List<com.example.pizzadash.dto.InactiveCustomerDTO> getInactiveCustomers(int days) {
-        String sql = "SELECT c.customerID, MAX(o.orderDate) AS lastOrder, DATEDIFF(CURDATE(), MAX(o.orderDate)) AS inactiveDays " +
+    public List<com.example.pizzadash.dto.InactiveCustomerDTO> getInactiveCustomers(int days, String reference) {
+        String refDate = (reference != null && !reference.isEmpty()) ? reference : java.time.LocalDate.now().toString();
+        String sql = "SELECT c.customerID, MAX(o.orderDate) AS lastOrder, DATEDIFF(?, MAX(o.orderDate)) AS inactiveDays " +
                 "FROM customers c " +
                 "LEFT JOIN orders o ON c.customerID = o.customerID " +
                 "GROUP BY c.customerID " +
                 "HAVING inactiveDays >= ? " +
                 "ORDER BY inactiveDays DESC";
-        return jdbcTemplate.query(sql, new Object[]{days}, (rs, i) ->
+        return jdbcTemplate.query(sql, new Object[]{refDate, days}, (rs, i) ->
                 new com.example.pizzadash.dto.InactiveCustomerDTO(
                         rs.getString("customerID"),
                         rs.getDate("lastOrder"),
