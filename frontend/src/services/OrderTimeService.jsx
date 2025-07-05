@@ -1,6 +1,7 @@
 const fetchOrderTimes = async (params) => {
   const token = localStorage.getItem('token');
-  const res = await fetch(`http://localhost:8080/orders/times?${new URLSearchParams(params)}`, {
+  const queryString = new URLSearchParams(params).toString();
+  const res = await fetch(`http://localhost:8080/orders/times?${queryString}`, {
     headers: {
       'Authorization': `Bearer ${token}`
     }

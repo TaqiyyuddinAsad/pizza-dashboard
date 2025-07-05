@@ -12,8 +12,8 @@ import { useContext } from 'react';
 import { FilterContext } from '../layout/layout';
 import CategoryRevenuePieChart from "../components/CategoryRevenuePieChart";
 
-const defaultStart = "2021-01-01";
-const defaultEnd = "2021-12-31";
+const defaultStart = "2020-01-01";
+const defaultEnd = "2020-02-01";
 
 const ProductsPage = () => {
   const { filters } = useContext(FilterContext);
@@ -307,7 +307,11 @@ const ProductsPage = () => {
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <ProductCombinationsList
-              data={combinations || []}
+              data={
+                sortOrder === 'best'
+                  ? combinations.slice().sort((a, b) => b.count - a.count)
+                  : combinations.slice().sort((a, b) => a.count - b.count)
+              }
               total={combTotal}
               page={combPage}
               rowsPerPage={combRowsPerPage}

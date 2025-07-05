@@ -19,7 +19,8 @@ export const Sidebar = memo(() => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem('auth');
+    localStorage.removeItem('token');
+    console.log('Logged out - token cleared');
     navigate('/');
   };
 

@@ -16,12 +16,20 @@ public class RevenueService {
     private JdbcTemplate jdbcTemplate;
 
   public List<RevenueDTO> getRevenueFiltered(LocalDate start, LocalDate end, List<String> stores, List<String> categories, List<String> sizes) {
+    System.out.println("🔍 RevenueService called with:");
+    System.out.println("  Start: " + start);
+    System.out.println("  End: " + end);
+    System.out.println("  Stores: " + stores);
+    System.out.println("  Categories: " + categories);
+    System.out.println("  Sizes: " + sizes);
+    
     long days = ChronoUnit.DAYS.between(start, end);
     String groupBy = (days <= 31) ? "DATE(o.orderDate)" :
                      (days <= 92) ? "YEARWEEK(o.orderDate)" :
                      "DATE_FORMAT(o.orderDate, '%Y-%m')";
 
     boolean hasProductFilter = (categories != null && !categories.isEmpty()) || (sizes != null && !sizes.isEmpty());
+    System.out.println("🔍 Has product filter: " + hasProductFilter);
 
     StringBuilder sql = new StringBuilder();
     List<Object> params = new java.util.ArrayList<>();
@@ -43,21 +51,21 @@ public class RevenueService {
       sql.append("SELECT ").append(groupBy).append(" AS label, SUM(p.price) AS revenue ");
       sql.append("FROM orders o ");
       sql.append("JOIN orderitems oi ON o.orderID = oi.orderID ");
-      sql.append("JOIN products p ON oi.SKU = p.SKU ");
+      sql.append("JOIN products p ON oi.productID = p.SKU ");
       sql.append("WHERE o.orderDate BETWEEN ? AND ?");
-      if (stores != null && !stores.isEmpty()) {
+    if (stores != null && !stores.isEmpty()) {
         sql.append(" AND o.storeID IN (")
            .append(stores.stream().map(s -> "?").reduce((a,b) -> a + "," + b).get())
            .append(")");
         params.addAll(stores);
-      }
-      if (categories != null && !categories.isEmpty()) {
+    }
+    if (categories != null && !categories.isEmpty()) {
         sql.append(" AND p.Category IN (")
            .append(categories.stream().map(c -> "?").reduce((a,b) -> a + "," + b).get())
            .append(")");
         params.addAll(categories);
-      }
-      if (sizes != null && !sizes.isEmpty()) {
+    }
+    if (sizes != null && !sizes.isEmpty()) {
         sql.append(" AND p.Size IN (")
            .append(sizes.stream().map(s -> "?").reduce((a,b) -> a + "," + b).get())
            .append(")");
@@ -66,6 +74,9 @@ public class RevenueService {
     }
 
     sql.append(" GROUP BY label ORDER BY label");
+
+    System.out.println("🔍 Generated SQL: " + sql.toString());
+    System.out.println("🔍 SQL Parameters: " + params);
 
     return jdbcTemplate.query(
         sql.toString(),

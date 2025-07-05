@@ -15,7 +15,9 @@ const TotalCustomersCard = ({ filters }) => {
     };
     const queryString = new URLSearchParams(params).toString();
 
-    fetch(`http://localhost:8080/api/analytics/customer-count?${queryString}`)
+    fetch(`http://localhost:8080/api/analytics/customer-count?${queryString}`, {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    })
       .then(res => {
         if (!res.ok) throw new Error("Fehler beim Laden der Kundenzahlen");
         return res.json();

@@ -17,12 +17,18 @@ export default function KpiGrid({ filters }) {
     console.log("⏱ Fetching KPIs with params:", params.toString());
 
     fetchKpiData(params.toString())
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error(`Fehler beim Laden der KPIs: ${res.status}`);
+        return res.json();
+      })
       .then(setKpis)
-      .catch(console.error);
+      .catch((err) => {
+        setKpis(null);
+        console.error(err);
+      });
   }, [filters]);
 
-  if (!kpis) return <div>Loading KPIs...</div>;
+  if (kpis === null) return <div style={{color: 'red'}}>Fehler beim Laden der KPIs.</div>;
 
   const cardProps = [
     {
@@ -64,9 +70,9 @@ export default function KpiGrid({ filters }) {
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-6 w-full">
+    <div className="grid grid-cols-2" style={{ gap: 32, width: '100%' }}>
       {cardProps.map((kpi, i) => (
-        <KpiCard key={i} {...kpi} />
+        <KpiCard key={i} {...kpi} titleStyle={{ fontSize: '1rem', fontWeight: 500 }} valueStyle={{ fontSize: '1.5rem', fontWeight: 600 }} />
       ))}
     </div>
   );

@@ -19,6 +19,19 @@ const TotalCustomersCard = ({ onClick }) => {
   const totalCustomers = 22378;
   const changeRate = 37.8;
 
+  const token = localStorage.getItem('token');
+  const fetchCustomers = async () => {
+    try {
+      const response = await fetch('http://localhost:8080/api/customers', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await response.json();
+      console.log('Customers data:', data);
+    } catch (error) {
+      console.error('Error fetching customers:', error);
+    }
+  };
+
   const chartData = {
     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
     datasets: [

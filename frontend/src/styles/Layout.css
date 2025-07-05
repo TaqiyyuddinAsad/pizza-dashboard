@@ -1,8 +1,8 @@
 /* General layout */
 .app-layout {
   display: flex;
-  height: 100vh;
   width: 100vw;
+  /* height: 100vh; */
 }
 
 /* Sidebar */
@@ -18,9 +18,9 @@
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  min-height: 100vh;      /* <--- min-height statt height */
-  overflow: visible;      /* <--- KEIN overflow: hidden */
-  padding-left: 225px;    /* Platz für die feste Sidebar */
+  overflow: visible;
+  padding-left: 225px;
+  /* min-height: 100vh; */
 }
 
 /* Topbar */
@@ -39,8 +39,9 @@
 /* Main content */
 .main-content {
   flex-grow: 1;
-  overflow-y: auto;
-  padding: 32px;
+  padding: 96px 32px 32px 32px; /* top padding = Topbar + FilterBar */
   box-sizing: border-box;
   background-color: #f9fafb;
 }
+
+/* Fixed FilterBar */

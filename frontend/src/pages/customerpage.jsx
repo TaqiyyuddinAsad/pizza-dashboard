@@ -26,8 +26,12 @@ const ChartToggleCard = ({ filters }) => {
     };
     const queryString = new URLSearchParams(params).toString();
     Promise.all([
-      fetch(`http://localhost:8080/api/analytics/customer-count?${queryString}`).then(res => res.json()),
-      fetch(`http://localhost:8080/api/analytics/revenue-per-customer?${queryString}`).then(res => res.json())
+      fetch(`http://localhost:8080/api/analytics/customer-count?${queryString}`, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      }).then(res => res.json()),
+      fetch(`http://localhost:8080/api/analytics/revenue-per-customer?${queryString}`, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      }).then(res => res.json())
     ]).then(([customers, revenue]) => {
       setCustomerData(customers);
       setRevenueData(revenue);

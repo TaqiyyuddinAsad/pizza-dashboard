@@ -7,8 +7,8 @@ const thirtyDaysAgo = new Date(Date.now() - 29 * 24 * 60 * 60 * 1000).toISOStrin
 
 const FilterBar = memo(({ onApplyFilters }) => {
   const [filters, setFilters] = useState({
-    start: '2020-03-01',
-    end: '2020-07-01',
+    start: '2020-01-01',
+    end: '2020-02-01',
     stores: [],
     categories: [],
     sizes: [],
@@ -24,7 +24,18 @@ const FilterBar = memo(({ onApplyFilters }) => {
   const memoizedOptions = useMemo(() => options, [options]);
 
   useEffect(() => {
-    fetch("http://localhost:8080/filters", { credentials: 'include' })
+    const token = localStorage.getItem('token');
+    if (!token) {
+      window.location.href = '/login';
+      return;
+    }
+
+    // Fetch filter options from the /filters endpoint
+    fetch("http://localhost:8080/filters", {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
       .then((res) => {
         if (res.status === 401) {
           window.location.href = '/login';
@@ -33,11 +44,21 @@ const FilterBar = memo(({ onApplyFilters }) => {
         if (!res.ok) throw new Error('Failed to fetch filters');
         return res.json();
       })
-      .then((data) => { if (data) setOptions(data); })
-    fetch("http://localhost:8080/filters")
-      .then((res) => res.json())
-      .then((data) => setOptions(data))
-      .catch((err) => console.error("Failed to load filter options:", err));
+      .then((data) => { 
+        if (data) {
+          setOptions({
+            categories: data.categories || [],
+            sizes: data.sizes || [],
+            stores: data.stores || []
+          });
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to load filter options:", err);
+        if (err.message.includes('401')) {
+          window.location.href = '/login';
+        }
+      });
   }, []);
 
   const handleDateChange = (start, end) => {
@@ -59,43 +80,62 @@ const FilterBar = memo(({ onApplyFilters }) => {
     onApplyFilters(safeFilters);
   };
 
+  const handleReset = () => {
+    setFilters({
+      start: '2020-01-01',
+      end: '2020-02-01',
+      stores: [],
+      categories: [],
+      sizes: [],
+    });
+    // Do NOT call onApplyFilters here
+  };
+
   return (
-    <div className="bg-white rounded-2xl p-4 flex flex-wrap items-center gap-4 shadow-lg shadow-gray-300/40 mt-2">
-      <DateFilter onDateChange={handleDateChange} />
+    <div>
+      <div className="bg-white rounded-2xl p-4 flex flex-wrap items-center gap-4 shadow-lg shadow-gray-300/40 mt-2">
+        <DateFilter onDateChange={handleDateChange} />
 
-      <MultiSelectFilter
-        label="Kategorie"
-        options={memoizedOptions.categories}
-        selectedValues={filters.categories}
-        onChange={(newValues) =>
-          setFilters((prev) => ({ ...prev, categories: newValues }))
-        }
-      />
+        <MultiSelectFilter
+          label="Kategorie"
+          options={memoizedOptions.categories}
+          selectedValues={filters.categories}
+          onChange={(newValues) =>
+            setFilters((prev) => ({ ...prev, categories: newValues }))
+          }
+        />
 
-      <MultiSelectFilter
-        label="Größe"
-        options={memoizedOptions.sizes}
-        selectedValues={filters.sizes}
-        onChange={(newValues) =>
-          setFilters((prev) => ({ ...prev, sizes: newValues }))
-        }
-      />
+        <MultiSelectFilter
+          label="Größe"
+          options={memoizedOptions.sizes}
+          selectedValues={filters.sizes}
+          onChange={(newValues) =>
+            setFilters((prev) => ({ ...prev, sizes: newValues }))
+          }
+        />
 
-      <MultiSelectFilter
-        label="Filiale"
-        options={memoizedOptions.stores}
-        selectedValues={filters.stores}
-        onChange={(newValues) =>
-          setFilters((prev) => ({ ...prev, stores: newValues }))
-        }
-      />
+        <MultiSelectFilter
+          label="Filiale"
+          options={memoizedOptions.stores}
+          selectedValues={filters.stores}
+          onChange={(newValues) =>
+            setFilters((prev) => ({ ...prev, stores: newValues }))
+          }
+        />
 
-      <button
-        onClick={handleApply}
-        className="ml-auto px-6 py-2 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 text-white font-semibold shadow-lg hover:scale-105 hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
-      >
-        Anfrage schicken
-      </button>
+        <button
+          onClick={handleApply}
+          className="ml-auto px-6 py-2 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 text-white font-semibold shadow-lg hover:scale-105 hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
+        >
+          Anfrage schicken
+        </button>
+        <button
+          onClick={handleReset}
+          className="ml-2 px-6 py-2 rounded-2xl bg-gray-200 text-gray-700 font-semibold shadow hover:bg-gray-300 transition-all duration-200"
+        >
+          Filter zurücksetzen
+        </button>
+      </div>
     </div>
   );
 });

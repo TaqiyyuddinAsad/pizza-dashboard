@@ -4,7 +4,14 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const COLORS = ["#E59B9B", "#B3B2E5", "#E5D1B2"];
+const COLORS = [
+  "#FF6384", // Red
+  "#36A2EB", // Blue
+  "#FFCE56", // Yellow
+  "#4BC0C0", // Teal
+  "#9966FF", // Purple
+  "#FF9F40"  // Orange
+];
 
 function OrderPie({ data }) {
   if (!data || !data.length)
@@ -35,20 +42,26 @@ function OrderPie({ data }) {
 
   // 👉 Otherwise show the pie
   return (
-    <div className="w-full h-full flex items-center justify-center">
-      <div className="w-[260px] h-[260px] md:w-[320px] md:h-[320px] lg:w-[380px] lg:h-[380px] flex items-center justify-center">
-        <Pie
-          data={chartData}
-          options={{
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: { position: "bottom", labels: { color: "#334155" } },
-              tooltip: { enabled: true },
+    <div style={{ width: 340, height: 340, display: 'flex', justifyContent: 'center', alignItems: 'center', margin: '0 auto' }}>
+      <Pie
+        data={chartData}
+        options={{
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: "bottom",
+              labels: {
+                color: "#334155",
+                font: { size: 18 },
+                boxWidth: 32,
+                boxHeight: 18
+              }
             },
-          }}
-        />
-      </div>
+            tooltip: { enabled: true },
+          },
+        }}
+      />
     </div>
   );
 }

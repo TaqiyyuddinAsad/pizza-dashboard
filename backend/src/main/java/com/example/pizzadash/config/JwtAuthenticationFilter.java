@@ -28,38 +28,52 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         String header = request.getHeader("Authorization");
+        System.out.println("[JWT Filter] Request path: " + request.getServletPath());
+        System.out.println("[JWT Filter] Authorization header: " + header);
         String token = null;
         String username = null;
 
         if (StringUtils.hasText(header) && header.startsWith("Bearer ")) {
             token = header.substring(7);
+            System.out.println("[JWT Filter] Token: " + token.substring(0, Math.min(20, token.length())) + "...");
             try {
-                Claims claims = Jwts.parser()
-                        .setSigningKey(SECRET_KEY)
-                        .parseClaimsJws(token)
-                        .getBody();
-                username = claims.getSubject();
+                username = com.example.pizzadash.config.JwtUtil.extractUsername(token);
+                System.out.println("[JWT Filter] Extracted username: " + username);
             } catch (Exception e) {
-                // Invalid token
+                System.out.println("[JWT Filter] Invalid token: " + e.getMessage());
+                e.printStackTrace();
             }
+        } else {
+            System.out.println("[JWT Filter] No valid Authorization header found");
         }
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-            if (userDetails != null) {
-                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities());
-                auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(auth);
+        if (username != null) {
+            try {
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                if (userDetails != null) {
+                    UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities());
+                    auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(auth);
+                    System.out.println("[JWT Filter] Authentication set for user: " + username);
+                } else {
+                    System.out.println("[JWT Filter] UserDetails not found for username: " + username);
+                }
+            } catch (Exception e) {
+                System.out.println("[JWT Filter] Error loading user details: " + e.getMessage());
+                e.printStackTrace();
             }
+        } else if (username == null) {
+            System.out.println("[JWT Filter] No username extracted from token");
         }
 
+        System.out.println("[JWT Filter] Current authentication: " + SecurityContextHolder.getContext().getAuthentication());
         filterChain.doFilter(request, response);
     }
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getServletPath();
-        return path.equals("/api/auth/login") || path.equals("/api/auth/test");
+        return path.equals("/api/auth/login");
     }
 } 

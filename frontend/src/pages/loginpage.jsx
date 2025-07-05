@@ -28,14 +28,20 @@ const LoginPage = () => {
         },
         body: JSON.stringify({ username: form.username, password: form.password }),
       });
+      console.log('Login response status:', res.status);
       if (res.ok) {
         const data = await res.json();
+        console.log('Login response data:', data);
         localStorage.setItem('token', data.token);
+        console.log('Token stored in localStorage:', localStorage.getItem('token'));
         navigate('/umsatz');
       } else {
+        const errorText = await res.text();
+        console.log('Login failed with status:', res.status, 'Error:', errorText);
         setError('Login fehlgeschlagen');
       }
     } catch (err) {
+      console.error('Login error:', err);
       setError('Fehler beim Login');
     }
   };

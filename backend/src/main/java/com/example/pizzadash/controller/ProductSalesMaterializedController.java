@@ -15,7 +15,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/materialized")
-@CrossOrigin(origins = "*")
 public class ProductSalesMaterializedController {
     
     @Autowired

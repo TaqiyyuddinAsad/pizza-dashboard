@@ -50,7 +50,9 @@ const OrdersPage = () => {
     // Load secondary data (rankings and order times) with delay
     setTimeout(() => {
       Promise.allSettled([
-        fetch(`http://localhost:8080/api/products/ranking?start=${filters.start}&end=${filters.end}`)
+        fetch(`http://localhost:8080/api/products/ranking?start=${filters.start}&end=${filters.end}`, {
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        })
           .then(res => res.json()),
         fetchStoreRanking(filters.start, filters.end),
         fetchOrderTimes(params)
@@ -137,26 +139,18 @@ const OrdersPage = () => {
       )}
     </div>
     <div style={{ flex: 1, minWidth: 0, display: "flex", height: "551px" }}>
-      <Card style={{ width: "100%", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-        <CardContent>
-          <Typography variant="h6">Bestellzeitpunkte</Typography>
-          <div style={{
-            width: "100%",
-            height: 250, 
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}>
-            {loading ? (
-              <CircularProgress size={40} />
-            ) : error ? (
-              <div style={{ color: '#d32f2f', textAlign: 'center' }}>
-                <p>❌ {error}</p>
-              </div>
-            ) : (
-              <OrderPie data={orderTimes} />
-            )}
-          </div>
+      <Card style={{ width: "100%", maxWidth: 420, minHeight: 420, margin: '0 auto', display: "flex", flexDirection: "column", alignItems: 'center', boxSizing: 'border-box' }}>
+        <Typography variant="h6" style={{ margin: '24px 0 0 0', alignSelf: 'center', fontWeight: 600 }}>Bestellzeitpunkte</Typography>
+        <CardContent style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 16, width: '100%' }}>
+          {loading ? (
+            <CircularProgress size={40} />
+          ) : error ? (
+            <div style={{ color: '#d32f2f', textAlign: 'center' }}>
+              <p>❌ {error}</p>
+            </div>
+          ) : (
+            <OrderPie data={orderTimes} />
+          )}
         </CardContent>
       </Card>
     </div>

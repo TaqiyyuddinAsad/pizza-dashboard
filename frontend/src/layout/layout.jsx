@@ -9,7 +9,7 @@ export const FilterContext = createContext();
 const Layout = memo(({ children }) => {
   const [filters, setFilters] = useState({
     start: '2020-01-01',
-    end: '2020-07-01',
+    end: '2020-02-01',
     stores: [],
     categories: [],
     sizes: [],
@@ -24,8 +24,10 @@ const Layout = memo(({ children }) => {
         <Sidebar />
         <div className="main-area">
           <Topbar />
-          <div className="px-8 pt-4 pb-8">
-            <FilterBar onApplyFilters={setFilters} />
+          <div>
+            <div className="filterbar-fixed">
+              <FilterBar onApplyFilters={setFilters} />
+            </div>
             <main className="main-content">
               {React.cloneElement(children, { filters })}
             </main>

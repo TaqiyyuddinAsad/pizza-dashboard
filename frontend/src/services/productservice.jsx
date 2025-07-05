@@ -88,7 +88,10 @@ export const getWorstSellersByRevenue = async (filters, page = 0, pageSize = 10)
 // Get filter options from materialized table
 export const getCategories = async () => {
     try {
-        const response = await fetch(`${API_BASE_URL}/materialized/categories`);
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${API_BASE_URL}/materialized/categories`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         return response.json();
     } catch (error) {
@@ -99,7 +102,10 @@ export const getCategories = async () => {
 
 export const getSizes = async () => {
     try {
-        const response = await fetch(`${API_BASE_URL}/materialized/sizes`);
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${API_BASE_URL}/materialized/sizes`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         return response.json();
     } catch (error) {
@@ -110,7 +116,10 @@ export const getSizes = async () => {
 
 export const getStores = async () => {
     try {
-        const response = await fetch(`${API_BASE_URL}/materialized/stores`);
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${API_BASE_URL}/materialized/stores`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         return response.json();
     } catch (error) {
@@ -147,7 +156,10 @@ export const getProductCombinations = async (filters, page = 0, pageSize = 10) =
 
 export const getAllProducts = async () => {
     try {
-        const response = await fetch(`${API_BASE_URL}/materialized/products`);
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${API_BASE_URL}/materialized/products`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         return response.json();
     } catch (error) {

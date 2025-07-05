@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 
 const InactiveCustomerTable = ({ filters }) => {
+  const referenceDate = '2022-12-31';
   const [rows, setRows] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -24,7 +25,10 @@ const InactiveCustomerTable = ({ filters }) => {
 
   useEffect(() => {
     setLoading(true);
-    fetch("http://localhost:8080/api/analytics/inactive-customers?reference=2022-12-31")
+    const token = localStorage.getItem('token');
+    fetch(`http://localhost:8080/api/analytics/inactive-customers?reference=${referenceDate}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
       .then(res => res.json())
       .then(data => {
         setRows(data || []);

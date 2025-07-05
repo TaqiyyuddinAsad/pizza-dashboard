@@ -24,15 +24,21 @@ export default function StoreCustomerMap({ height = 340 }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
+  const token = localStorage.getItem('token');
+
   useEffect(() => {
     setLoading(true);
     setError(false);
     Promise.all([
-      fetch("http://localhost:8080/api/stores").then((res) => {
+      fetch("http://localhost:8080/api/stores", {
+        headers: { 'Authorization': `Bearer ${token}` }
+      }).then((res) => {
         if (!res.ok) throw new Error("Fehler beim Laden der Stores");
         return res.json();
       }),
-      fetch("http://localhost:8080/api/customers").then((res) => {
+      fetch("http://localhost:8080/api/customers", {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      }).then((res) => {
         if (!res.ok) throw new Error("Fehler beim Laden der Kunden");
         return res.json();
       }),
@@ -47,7 +53,7 @@ export default function StoreCustomerMap({ height = 340 }) {
         setLoading(false);
         console.error(err);
       });
-  }, []);
+  }, [token]);
 
   if (loading) return <div className="p-6 text-gray-600">Lade Karte...</div>;
   if (error)

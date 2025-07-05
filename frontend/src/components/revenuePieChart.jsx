@@ -23,7 +23,9 @@ const RevenuePieChart = ({ filters }) => {
       sizes: (filters?.sizes || []).join(","),
     };
     const queryString = new URLSearchParams(params).toString();
-    fetch(`http://localhost:8080/api/analytics/revenue-per-customer-segments?${queryString}`)
+    fetch(`http://localhost:8080/api/analytics/revenue-per-customer-segments?${queryString}`, {
+      headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+    })
       .then(res => res.json())
       .then(apiData => {
         setData(apiData || []);

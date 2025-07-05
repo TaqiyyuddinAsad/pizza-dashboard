@@ -6,17 +6,37 @@ import OrdersPage from './pages/ordersPage.jsx';
 import CustomerPage from './pages/customerpage.jsx';
 import ProductPage from './pages/productsPage.jsx';
 import './index.css';
-import { CursorifyProvider } from '@cursorify/react';
-import PizzaCursor from './components/PizzaCursor';
 import React, { useEffect, useState } from 'react';
+
+// Add token expiration check function
+const isTokenExpired = (token) => {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload.exp * 1000 < Date.now();
+  } catch {
+    return true;
+  }
+};
 
 function ProtectedRoute({ children }) {
   const [auth, setAuth] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Call a protected endpoint to check session
-    fetch('/revenue?start=2022-01-01&end=2022-12-31', { credentials: 'include' })
+    const token = localStorage.getItem('token');
+    if (!token || isTokenExpired(token)) {
+      localStorage.removeItem('token'); // Clear expired token
+      setAuth(false);
+      setLoading(false);
+      return;
+    }
+
+    // Call a protected endpoint to check JWT token
+    fetch('http://localhost:8080/api/auth/testauth', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
       .then(res => {
         setAuth(res.ok);
         setLoading(false);
@@ -33,44 +53,39 @@ function ProtectedRoute({ children }) {
 
 function App() {
   return (
-    <>
-      <PizzaCursor />
-      <CursorifyProvider cursor={<PizzaCursor />}>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<LoginPage />} />
-            <Route path="/umsatz" element={
-              <ProtectedRoute>
-                <Layout>
-                  <RevenuePage />
-                </Layout>
-              </ProtectedRoute>
-            } />
-            <Route path="/bestellungen" element={
-              <ProtectedRoute>
-                <Layout>
-                  <OrdersPage />
-                </Layout>
-              </ProtectedRoute>
-            } />
-            <Route path="/kunden" element={
-              <ProtectedRoute>
-                <Layout>
-                  <CustomerPage />
-                </Layout>
-              </ProtectedRoute>
-            } />
-            <Route path="/waren" element={
-              <ProtectedRoute>
-                <Layout>
-                  <ProductPage />
-                </Layout>
-              </ProtectedRoute>
-            } />
-          </Routes>
-        </BrowserRouter>
-      </CursorifyProvider>
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<LoginPage />} />
+        <Route path="/umsatz" element={
+          <ProtectedRoute>
+            <Layout>
+              <RevenuePage />
+            </Layout>
+          </ProtectedRoute>
+        } />
+        <Route path="/bestellungen" element={
+          <ProtectedRoute>
+            <Layout>
+              <OrdersPage />
+            </Layout>
+          </ProtectedRoute>
+        } />
+        <Route path="/kunden" element={
+          <ProtectedRoute>
+            <Layout>
+              <CustomerPage />
+            </Layout>
+          </ProtectedRoute>
+        } />
+        <Route path="/waren" element={
+          <ProtectedRoute>
+            <Layout>
+              <ProductPage />
+            </Layout>
+          </ProtectedRoute>
+        } />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

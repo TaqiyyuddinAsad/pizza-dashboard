@@ -28,7 +28,6 @@ const RevenuePage = () => {
       console.log("💰 Revenue Request:", params.toString());
 
       fetchRevenueData(params.toString())
-        .then((res) => res.json())
         .then((data) => {
           console.log("💰 Revenue Data:", data);
           setData(data);
