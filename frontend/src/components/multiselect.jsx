@@ -33,14 +33,15 @@ const MultiSelectFilter = ({ label, options, selectedValues, onChange }) => {
     <FormControl
       sx={{
         m: 0.5,
-        minWidth: 140,
-        maxWidth: 220,
+        minWidth: { xs: 120, sm: 140 },
+        maxWidth: { xs: 160, sm: 220 },
+        width: { xs: '100%', sm: 'auto' },
       }}
       size="small"
     >
       <InputLabel 
         sx={{ 
-          fontSize: "0.8rem",
+          fontSize: { xs: "0.75rem", sm: "0.8rem" },
           color: 'var(--dark-mode) ? #f3f4f6 : #374151',
           '&.Mui-focused': {
             color: 'var(--dark-mode) ? #60a5fa : #3b82f6',
@@ -58,7 +59,7 @@ const MultiSelectFilter = ({ label, options, selectedValues, onChange }) => {
             <OutlinedInput
               label={label}
               sx={{ 
-                fontSize: "0.8rem", 
+                fontSize: { xs: "0.75rem", sm: "0.8rem" }, 
                 height: "38px",
                 backgroundColor: 'var(--dark-mode) ? #374151 : #ffffff',
                 color: 'var(--dark-mode) ? #f3f4f6 : #374151',
@@ -75,13 +76,23 @@ const MultiSelectFilter = ({ label, options, selectedValues, onChange }) => {
             />
           }
           renderValue={(selected) =>
-            selected.length > 3
-              ? `${selected.slice(0, 3).join(', ')}... +${selected.length - 3}`
+            selected.length > 2
+              ? `${selected.slice(0, 2).join(', ')}... +${selected.length - 2}`
               : selected.join(', ')
           }
-          MenuProps={MenuProps}
+          MenuProps={{
+            ...MenuProps,
+            PaperProps: {
+              ...MenuProps.PaperProps,
+              style: {
+                ...MenuProps.PaperProps.style,
+                width: { xs: 160, sm: 220 },
+                maxWidth: '90vw',
+              },
+            },
+          }}
           sx={{
-            fontSize: "0.8rem",
+            fontSize: { xs: "0.75rem", sm: "0.8rem" },
             overflow: 'hidden',
             whiteSpace: 'nowrap',
             '& .MuiSelect-icon': {
@@ -97,6 +108,7 @@ const MultiSelectFilter = ({ label, options, selectedValues, onChange }) => {
               sx={{
                 backgroundColor: 'var(--dark-mode) ? #374151 : #ffffff',
                 color: 'var(--dark-mode) ? #f3f4f6 : #374151',
+                fontSize: { xs: "0.75rem", sm: "0.8rem" },
                 '&:hover': {
                   backgroundColor: 'var(--dark-mode) ? #4b5563 : #f3f4f6',
                 }
@@ -115,7 +127,7 @@ const MultiSelectFilter = ({ label, options, selectedValues, onChange }) => {
               <ListItemText 
                 primary={value} 
                 sx={{ 
-                  fontSize: "0.8rem",
+                  fontSize: { xs: "0.75rem", sm: "0.8rem" },
                   color: 'var(--dark-mode) ? #f3f4f6 : #374151',
                 }} 
               />

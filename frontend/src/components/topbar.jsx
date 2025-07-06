@@ -1,17 +1,35 @@
 import React, { useContext } from 'react';
 import avatar from '../assets/pizzaicon.png'; 
 import { DarkModeContext } from '../layout/layout.jsx';
+import { FiMenu } from 'react-icons/fi';
 import '../styles/topbar.css';
 
-const Topbar = ({ username }) => {
+const Topbar = ({ username, onMenuToggle }) => {
   const { darkMode, toggleDarkMode } = useContext(DarkModeContext);
 
   return (
     <div className="topbar dark:bg-gray-800 dark:text-white">
-      <div className="user-info">
+      {/* Mobile menu button */}
+      <button
+        onClick={onMenuToggle}
+        className="mobile-menu-btn md:hidden bg-gray-200 dark:bg-gray-600 p-2 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors duration-200"
+        title="Toggle Menu"
+      >
+        <FiMenu className="w-5 h-5" />
+      </button>
+      
+      {/* Desktop user info */}
+      <div className="user-info hidden md:flex">
         <img src={avatar} alt="Avatar" className="avatar" />
         <span className="username">{username}</span>
       </div>
+      
+      {/* Mobile user info */}
+      <div className="user-info md:hidden">
+        <img src={avatar} alt="Avatar" className="avatar" />
+        <span className="username">{username}</span>
+      </div>
+      
       <button
         onClick={toggleDarkMode}
         className="dark-mode-toggle bg-gray-200 dark:bg-gray-600 p-2 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors duration-200"

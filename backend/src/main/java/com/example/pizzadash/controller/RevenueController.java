@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.pizzadash.service.RevenueService;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.security.core.context.SecurityContextHolder;
+
 import org.springframework.web.bind.annotation.RequestHeader;
 
 import com.example.pizzadash.dto.RevenueDTO;
@@ -34,16 +34,7 @@ public List<RevenueDTO> getRevenue(
     @RequestParam(required = false) String sizes,
     @RequestHeader Map<String, String> headers
 ) {
-    System.out.println("💰 Revenue Request:");
-    System.out.println("  Start: " + start);
-    System.out.println("  End: " + end);
-    System.out.println("  Stores: " + stores);
-    System.out.println("  Categories (raw): " + categories);
-    System.out.println("  Sizes (raw): " + sizes);
-    System.out.println("  Authenticated user: " + SecurityContextHolder.getContext().getAuthentication().getName());
-    System.out.println("  Request Headers:");
-    headers.forEach((k, v) -> System.out.println("    " + k + ": " + v));
-    System.out.println("  Authorization header: " + headers.get("authorization"));
+   
 
     LocalDate startDate = LocalDate.parse(start);
     LocalDate endDate = LocalDate.parse(end);

@@ -21,6 +21,8 @@ const Layout = memo(({ children }) => {
     return saved ? JSON.parse(saved) : false;
   });
 
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   // Apply dark mode class to document
   useEffect(() => {
     if (darkMode) {
@@ -35,6 +37,17 @@ const Layout = memo(({ children }) => {
     setDarkMode(!darkMode);
   };
 
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
+
+  // Close sidebar when clicking outside on mobile
+  const handleMainClick = () => {
+    if (window.innerWidth <= 768 && sidebarOpen) {
+      setSidebarOpen(false);
+    }
+  };
+
   // Memoize context values to prevent unnecessary re-renders
   const filterContextValue = useMemo(() => ({ filters, setFilters }), [filters]);
   const darkModeContextValue = useMemo(() => ({ darkMode, toggleDarkMode }), [darkMode]);
@@ -43,14 +56,26 @@ const Layout = memo(({ children }) => {
     <FilterContext.Provider value={filterContextValue}>
       <DarkModeContext.Provider value={darkModeContextValue}>
         <div className="app-layout">
-          <Sidebar />
+          {/* Mobile overlay */}
+          {sidebarOpen && (
+            <div 
+              className="mobile-overlay"
+              onClick={() => setSidebarOpen(false)}
+            />
+          )}
+          
+          {/* Sidebar */}
+          <div className={`sidebar-container ${sidebarOpen ? 'sidebar-open' : ''}`}>
+            <Sidebar onToggle={toggleSidebar} />
+          </div>
+          
           <div className="main-area">
-            <Topbar username="Admin" />
+            <Topbar username="Admin" onMenuToggle={toggleSidebar} />
             <div>
               <div className="filterbar-fixed">
                 <FilterBar onApplyFilters={setFilters} />
               </div>
-              <main className="main-content">
+              <main className="main-content" onClick={handleMainClick}>
                 {React.cloneElement(children, { filters })}
               </main>
             </div>

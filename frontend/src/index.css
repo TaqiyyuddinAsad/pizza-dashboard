@@ -22,6 +22,59 @@
   transition: all 0.3s ease;
 }
 
+/* Mobile-friendly base styles */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+}
+
+/* Mobile-specific adjustments */
+@media (max-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+  
+  body {
+    font-size: 14px;
+    line-height: 1.4;
+  }
+  
+  /* Prevent horizontal scrolling on mobile */
+  .app-layout {
+    overflow-x: hidden;
+  }
+  
+  /* Improve touch targets */
+  button, 
+  [role="button"],
+  input[type="button"],
+  input[type="submit"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Better spacing for mobile */
+  .main-content {
+    padding: 120px 16px 16px 16px !important;
+  }
+  
+  /* Improve table readability on mobile */
+  table {
+    font-size: 0.875rem;
+  }
+  
+  /* Make cards more mobile-friendly */
+  .card, .bg-white {
+    border-radius: 12px;
+    margin-bottom: 16px;
+  }
+}
+
 a {
   font-weight: 500;
   color: #646cff;
@@ -71,6 +124,21 @@ html, body, #root {
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
+}
+
+/* Mobile heading adjustments */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2em;
+  }
+  
+  h2 {
+    font-size: 1.5em;
+  }
+  
+  h3 {
+    font-size: 1.25em;
+  }
 }
 
 /* body, * {

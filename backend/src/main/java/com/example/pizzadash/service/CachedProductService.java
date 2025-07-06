@@ -19,9 +19,7 @@ public class CachedProductService {
     @Autowired
     private AnalyticsRepository analyticsRepository;
     
-    /**
-     * Get bestsellers with caching - much simpler than materialized tables!
-     */
+    
     @Cacheable(value = "bestsellers", key = "#storeId + '_' + #startDate + '_' + #endDate + '_' + #category + '_' + #size + '_' + #page + '_' + #pageSize")
     public PaginatedResponse<Map<String, Object>> getBestsellers(
             String storeId, 

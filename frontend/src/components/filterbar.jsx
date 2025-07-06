@@ -1,6 +1,9 @@
 import React, { useEffect, useState, memo, useMemo } from "react";
 import MultiSelectFilter from "./multiselect";
 import DateFilter from "./DateFilter"; // Optional – falls du den nutzt
+import { FiFilter, FiChevronDown, FiChevronUp } from 'react-icons/fi';
+import { useMediaQuery } from 'react-responsive';
+import '../styles/Layout.css';
 import { API_BASE_URL } from '../config/api.js';
 
 const today = new Date().toISOString().slice(0, 10);
@@ -20,6 +23,15 @@ const FilterBar = memo(({ onApplyFilters }) => {
     categories: [],
     sizes: [],
   });
+
+  // Responsive: detect if mobile
+  const isMobile = useMediaQuery({ maxWidth: 768 });
+  const [collapsed, setCollapsed] = useState(isMobile);
+
+  // Update collapse state on screen resize
+  useEffect(() => {
+    setCollapsed(isMobile);
+  }, [isMobile]);
 
   // Memoize options to prevent unnecessary re-renders
   const memoizedOptions = useMemo(() => options, [options]);
@@ -77,7 +89,6 @@ const FilterBar = memo(({ onApplyFilters }) => {
       start: filters.start || thirtyDaysAgo,
       end: filters.end || today,
     };
-    console.log("🔍 Filter angewendet:", safeFilters);
     onApplyFilters(safeFilters);
   };
 
@@ -92,51 +103,66 @@ const FilterBar = memo(({ onApplyFilters }) => {
     // Do NOT call onApplyFilters here
   };
 
+  // Collapsible filter bar for mobile
   return (
     <div>
-      <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 flex flex-wrap items-center gap-4 shadow-lg shadow-gray-300/40 dark:shadow-gray-900/40 mt-2 border border-gray-200 dark:border-gray-700">
-        <DateFilter onDateChange={handleDateChange} />
-
-        <MultiSelectFilter
-          label="Kategorie"
-          options={memoizedOptions.categories}
-          selectedValues={filters.categories}
-          onChange={(newValues) =>
-            setFilters((prev) => ({ ...prev, categories: newValues }))
-          }
-        />
-
-        <MultiSelectFilter
-          label="Größe"
-          options={memoizedOptions.sizes}
-          selectedValues={filters.sizes}
-          onChange={(newValues) =>
-            setFilters((prev) => ({ ...prev, sizes: newValues }))
-          }
-        />
-
-        <MultiSelectFilter
-          label="Filiale"
-          options={memoizedOptions.stores}
-          selectedValues={filters.stores}
-          onChange={(newValues) =>
-            setFilters((prev) => ({ ...prev, stores: newValues }))
-          }
-        />
-
+      {isMobile && (
         <button
-          onClick={handleApply}
-          className="ml-auto px-6 py-2 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 text-white font-semibold shadow-lg hover:scale-105 hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
+          className="w-full flex items-center justify-between px-4 py-2 rounded-2xl bg-gray-700 text-gray-100 font-semibold mb-2 shadow-lg"
+          onClick={() => setCollapsed((c) => !c)}
+          style={{ fontSize: 16 }}
         >
-          Anfrage schicken
+          <span className="flex items-center gap-2"><FiFilter /> Filter</span>
+          {collapsed ? <FiChevronDown /> : <FiChevronUp />}
         </button>
-        <button
-          onClick={handleReset}
-          className="ml-2 px-6 py-2 rounded-2xl bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 font-semibold shadow hover:bg-gray-300 dark:hover:bg-gray-500 transition-all duration-200"
-        >
-          Filter zurücksetzen
-        </button>
-      </div>
+      )}
+      {(!isMobile || !collapsed) && (
+        <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 flex flex-wrap items-center gap-4 shadow-lg shadow-gray-300/40 dark:shadow-gray-900/40 mt-2 border border-gray-200 dark:border-gray-700">
+          <DateFilter onDateChange={handleDateChange} />
+
+          <MultiSelectFilter
+            label="Kategorie"
+            options={memoizedOptions.categories}
+            selectedValues={filters.categories}
+            onChange={(newValues) =>
+              setFilters((prev) => ({ ...prev, categories: newValues }))
+            }
+          />
+
+          <MultiSelectFilter
+            label="Größe"
+            options={memoizedOptions.sizes}
+            selectedValues={filters.sizes}
+            onChange={(newValues) =>
+              setFilters((prev) => ({ ...prev, sizes: newValues }))
+            }
+          />
+
+          <MultiSelectFilter
+            label="Filiale"
+            options={memoizedOptions.stores}
+            selectedValues={filters.stores}
+            onChange={(newValues) =>
+              setFilters((prev) => ({ ...prev, stores: newValues }))
+            }
+          />
+
+          <div className="flex flex-col sm:flex-row gap-2 ml-auto">
+            <button
+              onClick={handleApply}
+              className="px-6 py-2 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 text-white font-semibold shadow-lg hover:scale-105 hover:from-blue-700 hover:to-purple-700 transition-all duration-200 text-sm sm:text-base"
+            >
+              Anfrage schicken
+            </button>
+            <button
+              onClick={handleReset}
+              className="px-6 py-2 rounded-2xl bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 font-semibold shadow hover:bg-gray-300 dark:hover:bg-gray-500 transition-all duration-200 text-sm sm:text-base"
+            >
+              Filter zurücksetzen
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 });
