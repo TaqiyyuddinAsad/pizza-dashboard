@@ -24,10 +24,11 @@ public class OrderController {
     public List<OrdersDTO> getOrdersByWeekday(
         @RequestParam String start,
         @RequestParam String end,
-        @RequestParam(required = false) List<String> stores,
-        @RequestParam(required = false) List<String> categories,
-        @RequestParam(required = false) List<String> sizes
+        @RequestParam(required = false) String stores,
+        @RequestParam(required = false) String categories,
+        @RequestParam(required = false) String sizes
 ) {
+        System.out.println(">>> getOrdersByWeekday endpoint HIT!");
         System.out.println("📊 Orders Chart Request:");
         System.out.println("  Start: " + start);
         System.out.println("  End: " + end);
@@ -37,7 +38,11 @@ public class OrderController {
         
         LocalDate startDate = LocalDate.parse(start);
         LocalDate endDate = LocalDate.parse(end);
-        return orderService.getOrdersGroupedByWeekday(startDate, endDate, stores, categories, sizes);
+        List<String> storesList = splitCsv(stores);
+        List<String> categoriesList = splitCsv(categories);
+        List<String> sizesList = splitCsv(sizes);
+        
+        return orderService.getOrdersGroupedByWeekday(startDate, endDate, storesList, categoriesList, sizesList);
 }
 
 @GetMapping("/orders/times")

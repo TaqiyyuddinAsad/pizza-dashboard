@@ -7,7 +7,7 @@ import ProductPerformanceChart from "../components/productPerformanceChart";
 import CategorySalesBarChart from "../components/CategorySalesBarChart";
 import ProductSizePieChart from "../components/ProductSizePieChart";
 import ProductBestsellersTable from "../components/ProductBestsellersTable";
-import { getBestsellersByOrders, getWorstSellersByOrders, getBestsellersByRevenue, getWorstSellersByRevenue, getProductCombinations, getCategories, getAllProducts, getProductPerformanceAfterLaunch, getCategorySalesTimeline, getSalesBySizePie } from "../services/productservice";
+import { getBestsellersByOrders, getBestsellersByRevenue, getProductCombinations, getCategories, getAllProducts, getProductPerformanceAfterLaunch, getCategorySalesTimeline, getSalesBySizePie } from "../services/productservice";
 import { useContext } from 'react';
 import { FilterContext } from '../layout/layout';
 import CategoryRevenuePieChart from "../components/CategoryRevenuePieChart";
@@ -99,26 +99,31 @@ const ProductsPage = () => {
     };
     let fetchFn;
     if (sortBy === 'orders') {
-      fetchFn = sortOrder === 'best' ? getBestsellersByOrders : getWorstSellersByOrders;
+      fetchFn = getBestsellersByOrders;
     } else {
-      fetchFn = sortOrder === 'best' ? getBestsellersByRevenue : getWorstSellersByRevenue;
+      fetchFn = getBestsellersByRevenue;
     }
     fetchFn(serviceFilters, bestsellerPage, bestsellerRowsPerPage)
       .then(res => {
+        let data = Array.isArray(res.data) ? res.data : [];
+        
+        // If we want worst sellers, reverse the data
+        if (sortOrder === 'worst') {
+          data = data.reverse();
+        }
+        
         setBestsellers(
-          Array.isArray(res.data)
-            ? res.data.map(row => ({
-                name: row.productName,
-                price: row.productPrice,
-                size: row.productSize,
-                orders: row.totalOrders,
-                revenue: row.totalRevenue,
-                category: row.productCategory,
-                store: row.storeId,
-                storeCity: row.storeCity,
-                storeState: row.storeState
-              }))
-            : []
+          data.map(row => ({
+            name: row.productName,
+            price: row.productPrice,
+            size: row.productSize,
+            orders: row.totalOrders,
+            revenue: row.totalRevenue,
+            category: row.productCategory,
+            store: row.storeId,
+            storeCity: row.storeCity,
+            storeState: row.storeState
+          }))
         );
         setBestsellerTotal(res.total || 0);
       })
@@ -237,7 +242,14 @@ const ProductsPage = () => {
 
   const ChartSliderToggle = ({ value, onChange }) => (
     <div style={{ display: 'flex', alignItems: 'center', marginRight: 24 }}>
-      <span className="dark:text-gray-300" style={{ marginRight: 8, fontWeight: value ? 600 : 400, color: value ? '#1976d2' : '#888', fontSize: 15 }}>Performance</span>
+      <span className="dark:text-gray-300" style={{ 
+        marginRight: 8, 
+        fontWeight: value ? 600 : 400, 
+        color: value ? '#1976d2' : '#888', 
+        fontSize: 15 
+      }}>
+        Performance
+      </span>
       <div
         onClick={() => onChange(!value)}
         style={{
@@ -248,36 +260,82 @@ const ProductsPage = () => {
           width: 20, height: 20, borderRadius: '50%', background: '#fff', position: 'absolute', left: value ? 24 : 4, top: 2, transition: 'left 0.2s', boxShadow: '0 1px 4px rgba(0,0,0,0.12)'
         }} />
       </div>
-      <span className="dark:text-gray-300" style={{ marginLeft: 8, fontWeight: !value ? 600 : 400, color: !value ? '#1976d2' : '#888', fontSize: 15 }}>Kategorie</span>
+      <span className="dark:text-gray-300" style={{ 
+        marginLeft: 8, 
+        fontWeight: !value ? 600 : 400, 
+        color: !value ? '#1976d2' : '#888', 
+        fontSize: 15 
+      }}>
+        Kategorie
+      </span>
     </div>
   );
 
   return (
-    <div className="main-content" style={{ maxWidth: 1400, margin: '0 auto', padding: '32px 32px 0 32px', minHeight: '100vh' }}>
+    <div className="main-content dark:bg-gray-900" style={{ maxWidth: 1400, margin: '0 auto', padding: '32px 32px 0 32px', minHeight: '100vh' }}>
       <div className="product-analysis-page">
         {/* Material UI toggles for both tables */}
-        <div style={{ display: 'flex', gap: '2rem', marginBottom: '1.5rem', alignItems: 'center', justifyContent: 'center' }}>
+        <div className="dark:bg-gray-800 dark:border-gray-700" style={{ 
+          display: 'flex', 
+          gap: '2rem', 
+          marginBottom: '1.5rem', 
+          marginTop: '2rem',
+          alignItems: 'center', 
+          justifyContent: 'center',
+          background: '#fff',
+          borderRadius: 16,
+          padding: '1rem',
+          boxShadow: '0 4px 24px rgba(0,0,0,0.10)'
+        }}>
           <ToggleButtonGroup
             value={sortBy}
             exclusive
             onChange={(_e, val) => val && setSortBy(val)}
             size="small"
+            className="dark:bg-gray-700"
           >
-            <ToggleButton value="orders">By Orders</ToggleButton>
-            <ToggleButton value="revenue">By Revenue</ToggleButton>
+            <ToggleButton 
+              value="orders"
+              className="dark:bg-gray-600 dark:text-gray-100 dark:hover:bg-gray-500 dark:data-[state=selected]:bg-blue-600"
+            >
+              By Orders
+            </ToggleButton>
+            <ToggleButton 
+              value="revenue"
+              className="dark:bg-gray-600 dark:text-gray-100 dark:hover:bg-gray-500 dark:data-[state=selected]:bg-blue-600"
+            >
+              By Revenue
+            </ToggleButton>
           </ToggleButtonGroup>
           <ToggleButtonGroup
             value={sortOrder}
             exclusive
             onChange={(_e, val) => val && setSortOrder(val)}
             size="small"
+            className="dark:bg-gray-700"
           >
-            <ToggleButton value="best">Best</ToggleButton>
-            <ToggleButton value="worst">Worst</ToggleButton>
+            <ToggleButton 
+              value="best"
+              className="dark:bg-gray-600 dark:text-gray-100 dark:hover:bg-gray-500 dark:data-[state=selected]:bg-blue-600"
+            >
+              Best
+            </ToggleButton>
+            <ToggleButton 
+              value="worst"
+              className="dark:bg-gray-600 dark:text-gray-100 dark:hover:bg-gray-500 dark:data-[state=selected]:bg-blue-600"
+            >
+              Worst
+            </ToggleButton>
           </ToggleButtonGroup>
         </div>
         {/* Applied filters summary bar */}
-        <div className="dark:text-gray-300" style={{ marginBottom: '1.5rem', fontWeight: 500, fontSize: '1.1rem', color: '#222', textAlign: 'center' }}>
+        <div className="dark:text-gray-300" style={{ 
+          marginBottom: '1.5rem', 
+          fontWeight: 500, 
+          fontSize: '1.1rem', 
+          color: '#222',
+          textAlign: 'center' 
+        }}>
           {getTableTypeLabel()} | {getDateRangeLabel()} | {getStoreLabel()} {getCategoryLabel()} {getSizeLabel()}
         </div>
         {/* Top section: tables */}
@@ -318,11 +376,22 @@ const ProductsPage = () => {
           {/* Left: Chart card with toggle above */}
           <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '2rem' }}>
             {/* Toggle and filters above card */}
-            <div className="dark:text-gray-300" style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '1rem', color: '#222', flexWrap: 'wrap' }}>
+            <div className="dark:bg-gray-800 dark:border-gray-700" style={{ 
+              marginBottom: '1rem', 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '1rem', 
+              color: '#222', 
+              flexWrap: 'wrap',
+              background: '#fff',
+              borderRadius: 12,
+              padding: '1rem',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+            }}>
               <ChartSliderToggle value={showPerformance} onChange={setShowPerformance} />
               {showPerformance && (
                 <>
-                  <span>Produkt:</span>
+                  <span className="dark:text-gray-300">Produkt:</span>
                   <select
                     value={pendingProduct}
                     onChange={e => {
@@ -339,7 +408,7 @@ const ProductsPage = () => {
                       </option>
                     ))}
                   </select>
-                  <span>Größe:</span>
+                  <span className="dark:text-gray-300">Größe:</span>
                   <select
                     value={pendingSize}
                     onChange={e => setPendingSize(e.target.value)}
@@ -350,7 +419,7 @@ const ProductsPage = () => {
                       <option key={size} value={size}>{size}</option>
                     ))}
                   </select>
-                  <span>Tage nach Launch:</span>
+                  <span className="dark:text-gray-300">Tage nach Launch:</span>
                   <select
                     value={pendingDays}
                     onChange={e => setPendingDays(Number(e.target.value))}

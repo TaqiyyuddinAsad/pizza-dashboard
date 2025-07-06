@@ -125,7 +125,7 @@
 /* Main content */
 .main-content {
   flex-grow: 1;
-  padding: 96px 32px 32px 32px; /* top padding = Topbar + FilterBar */
+  padding: 0 32px 32px 32px;
   box-sizing: border-box;
   background-color: #f9fafb;
   min-height: calc(100vh - 60px);
@@ -136,21 +136,13 @@
   background-color: #111827 !important;
 }
 
-/* Fixed FilterBar */
+/* Fixed FilterBar (now normal flow) */
 .filterbar-fixed {
-  position: fixed;
-  top: 60px;
-  left: 225px;
-  right: 0;
-  z-index: 15;
-  background-color: #f9fafb;
+  position: static;
   padding: 16px 32px;
-  border-bottom: 1px solid #e0e0e0;
 }
 
 .dark .filterbar-fixed {
-  background-color: #111827;
-  border-bottom-color: #374151;
 }
 
 /* Responsive breakpoints */

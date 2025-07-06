@@ -16,9 +16,7 @@ import {
 } from '@mui/material';
 import { 
   getBestsellersByOrders, 
-  getWorstSellersByOrders,
-  getBestsellersByRevenue,
-  getWorstSellersByRevenue
+  getBestsellersByRevenue
 } from '../services/productservice';
 
 const ProductBestsellersTable = ({ filters }) => {
@@ -36,20 +34,19 @@ const ProductBestsellersTable = ({ filters }) => {
       let response;
       
       if (sortBy === 'orders') {
-        if (sortOrder === 'best') {
-          response = await getBestsellersByOrders(filters, page, rowsPerPage);
-        } else {
-          response = await getWorstSellersByOrders(filters, page, rowsPerPage);
-        }
+        response = await getBestsellersByOrders(filters, page, rowsPerPage);
       } else {
-        if (sortOrder === 'best') {
-          response = await getBestsellersByRevenue(filters, page, rowsPerPage);
-        } else {
-          response = await getWorstSellersByRevenue(filters, page, rowsPerPage);
-        }
+        response = await getBestsellersByRevenue(filters, page, rowsPerPage);
       }
       
-      setData(response.content || []);
+      let data = response.content || [];
+      
+      // If we want worst sellers, reverse the data
+      if (sortOrder === 'worst') {
+        data = data.reverse();
+      }
+      
+      setData(data);
       setTotalElements(response.totalElements || 0);
     } catch (error) {
       console.error('Error fetching data:', error);

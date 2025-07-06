@@ -22,8 +22,8 @@ const OrdersPage = () => {
 
   // Memoize chartFilters to prevent unnecessary re-renders
   const chartFilters = useMemo(() => ({
-    start: filters.start ? parseDate(filters.start) : parseDate("2020-06-01"),
-    end: filters.end ? parseDate(filters.end) : parseDate("2020-07-01"),
+    start: filters.start || "2020-06-01",
+    end: filters.end || "2020-07-01",
     stores: filters.stores || [],
     categories: filters.categories || [],
     sizes: filters.sizes || [],

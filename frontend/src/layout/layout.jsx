@@ -72,7 +72,7 @@ const Layout = memo(({ children }) => {
           <div className="main-area">
             <Topbar username="Admin" onMenuToggle={toggleSidebar} />
             <div>
-              <div className="filterbar-fixed">
+              <div style={{ marginTop: 90, marginBottom: 16, borderRadius: 16, maxWidth: 1100, marginLeft: 'auto', marginRight: 'auto', boxShadow: '0 2px 12px 0 rgba(0,0,0,0.08)' }}>
                 <FilterBar onApplyFilters={setFilters} />
               </div>
               <main className="main-content" onClick={handleMainClick}>

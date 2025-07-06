@@ -25,15 +25,15 @@ public class OrderRepository {
         params.add(start);
         params.add(end);
         if (stores != null && !stores.isEmpty()) {
-            sql.append(" AND o.storeID IN (").append("?,".repeat(stores.size()).replaceAll(", $", "")).append(")");
+            sql.append(" AND o.storeID IN (").append(String.join(",", Collections.nCopies(stores.size(), "?"))).append(")");
             params.addAll(stores);
         }
         if (categories != null && !categories.isEmpty()) {
-            sql.append(" AND p.Category IN (").append("?,".repeat(categories.size()).replaceAll(", $", "")).append(")");
+            sql.append(" AND p.Category IN (").append(String.join(",", Collections.nCopies(categories.size(), "?"))).append(")");
             params.addAll(categories);
         }
         if (sizes != null && !sizes.isEmpty()) {
-            sql.append(" AND p.Size IN (").append("?,".repeat(sizes.size()).replaceAll(", $", "")).append(")");
+            sql.append(" AND p.Size IN (").append(String.join(",", Collections.nCopies(sizes.size(), "?"))).append(")");
             params.addAll(sizes);
         }
         sql.append(" GROUP BY label ORDER BY FIELD(label, 'Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday')");

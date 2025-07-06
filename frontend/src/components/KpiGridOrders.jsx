@@ -11,6 +11,14 @@ const KpiGridOrders = memo(({ filters }) => {
   useEffect(() => {
     if (!filters?.start || !filters?.end) return;
 
+    // Check if token exists before making request
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('❌ No token available for KPI request');
+      setError('No authentication token available');
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
@@ -21,11 +29,9 @@ const KpiGridOrders = memo(({ filters }) => {
     if (filters.categories?.length) params.append("categories", filters.categories.join(","));
     if (filters.sizes?.length) params.append("sizes", filters.sizes.join(","));
 
+    console.log('🚀 Making KPI request with token:', token.substring(0, 20) + '...');
+
     fetchKpiData(params.toString())
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
-      })
       .then(setKpis)
       .catch((err) => {
         console.error("KPI loading failed:", err);

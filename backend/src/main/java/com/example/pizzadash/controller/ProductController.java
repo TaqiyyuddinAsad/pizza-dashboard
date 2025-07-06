@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 @RestController
 @RequestMapping("/api/products")
@@ -28,6 +30,13 @@ public class ProductController {
 
     @Autowired
     private ProductService productService;
+
+    private List<String> splitCsv(String csv) {
+        if (csv == null || csv.trim().isEmpty()) {
+            return new ArrayList<>();
+        }
+        return Arrays.asList(csv.split(","));
+    }
 
     @GetMapping("/ranking")
     public List<RankedProduct> getProductRankingWithTrend(
@@ -51,24 +60,28 @@ public class ProductController {
     public PaginatedResponse<ProductBestsellerDTO> getBestseller(
         @RequestParam String start,
         @RequestParam String end,
-        @RequestParam(required = false) List<String> stores,
-        @RequestParam(required = false) List<String> categories,
-        @RequestParam(required = false) List<String> sizes,
+        @RequestParam(required = false) String stores,
+        @RequestParam(required = false) String categories,
+        @RequestParam(required = false) String sizes,
         @RequestParam(defaultValue = "1") int page,
         @RequestParam(defaultValue = "10") int size
     ) {
-        return productService.getBestseller(start, end, stores, categories, sizes, page, size);
+        List<String> storesList = splitCsv(stores);
+        List<String> categoriesList = splitCsv(categories);
+        List<String> sizesList = splitCsv(sizes);
+        return productService.getBestseller(start, end, storesList, categoriesList, sizesList, page, size);
     }
 
     @GetMapping("/combinations")
     public PaginatedResponse<ProductCombinationDTO> getCombinations(
         @RequestParam String start,
         @RequestParam String end,
-        @RequestParam(required = false) List<String> stores,
+        @RequestParam(required = false) String stores,
         @RequestParam(defaultValue = "1") int page,
         @RequestParam(defaultValue = "10") int size
     ) {
-        return productService.getCombinations(start, end, stores, page, size);
+        List<String> storesList = splitCsv(stores);
+        return productService.getCombinations(start, end, storesList, page, size);
     }
 
     @GetMapping("/performance")
@@ -76,18 +89,20 @@ public class ProductController {
         @RequestParam String sku,
         @RequestParam String start,
         @RequestParam String end,
-        @RequestParam(required = false) List<String> stores
+        @RequestParam(required = false) String stores
     ) {
-        return productService.getPerformance(sku, start, end, stores);
+        List<String> storesList = splitCsv(stores);
+        return productService.getPerformance(sku, start, end, storesList);
     }
 
     @GetMapping("/pie-size")
     public List<ProductPieDTO> getPieBySize(
         @RequestParam String start,
         @RequestParam String end,
-        @RequestParam(required = false) List<String> stores
+        @RequestParam(required = false) String stores
     ) {
-        return productService.getPieBySize(start, end, stores);
+        List<String> storesList = splitCsv(stores);
+        return productService.getPieBySize(start, end, storesList);
     }
 
     @GetMapping("/summary")
@@ -95,18 +110,21 @@ public class ProductController {
         @RequestParam String sku,
         @RequestParam String start,
         @RequestParam String end,
-        @RequestParam(required = false) List<String> stores
+        @RequestParam(required = false) String stores
     ) {
-        return productService.getSummary(sku, start, end, stores);
+        List<String> storesList = splitCsv(stores);
+        return productService.getSummary(sku, start, end, storesList);
     }
 
     @GetMapping("/category-sales")
     public List<CategorySalesDTO> getCategorySales(
         @RequestParam String start,
         @RequestParam String end,
-        @RequestParam(required = false) List<String> stores,
-        @RequestParam(required = false) List<String> sizes
+        @RequestParam(required = false) String stores,
+        @RequestParam(required = false) String sizes
     ) {
-        return productService.getCategorySales(start, end, stores, sizes);
+        List<String> storesList = splitCsv(stores);
+        List<String> sizesList = splitCsv(sizes);
+        return productService.getCategorySales(start, end, storesList, sizesList);
     }
 }

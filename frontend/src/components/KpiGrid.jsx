@@ -17,10 +17,6 @@ export default function KpiGrid({ filters }) {
     console.log("⏱ Fetching KPIs with params:", params.toString());
 
     fetchKpiData(params.toString())
-      .then((res) => {
-        if (!res.ok) throw new Error(`Fehler beim Laden der KPIs: ${res.status}`);
-        return res.json();
-      })
       .then(setKpis)
       .catch((err) => {
         setKpis(null);

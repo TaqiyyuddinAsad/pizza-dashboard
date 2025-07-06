@@ -23,6 +23,13 @@ public class KpiController {
         @RequestParam(required = false) String categories,
         @RequestParam(required = false) String sizes
     ) {
+        System.out.println("🎯 KPI Controller called!");
+        System.out.println("  Start: " + start);
+        System.out.println("  End: " + end);
+        System.out.println("  Stores: " + stores);
+        System.out.println("  Categories: " + categories);
+        System.out.println("  Sizes: " + sizes);
+        
        LocalDate startDate = LocalDate.parse(start.trim());
        LocalDate endDate = LocalDate.parse(end.trim());
         List<String> storeList = split(stores);
@@ -30,6 +37,7 @@ public class KpiController {
         List<String> sizeList = split(sizes);
 
         Map<String, Object> result = orderService.getKpiSummary(startDate, endDate, storeList, categoryList, sizeList);
+        System.out.println("🎯 KPI Controller returning result: " + result);
         return result;
     }
 

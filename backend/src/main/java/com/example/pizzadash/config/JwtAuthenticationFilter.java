@@ -1,7 +1,5 @@
 package com.example.pizzadash.config;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,7 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    private static final String SECRET_KEY = "very_secret_key_change_me";
+    
     private final UserDetailsService userDetailsService;
 
     public JwtAuthenticationFilter(UserDetailsService userDetailsService) {
@@ -74,6 +72,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getServletPath();
-        return path.equals("/api/auth/login");
+        System.out.println("[JWT Filter] Checking shouldNotFilter for path: " + path);
+        boolean shouldNotFilter = path.equals("/api/auth/login");
+        System.out.println("[JWT Filter] shouldNotFilter result: " + shouldNotFilter);
+        return shouldNotFilter;
     }
 } 

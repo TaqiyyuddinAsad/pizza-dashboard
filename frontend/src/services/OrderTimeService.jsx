@@ -9,7 +9,7 @@ const fetchOrderTimes = async (params) => {
     }
   });
 
-  // Erst Loggen – aber mit .clone()
+
   const responseText = await res.clone().text();
   console.log("DEBUG Backend-Response:", responseText);
 
@@ -17,7 +17,7 @@ const fetchOrderTimes = async (params) => {
     throw new Error(`Backend Error ${res.status}: ${responseText}`);
   }
 
-  // Dann als JSON zurückgeben
+  
   return res.json();
 };
 export default fetchOrderTimes;

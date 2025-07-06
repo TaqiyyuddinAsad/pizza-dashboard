@@ -1,6 +1,6 @@
 import React, { useEffect, useState, memo, useMemo } from "react";
 import MultiSelectFilter from "./multiselect";
-import DateFilter from "./DateFilter"; // Optional – falls du den nutzt
+import DateFilter from "./DateFilter"; 
 import { FiFilter, FiChevronDown, FiChevronUp } from 'react-icons/fi';
 import { useMediaQuery } from 'react-responsive';
 import '../styles/Layout.css';
@@ -24,16 +24,15 @@ const FilterBar = memo(({ onApplyFilters }) => {
     sizes: [],
   });
 
-  // Responsive: detect if mobile
   const isMobile = useMediaQuery({ maxWidth: 768 });
   const [collapsed, setCollapsed] = useState(isMobile);
 
-  // Update collapse state on screen resize
+ 
   useEffect(() => {
     setCollapsed(isMobile);
   }, [isMobile]);
 
-  // Memoize options to prevent unnecessary re-renders
+  
   const memoizedOptions = useMemo(() => options, [options]);
 
   useEffect(() => {
@@ -43,7 +42,6 @@ const FilterBar = memo(({ onApplyFilters }) => {
       return;
     }
 
-    // Fetch filter options from the /filters endpoint
     fetch(`${API_BASE_URL}/filters`, {
       headers: {
         'Authorization': `Bearer ${token}`
@@ -83,7 +81,7 @@ const FilterBar = memo(({ onApplyFilters }) => {
   };
 
   const handleApply = () => {
-    // Always send valid dates
+    
     const safeFilters = {
       ...filters,
       start: filters.start || thirtyDaysAgo,
@@ -100,12 +98,11 @@ const FilterBar = memo(({ onApplyFilters }) => {
       categories: [],
       sizes: [],
     });
-    // Do NOT call onApplyFilters here
   };
 
-  // Collapsible filter bar for mobile
+  
   return (
-    <div>
+    <>
       {isMobile && (
         <button
           className="w-full flex items-center justify-between px-4 py-2 rounded-2xl bg-gray-700 text-gray-100 font-semibold mb-2 shadow-lg"
@@ -117,7 +114,7 @@ const FilterBar = memo(({ onApplyFilters }) => {
         </button>
       )}
       {(!isMobile || !collapsed) && (
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 flex flex-wrap items-center gap-4 shadow-lg shadow-gray-300/40 dark:shadow-gray-900/40 mt-2 border border-gray-200 dark:border-gray-700">
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-2 flex flex-wrap items-center gap-2 shadow-lg shadow-gray-300/40 dark:shadow-gray-900/40 mt-2 border border-gray-200 dark:border-gray-700">
           <DateFilter onDateChange={handleDateChange} />
 
           <MultiSelectFilter
@@ -147,23 +144,23 @@ const FilterBar = memo(({ onApplyFilters }) => {
             }
           />
 
-          <div className="flex flex-col sm:flex-row gap-2 ml-auto">
+          <div className="flex flex-col sm:flex-row gap-1 ml-auto">
             <button
               onClick={handleApply}
-              className="px-6 py-2 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 text-white font-semibold shadow-lg hover:scale-105 hover:from-blue-700 hover:to-purple-700 transition-all duration-200 text-sm sm:text-base"
+              className="px-3 py-1 rounded-lg bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 text-white font-semibold shadow-lg hover:scale-105 hover:from-blue-700 hover:to-purple-700 transition-all duration-200 text-xs"
             >
               Anfrage schicken
             </button>
             <button
               onClick={handleReset}
-              className="px-6 py-2 rounded-2xl bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 font-semibold shadow hover:bg-gray-300 dark:hover:bg-gray-500 transition-all duration-200 text-sm sm:text-base"
+              className="px-3 py-1 rounded-lg bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 font-semibold shadow hover:bg-gray-300 dark:hover:bg-gray-500 transition-all duration-200 text-xs"
             >
               Filter zurücksetzen
             </button>
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 });
 
