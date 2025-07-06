@@ -29,19 +29,7 @@ public class KpiController {
         List<String> categoryList = split(categories);
         List<String> sizeList = split(sizes);
 
-        Map<String, Object> row = orderService.getKpiSummary(startDate, endDate, storeList, categoryList, sizeList);
-
-        double revenue = row.get("revenue") != null ? ((Number) row.get("revenue")).doubleValue() : 0;
-        int totalOrders = row.get("totalOrders") != null ? ((Number) row.get("totalOrders")).intValue() : 0;
-        int totalItems = row.get("totalItems") != null ? ((Number) row.get("totalItems")).intValue() : 0;
-        double avgOrderValue = totalOrders > 0 ? revenue / totalOrders : 0;
-
-        Map<String, Object> result = new HashMap<>();
-        result.put("Revenue", revenue);
-        result.put("Avg Order Value", avgOrderValue);
-        result.put("Total Orders", totalOrders);
-        result.put("Total Items", totalItems);
-
+        Map<String, Object> result = orderService.getKpiSummary(startDate, endDate, storeList, categoryList, sizeList);
         return result;
     }
 

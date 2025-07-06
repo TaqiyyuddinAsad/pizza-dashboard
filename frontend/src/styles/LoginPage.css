@@ -94,3 +94,19 @@
 #login {
     color: black;
 }
+
+.login-right .title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 50px;
+  font-size: 4rem;
+  font-weight: bold;
+}
+
+.login-right .title span,
+.login-right .title div {
+  font-size: 4rem !important;
+  font-weight: bold !important;
+  color: #fff !important;
+}

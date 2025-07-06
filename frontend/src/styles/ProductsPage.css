@@ -1,0 +1,39 @@
+.products-dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 32px 0;
+}
+
+.products-dashboard-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+  padding: 24px;
+  min-height: 380px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Dark mode override for products dashboard card */
+.dark .products-dashboard-card {
+  background: #1f2937 !important;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.3) !important;
+}
+
+.main-content {
+  background: #f7f8fa;
+}
+.dark .main-content {
+  background: #111827 !important;
+}
+
+@media (max-width: 900px) {
+  .products-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+} 

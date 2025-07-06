@@ -43,3 +43,8 @@ CREATE TABLE orderItems (
     FOREIGN KEY (orderID) REFERENCES orders(orderID),
     FOREIGN KEY (SKU) REFERENCES products(SKU)
 );
+
+-- Recommended indexes for performance
+CREATE INDEX IF NOT EXISTS idx_orders_orderDate_storeID ON orders(orderDate, storeID);
+CREATE INDEX IF NOT EXISTS idx_orderitems_orderID_productID ON orderitems(orderID, productID);
+CREATE INDEX IF NOT EXISTS idx_products_SKU_Category_Size ON products(SKU, Category, Size);

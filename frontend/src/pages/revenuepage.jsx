@@ -1,36 +1,40 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Line } from "react-chartjs-2";
 import "chart.js/auto";
 import "../styles/RevenuePage.css";
 import { fetchRevenueData } from "../services/revenue";
-import FilterBar from "../components/filterbar";
+import { FilterContext } from "../layout/layout";
 
 const RevenuePage = () => {
+  const { filters } = useContext(FilterContext);
   const [data, setData] = useState([]);
 
-  const handleApplyFilters = (filters) => {
-    const params = new URLSearchParams();
-
+  useEffect(() => {
     if (filters.start && filters.end) {
-      params.append("start", filters.start.toString());
-      params.append("end", filters.end.toString());
-    }
-    if (filters.stores?.length) {
-      params.append("stores", filters.stores.join(","));
-    }
-    if (filters.categories?.length) {
-      params.append("categories", filters.categories.join(","));
-    }
-    if (filters.sizes?.length) {
-      params.append("sizes", filters.sizes.join(","));
-    }
+      const params = new URLSearchParams();
+      params.append("start", filters.start);
+      params.append("end", filters.end);
+      
+      if (filters.stores?.length) {
+        filters.stores.forEach(store => params.append("stores", store));
+      }
+      if (filters.categories?.length) {
+        filters.categories.forEach(category => params.append("categories", category));
+      }
+      if (filters.sizes?.length) {
+        filters.sizes.forEach(size => params.append("sizes", size));
+      }
 
-    fetchRevenueData(params.toString())
-      .then((res) => res.json())
-      .then((data) => setData(data))
-      .catch((err) => console.error("Failed to load revenue data:", err));
-      console.log(params.toString())
-  };
+      console.log("💰 Revenue Request:", params.toString());
+
+      fetchRevenueData(params.toString())
+        .then((data) => {
+          console.log("💰 Revenue Data:", data);
+          setData(data);
+        })
+        .catch((err) => console.error("Failed to load revenue data:", err));
+    }
+  }, [filters]);
 
   const chartData = {
     labels: data.map((entry) => entry.label),
@@ -48,19 +52,20 @@ const RevenuePage = () => {
   const totalRevenue = data.reduce((sum, d) => sum + Number(d.revenue), 0);
 
   return (
-    <div className="revenue-container">
-      <h1 className="page-title">Finanzen</h1>
+    <div className="revenue-container dark:bg-gray-900">
+      <h1 className="page-title dark:text-gray-100">Finanzen</h1>
+      
 
-      <div className="revenue-card">
+      <div className="revenue-card dark:bg-gray-800 dark:border-gray-700">
         <div className="card-header">
           <div className="revenue-summary">
-            <p className="revenue-title">Gesamtumsatz</p>
-            <p className="revenue-value">
+            <p className="revenue-title dark:text-gray-300">Gesamtumsatz</p>
+            <p className="revenue-value dark:text-gray-100">
               {totalRevenue.toLocaleString("de-DE")}€
             </p>
           </div>
 
-          <FilterBar onApplyFilters={handleApplyFilters} />
+          
         </div>
 
         <div className="revenue-chart">

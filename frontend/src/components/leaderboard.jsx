@@ -10,6 +10,15 @@ const borderStyles = [
   { bg: "#fafbfc", border: "2px solid #e0e0e0" },
 ];
 
+// Dark mode border styles
+const darkBorderStyles = [
+  { bg: "#1f2937", border: "2px solid #fbbf24" }, // Gold
+  { bg: "#374151", border: "2px solid #9ca3af" }, // Silber
+  { bg: "#451a03", border: "2px solid #fb923c" }, // Bronze
+  { bg: "#1f2937", border: "2px solid #6b7280" },
+  { bg: "#1f2937", border: "2px solid #6b7280" },
+];
+
 export default function Leaderboard({
   data,
   title,
@@ -17,19 +26,20 @@ export default function Leaderboard({
   showRankBefore = false
 }) {
   return (
-    <Card sx={{ maxWidth: 600, margin: "32px auto", borderRadius: 4, boxShadow: 5, border: "none", background: "none" }}>
+    <Card className="dark:bg-gray-800 dark:border-gray-700" sx={{ maxWidth: 600, margin: "32px auto", borderRadius: 4, boxShadow: 5, border: "none", background: "none" }}>
       <CardContent>
-        <Typography variant="h6" fontWeight="bold" sx={{ mb: 2 }}>
+        <Typography variant="h6" fontWeight="bold" className="dark:text-gray-100" sx={{ mb: 2 }}>
           {title}
         </Typography>
-        <Divider sx={{ mb: 2 }} />
+        <Divider className="dark:border-gray-600" sx={{ mb: 2 }} />
         <Box>
           {data.length === 0 ? (
-            <Typography color="text.secondary">Keine Daten.</Typography>
+            <Typography className="dark:text-gray-300" color="text.secondary">Keine Daten.</Typography>
           ) : (
             data.map((item, i) => (
               <Box
                 key={item.label}
+                className="dark:bg-gray-700 dark:border-gray-600"
                 sx={{
                   display: "flex",
                   alignItems: "center",
@@ -62,9 +72,9 @@ export default function Leaderboard({
                   />
                 </Box>
                 <Box sx={{ flex: 1, ml: 2 }}>
-                  <Typography fontWeight="bold">{item.label}</Typography>
+                  <Typography className="dark:text-gray-100" fontWeight="bold">{item.label}</Typography>
                   {showRankBefore && (
-                    <Typography variant="body2" color="text.secondary" sx={{ fontSize: 13 }}>
+                    <Typography className="dark:text-gray-300" variant="body2" color="text.secondary" sx={{ fontSize: 13 }}>
                       {item.rankBefore
                         ? `(vorher: ${item.rankBefore})`
                         : i === 0 && item.trend === "new"
@@ -75,7 +85,7 @@ export default function Leaderboard({
                 </Box>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: 80, justifyContent: "flex-end" }}>
                   {item.trend && <TrendIcon trend={item.trend} />}
-                  <Typography fontWeight="medium">{item.value.toLocaleString()}x</Typography>
+                  <Typography className="dark:text-gray-100" fontWeight="medium">{item.value.toLocaleString()}x</Typography>
                 </Box>
               </Box>
             ))
