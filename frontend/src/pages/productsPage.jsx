@@ -203,30 +203,21 @@ const ProductsPage = () => {
         })
         .catch(() => setCategorySales([]));
     }
-  }, [
-    showPerformance,
-    filters.start,
-    filters.end,
-    filters.stores ? filters.stores.join(',') : '',
-    filters.categories ? filters.categories.join(',') : '',
-    filters.sizes ? filters.sizes.join(',') : ''
-  ]);
+  }, [showPerformance, filters.start, filters.end, filters.stores ? filters.stores.join(',') : '', filters.categories ? filters.categories.join(',') : '', filters.sizes ? filters.sizes.join(',') : '']);
 
-  // Helper for summary bar
   const formatDate = (dateStr) => {
-    if (!dateStr) return '';
-    const d = new Date(dateStr);
-    return d.toLocaleDateString('de-DE');
+    return new Date(dateStr).toLocaleDateString('de-DE');
   };
+
   const getTableTypeLabel = () => {
-    if (sortOrder === 'best') return sortBy === 'orders' ? 'Bestsellers' : 'Top Revenue';
-    return sortBy === 'orders' ? 'Worst Sellers' : 'Lowest Revenue';
+    return `${sortOrder === 'best' ? 'Top' : 'Bottom'} ${sortBy === 'orders' ? 'Orders' : 'Revenue'}`;
   };
+
   const getDateRangeLabel = () => `${formatDate(filters.start)} - ${formatDate(filters.end)}`;
   const getStoreLabel = () =>
     (filters.stores && filters.stores.length === 1 && filters.stores[0])
-      ? `Store: ${filters.stores[0]}`
-      : 'All Stores';
+      ? `| Store: ${filters.stores[0]}`
+      : '';
   const getCategoryLabel = () =>
     (filters.categories && filters.categories.length === 1 && filters.categories[0])
       ? `| Category: ${filters.categories[0]}`
@@ -236,7 +227,6 @@ const ProductsPage = () => {
       ? `| Size: ${filters.sizes[0]}`
       : '';
 
-  // Convert filters to the format expected by ProductBestsellersTable
   const tableFilters = {
     startDate: filters.start,
     endDate: filters.end,
@@ -247,7 +237,7 @@ const ProductsPage = () => {
 
   const ChartSliderToggle = ({ value, onChange }) => (
     <div style={{ display: 'flex', alignItems: 'center', marginRight: 24 }}>
-      <span style={{ marginRight: 8, fontWeight: value ? 600 : 400, color: value ? '#1976d2' : '#888', fontSize: 15 }}>Performance</span>
+      <span className="dark:text-gray-300" style={{ marginRight: 8, fontWeight: value ? 600 : 400, color: value ? '#1976d2' : '#888', fontSize: 15 }}>Performance</span>
       <div
         onClick={() => onChange(!value)}
         style={{
@@ -258,12 +248,12 @@ const ProductsPage = () => {
           width: 20, height: 20, borderRadius: '50%', background: '#fff', position: 'absolute', left: value ? 24 : 4, top: 2, transition: 'left 0.2s', boxShadow: '0 1px 4px rgba(0,0,0,0.12)'
         }} />
       </div>
-      <span style={{ marginLeft: 8, fontWeight: !value ? 600 : 400, color: !value ? '#1976d2' : '#888', fontSize: 15 }}>Kategorie</span>
+      <span className="dark:text-gray-300" style={{ marginLeft: 8, fontWeight: !value ? 600 : 400, color: !value ? '#1976d2' : '#888', fontSize: 15 }}>Kategorie</span>
     </div>
   );
 
   return (
-    <div style={{ maxWidth: 1400, margin: '0 auto', padding: '32px 32px 0 32px', background: '#f7f8fa', minHeight: '100vh' }}>
+    <div className="main-content" style={{ maxWidth: 1400, margin: '0 auto', padding: '32px 32px 0 32px', minHeight: '100vh' }}>
       <div className="product-analysis-page">
         {/* Material UI toggles for both tables */}
         <div style={{ display: 'flex', gap: '2rem', marginBottom: '1.5rem', alignItems: 'center', justifyContent: 'center' }}>
@@ -287,7 +277,7 @@ const ProductsPage = () => {
           </ToggleButtonGroup>
         </div>
         {/* Applied filters summary bar */}
-        <div style={{ marginBottom: '1.5rem', fontWeight: 500, fontSize: '1.1rem', color: '#222', textAlign: 'center' }}>
+        <div className="dark:text-gray-300" style={{ marginBottom: '1.5rem', fontWeight: 500, fontSize: '1.1rem', color: '#222', textAlign: 'center' }}>
           {getTableTypeLabel()} | {getDateRangeLabel()} | {getStoreLabel()} {getCategoryLabel()} {getSizeLabel()}
         </div>
         {/* Top section: tables */}
@@ -328,7 +318,7 @@ const ProductsPage = () => {
           {/* Left: Chart card with toggle above */}
           <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '2rem' }}>
             {/* Toggle and filters above card */}
-            <div style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '1rem', color: '#222', flexWrap: 'wrap' }}>
+            <div className="dark:text-gray-300" style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '1rem', color: '#222', flexWrap: 'wrap' }}>
               <ChartSliderToggle value={showPerformance} onChange={setShowPerformance} />
               {showPerformance && (
                 <>
@@ -340,6 +330,7 @@ const ProductsPage = () => {
                       const prod = productList.find(p => p.sku === e.target.value);
                       if (prod && prod.sizes && prod.sizes.length > 0) setPendingSize(prod.sizes[0]);
                     }}
+                    className="dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
                     style={{ background: '#fff', color: '#222', border: '1px solid #ccc', borderRadius: 4, padding: '4px 8px', minWidth: 120 }}
                   >
                     {productList.map(p => (
@@ -352,6 +343,7 @@ const ProductsPage = () => {
                   <select
                     value={pendingSize}
                     onChange={e => setPendingSize(e.target.value)}
+                    className="dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
                     style={{ background: '#fff', color: '#222', border: '1px solid #ccc', borderRadius: 4, padding: '4px 8px', minWidth: 80 }}
                   >
                     {(productList.find(p => p.sku === pendingProduct)?.sizes || []).map(size => (
@@ -362,6 +354,7 @@ const ProductsPage = () => {
                   <select
                     value={pendingDays}
                     onChange={e => setPendingDays(Number(e.target.value))}
+                    className="dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600"
                     style={{ background: '#fff', color: '#222', border: '1px solid #ccc', borderRadius: 4, padding: '4px 8px', minWidth: 80 }}
                   >
                     {[7, 14, 30, 60, 90, 180, 365].map(days => (
@@ -389,16 +382,16 @@ const ProductsPage = () => {
                 </>
               )}
             </div>
-            <div style={{ background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.10)', padding: 24, minHeight: 380, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', width: '100%' }}>
+            <div className="dark:bg-gray-800 dark:border-gray-700" style={{ background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.10)', padding: 24, minHeight: 380, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', width: '100%' }}>
               {/* Chart title */}
-              <div style={{ fontSize: 20, fontWeight: 600, color: '#111', marginBottom: 12, textAlign: 'left' }}>
+              <div className="dark:text-gray-100" style={{ fontSize: 20, fontWeight: 600, color: '#111', marginBottom: 12, textAlign: 'left' }}>
                 {showPerformance ? 'Performance nach Launch' : 'Umsatz nach Kategorie'}
               </div>
               {showPerformance ? (
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
                     <div>
-                      <span style={{ fontSize: 15, fontWeight: 400, color: '#555' }}>
+                      <span className="dark:text-gray-300" style={{ fontSize: 15, fontWeight: 400, color: '#555' }}>
                         {getStoreLabel()} {selectedSize ? `| Size: ${selectedSize}` : ''} {selectedProduct ? `| Produkt: ${(productList.find(p => p.sku === selectedProduct)?.name) || selectedProduct}` : ''} {daysAfterLaunch ? `| Tage: ${daysAfterLaunch}` : ''}
                       </span>
                     </div>
@@ -426,8 +419,8 @@ const ProductsPage = () => {
           </div>
           {/* Right: Pie chart card with title above chart */}
           <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-            <div style={{ background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.10)', padding: 24, minHeight: 380, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', width: '100%' }}>
-              <div style={{ fontSize: 20, fontWeight: 600, color: '#111', marginBottom: 12, textAlign: 'center' }}>Verkaufsanteile nach Pizzagröße</div>
+            <div className="dark:bg-gray-800 dark:border-gray-700" style={{ background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.10)', padding: 24, minHeight: 380, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', width: '100%' }}>
+              <div className="dark:text-gray-100" style={{ fontSize: 20, fontWeight: 600, color: '#111', marginBottom: 12, textAlign: 'center' }}>Verkaufsanteile nach Pizzagröße</div>
               <ProductSizePieChart data={pieBySize || []} filters={filters} />
             </div>
           </div>

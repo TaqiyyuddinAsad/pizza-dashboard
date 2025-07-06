@@ -14,7 +14,7 @@ import {
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 const ProductPerformanceChart = ({ data }) => {
-  if (!data || data.length === 0) return <div>Keine Daten</div>;
+  if (!data || data.length === 0) return <div className="dark:text-gray-300">Keine Daten</div>;
   const chartData = {
     labels: data.map((row) => row.period),
     datasets: [
@@ -40,20 +40,20 @@ const ProductPerformanceChart = ({ data }) => {
   return (
     <div>
       <Line data={chartData} options={options} />
-      <table style={{ marginTop: 16 }}>
+      <table className="dark:text-gray-300" style={{ marginTop: 16 }}>
         <thead>
           <tr>
-            <th>Woche</th>
-            <th>Bestellungen</th>
-            <th>Umsatz</th>
+            <th className="dark:text-gray-100">Woche</th>
+            <th className="dark:text-gray-100">Bestellungen</th>
+            <th className="dark:text-gray-100">Umsatz</th>
           </tr>
         </thead>
         <tbody>
           {data.map((row, idx) => (
             <tr key={idx}>
-              <td>{row.period}</td>
-              <td>{row.quantity}</td>
-              <td>{row.revenue}€</td>
+              <td className="dark:text-gray-300">{row.period}</td>
+              <td className="dark:text-gray-300">{row.quantity}</td>
+              <td className="dark:text-gray-300">{row.revenue}€</td>
             </tr>
           ))}
         </tbody>

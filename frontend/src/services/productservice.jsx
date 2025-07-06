@@ -1,4 +1,5 @@
-const API_BASE_URL = 'http://localhost:8080/api';
+import { API_BASE_URL } from '../config/api.js';
+const API_BASE_URL_FULL = `${API_BASE_URL}/api`;
 
 // Materialized table endpoints
 export const getBestsellersByOrders = async (filters, page = 0, pageSize = 10) => {
@@ -13,7 +14,7 @@ export const getBestsellersByOrders = async (filters, page = 0, pageSize = 10) =
         params.append('pageSize', pageSize);
 
         const token = localStorage.getItem('token');
-        const response = await fetch(`${API_BASE_URL}/materialized/bestsellers/orders?${params}`, { headers: { 'Authorization': `Bearer ${token}` } });
+        const response = await fetch(`${API_BASE_URL_FULL}/materialized/bestsellers/orders?${params}`, { headers: getAuthHeader() });
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         return response.json();
     } catch (error) {
@@ -34,7 +35,7 @@ export const getWorstSellersByOrders = async (filters, page = 0, pageSize = 10) 
         params.append('pageSize', pageSize);
 
         const token = localStorage.getItem('token');
-        const response = await fetch(`${API_BASE_URL}/materialized/worst-sellers/orders?${params}`, { headers: { 'Authorization': `Bearer ${token}` } });
+        const response = await fetch(`${API_BASE_URL_FULL}/materialized/worst-sellers/orders?${params}`, { headers: getAuthHeader() });
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         return response.json();
     } catch (error) {
@@ -55,7 +56,7 @@ export const getBestsellersByRevenue = async (filters, page = 0, pageSize = 10) 
         params.append('pageSize', pageSize);
 
         const token = localStorage.getItem('token');
-        const response = await fetch(`${API_BASE_URL}/materialized/bestsellers/revenue?${params}`, { headers: { 'Authorization': `Bearer ${token}` } });
+        const response = await fetch(`${API_BASE_URL_FULL}/materialized/bestsellers/revenue?${params}`, { headers: getAuthHeader() });
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         return response.json();
     } catch (error) {
@@ -76,7 +77,7 @@ export const getWorstSellersByRevenue = async (filters, page = 0, pageSize = 10)
         params.append('pageSize', pageSize);
 
         const token = localStorage.getItem('token');
-        const response = await fetch(`${API_BASE_URL}/materialized/worst-sellers/revenue?${params}`, { headers: { 'Authorization': `Bearer ${token}` } });
+        const response = await fetch(`${API_BASE_URL_FULL}/materialized/worst-sellers/revenue?${params}`, { headers: getAuthHeader() });
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         return response.json();
     } catch (error) {
@@ -89,8 +90,8 @@ export const getWorstSellersByRevenue = async (filters, page = 0, pageSize = 10)
 export const getCategories = async () => {
     try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`${API_BASE_URL}/materialized/categories`, {
-            headers: { 'Authorization': `Bearer ${token}` }
+        const response = await fetch(`${API_BASE_URL_FULL}/materialized/categories`, {
+            headers: getAuthHeader()
         });
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         return response.json();
@@ -103,8 +104,8 @@ export const getCategories = async () => {
 export const getSizes = async () => {
     try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`${API_BASE_URL}/materialized/sizes`, {
-            headers: { 'Authorization': `Bearer ${token}` }
+        const response = await fetch(`${API_BASE_URL_FULL}/materialized/sizes`, {
+            headers: getAuthHeader()
         });
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         return response.json();
@@ -117,8 +118,8 @@ export const getSizes = async () => {
 export const getStores = async () => {
     try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`${API_BASE_URL}/materialized/stores`, {
-            headers: { 'Authorization': `Bearer ${token}` }
+        const response = await fetch(`${API_BASE_URL_FULL}/materialized/stores`, {
+            headers: getAuthHeader()
         });
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         return response.json();
@@ -145,7 +146,7 @@ export const getProductCombinations = async (filters, page = 0, pageSize = 10) =
         params.append('size', pageSize);
 
         const token = localStorage.getItem('token');
-        const response = await fetch(`${API_BASE_URL}/products/combinations?${params}`, { headers: { 'Authorization': `Bearer ${token}` } });
+        const response = await fetch(`${API_BASE_URL_FULL}/products/combinations?${params}`, { headers: getAuthHeader() });
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         return response.json();
     } catch (error) {
@@ -157,8 +158,8 @@ export const getProductCombinations = async (filters, page = 0, pageSize = 10) =
 export const getAllProducts = async () => {
     try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`${API_BASE_URL}/materialized/products`, {
-            headers: { 'Authorization': `Bearer ${token}` }
+        const response = await fetch(`${API_BASE_URL_FULL}/materialized/products`, {
+            headers: getAuthHeader()
         });
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         return response.json();
@@ -175,9 +176,9 @@ export const getProductPerformanceAfterLaunch = async (sku, days, size, storeId)
         params.append('days', days);
         if (size) params.append('size', size);
         if (storeId) params.append('storeId', storeId);
-        const url = `${API_BASE_URL}/materialized/performance?${params}`;
+        const url = `${API_BASE_URL_FULL}/materialized/performance?${params}`;
         const token = localStorage.getItem('token');
-        const response = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
+        const response = await fetch(url, { headers: getAuthHeader() });
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
         return data;
@@ -194,7 +195,7 @@ export const getCategorySalesTimeline = async (filters) => {
         if (filters.store && filters.store.length > 0 && filters.store[0]) params.append('storeId', filters.store[0]);
         if (filters.size && filters.size.length > 0 && filters.size[0]) params.append('size', filters.size[0]);
         const token = localStorage.getItem('token');
-        const response = await fetch(`${API_BASE_URL}/materialized/category-sales-timeline?${params}`, { headers: { 'Authorization': `Bearer ${token}` } });
+        const response = await fetch(`${API_BASE_URL_FULL}/materialized/category-sales-timeline?${params}`, { headers: getAuthHeader() });
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         return response.json();
     } catch (error) {
@@ -212,10 +213,15 @@ export const getSalesBySizePie = async (filters) => {
             filters.store.forEach(storeId => params.append('stores', storeId));
         }
         const token = localStorage.getItem('token');
-        const response = await fetch(`${API_BASE_URL.replace('/api', '')}/api/products/pie-size?${params}`, { headers: { 'Authorization': `Bearer ${token}` } });
+        const response = await fetch(`${API_BASE_URL_FULL}/products/pie-size?${params}`, { headers: getAuthHeader() });
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         return response.json();
     } catch (error) {
         throw error;
     }
 };
+
+function getAuthHeader() {
+  const token = localStorage.getItem('token');
+  return { 'Authorization': `Bearer ${token}` };
+}

@@ -1,6 +1,8 @@
+import { API_BASE_URL } from '../config/api.js';
+
 export async function fetchStoreRanking(start, end) {
   const token = localStorage.getItem('token');
-  const res = await fetch(`http://localhost:8080/stores/ranking?start=${start}&end=${end}`, {
+  const res = await fetch(`${API_BASE_URL}/stores/ranking?start=${start}&end=${end}`, {
     headers: {
       'Authorization': `Bearer ${token}`
     }

@@ -1,6 +1,7 @@
 import React, { useEffect, useState, memo, useMemo } from "react";
 import MultiSelectFilter from "./multiselect";
 import DateFilter from "./DateFilter"; // Optional – falls du den nutzt
+import { API_BASE_URL } from '../config/api.js';
 
 const today = new Date().toISOString().slice(0, 10);
 const thirtyDaysAgo = new Date(Date.now() - 29 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
@@ -31,7 +32,7 @@ const FilterBar = memo(({ onApplyFilters }) => {
     }
 
     // Fetch filter options from the /filters endpoint
-    fetch("http://localhost:8080/filters", {
+    fetch(`${API_BASE_URL}/filters`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -93,7 +94,7 @@ const FilterBar = memo(({ onApplyFilters }) => {
 
   return (
     <div>
-      <div className="bg-white rounded-2xl p-4 flex flex-wrap items-center gap-4 shadow-lg shadow-gray-300/40 mt-2">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 flex flex-wrap items-center gap-4 shadow-lg shadow-gray-300/40 dark:shadow-gray-900/40 mt-2 border border-gray-200 dark:border-gray-700">
         <DateFilter onDateChange={handleDateChange} />
 
         <MultiSelectFilter
@@ -131,7 +132,7 @@ const FilterBar = memo(({ onApplyFilters }) => {
         </button>
         <button
           onClick={handleReset}
-          className="ml-2 px-6 py-2 rounded-2xl bg-gray-200 text-gray-700 font-semibold shadow hover:bg-gray-300 transition-all duration-200"
+          className="ml-2 px-6 py-2 rounded-2xl bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 font-semibold shadow hover:bg-gray-300 dark:hover:bg-gray-500 transition-all duration-200"
         >
           Filter zurücksetzen
         </button>

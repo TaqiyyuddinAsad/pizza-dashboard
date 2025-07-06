@@ -32,7 +32,7 @@ function ProtectedRoute({ children }) {
     }
 
     // Call a protected endpoint to check JWT token
-    fetch('http://localhost:8080/api/auth/testauth', {
+    fetch('http://192.168.0.167:8080/api/auth/testauth', {
       headers: {
         'Authorization': `Bearer ${token}`
       }

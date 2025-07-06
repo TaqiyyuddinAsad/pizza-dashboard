@@ -28,13 +28,26 @@
   min-width: 0;
 }
 
+/* Dark mode overrides for chart and KPI wrappers */
+.dark .orders-chart-wrapper,
+.dark .orders-kpi-wrapper {
+  background-color: #1f2937 !important;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2) !important;
+}
+
 .orders-page {
   height: 100vh;
+  min-height: 100vh;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   background: #fafbfc;
+}
+
+/* Dark mode override for orders page */
+.dark .orders-page {
+  background: #111827 !important;
 }
 
 /* Main Content Wrapper */
@@ -45,6 +58,10 @@
   padding: 0 24px;
   box-sizing: border-box;
   font-size: 1rem;
+}
+
+.dark .main-content-wrapper {
+  background: #111827 !important;
 }
 
 .dashboard-row {

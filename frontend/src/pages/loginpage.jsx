@@ -16,12 +16,20 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+    
+    // Debug: Check if we're on mobile
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    console.log('Device type:', isMobile ? 'Mobile' : 'Desktop');
+    console.log('User agent:', navigator.userAgent);
+    
     if (!form.username || !form.password) {
       setError('Bitte Benutzername und Passwort eingeben.');
       return;
     }
+    
     try {
-      const res = await fetch('http://localhost:8080/api/auth/login', {
+      console.log('Attempting login with username:', form.username);
+      const res = await fetch('http://192.168.0.167:8080/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -29,12 +37,24 @@ const LoginPage = () => {
         body: JSON.stringify({ username: form.username, password: form.password }),
       });
       console.log('Login response status:', res.status);
+      
       if (res.ok) {
         const data = await res.json();
         console.log('Login response data:', data);
         localStorage.setItem('token', data.token);
         console.log('Token stored in localStorage:', localStorage.getItem('token'));
-        navigate('/umsatz');
+        
+        // Debug: Check if navigation function exists
+        console.log('Navigate function exists:', typeof navigate === 'function');
+        console.log('About to navigate to /umsatz');
+        
+        // Try navigation with a small delay for mobile
+        setTimeout(() => {
+          console.log('Executing navigation...');
+          navigate('/umsatz');
+          console.log('Navigation executed');
+        }, isMobile ? 100 : 0);
+        
       } else {
         const errorText = await res.text();
         console.log('Login failed with status:', res.status, 'Error:', errorText);

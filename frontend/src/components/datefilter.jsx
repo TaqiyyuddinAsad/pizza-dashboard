@@ -14,6 +14,7 @@ const DateFilter = ({ onDateChange }) => {
         defaultValue={[defaultStart, defaultEnd]}
         format="YYYY-MM-DD"
         allowClear={false}
+        className="dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
         onChange={(dates, dateStrings) => {
           if (!dates || dates.length !== 2 || !dateStrings[0] || !dateStrings[1]) {
             message.warning("Bitte ein vollständiges Start- und Enddatum auswählen.");

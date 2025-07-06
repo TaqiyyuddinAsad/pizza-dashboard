@@ -14,6 +14,11 @@
   flex-shrink: 0;
 }
 
+/* Dark mode override for sidebar */
+.dark .sidebar {
+  background-color: #1f2937 !important;
+}
+
 .main-area {
   display: flex;
   flex-direction: column;
@@ -36,12 +41,23 @@
   flex-shrink: 0;
 }
 
+/* Dark mode override for topbar */
+.dark .topbar {
+  background-color: #1f2937 !important;
+  border-bottom-color: #374151 !important;
+}
+
 /* Main content */
 .main-content {
   flex-grow: 1;
   padding: 96px 32px 32px 32px; /* top padding = Topbar + FilterBar */
   box-sizing: border-box;
   background-color: #f9fafb;
+}
+
+/* Dark mode override for main content */
+.dark .main-content {
+  background-color: #111827 !important;
 }
 
 /* Fixed FilterBar */

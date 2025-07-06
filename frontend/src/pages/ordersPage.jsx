@@ -91,7 +91,7 @@ const OrdersPage = () => {
   }, [filters]);
 
   return (
-   <div className="orders-page">
+   <div className="orders-page dark:bg-gray-900">
   {/* OBERSTE REIHE: Chart und KPIs - Load immediately */}
   <div className="orders-container">
     <div className="orders-chart-wrapper">
@@ -139,13 +139,13 @@ const OrdersPage = () => {
       )}
     </div>
     <div style={{ flex: 1, minWidth: 0, display: "flex", height: "551px" }}>
-      <Card style={{ width: "100%", maxWidth: 420, minHeight: 420, margin: '0 auto', display: "flex", flexDirection: "column", alignItems: 'center', boxSizing: 'border-box' }}>
-        <Typography variant="h6" style={{ margin: '24px 0 0 0', alignSelf: 'center', fontWeight: 600 }}>Bestellzeitpunkte</Typography>
+      <Card className="dark:bg-gray-800 dark:border-gray-700" style={{ width: "100%", maxWidth: 420, minHeight: 420, margin: '0 auto', display: "flex", flexDirection: "column", alignItems: 'center', boxSizing: 'border-box' }}>
+        <Typography variant="h6" className="dark:text-gray-100" style={{ margin: '24px 0 0 0', alignSelf: 'center', fontWeight: 600 }}>Bestellzeitpunkte</Typography>
         <CardContent style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 16, width: '100%' }}>
           {loading ? (
             <CircularProgress size={40} />
           ) : error ? (
-            <div style={{ color: '#d32f2f', textAlign: 'center' }}>
+            <div className="dark:text-red-400" style={{ color: '#d32f2f', textAlign: 'center' }}>
               <p>❌ {error}</p>
             </div>
           ) : (

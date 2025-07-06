@@ -11,22 +11,34 @@
   font-weight: 400;
 
   
-  color: rgba(255, 255, 255, 0.87);
+  color: #213547;
+  background-color: #ffffff;
   
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: all 0.3s ease;
 }
 
 a {
   font-weight: 500;
   color: #646cff;
   text-decoration: inherit;
+  transition: color 0.3s ease;
 }
 a:hover {
   color: #535bf2;
+}
+
+/* Dark mode link styles */
+.dark a {
+  color: #818cf8;
+}
+
+.dark a:hover {
+  color: #a5b4fc;
 }
 
 body {
@@ -35,6 +47,25 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  background-color: #f8fafc;
+  color: #1e293b;
+  transition: all 0.3s ease;
+}
+
+/* Dark mode styles */
+.dark body {
+  background-color: #0f172a !important;
+  color: #f1f5f9 !important;
+}
+
+html, body, #root {
+  background: #111827 !important;
+  min-height: 100vh;
+  width: 100vw;
+  overflow-x: hidden;
+}
+.dark html, .dark body, .dark #root {
+  background: #111827 !important;
 }
 
 h1 {
@@ -46,9 +77,313 @@ h1 {
   cursor: none !important;
 } */
 
+/* Enhanced dark mode background overrides */
+.dark .bg-white {
+  background-color: #1e293b !important;
+}
+
+.dark .bg-gray-50 {
+  background-color: #0f172a !important;
+}
+
+.dark .bg-gray-100 {
+  background-color: #1e293b !important;
+}
+
+.dark .bg-gray-200 {
+  background-color: #374151 !important;
+}
+
+.dark .bg-gray-300 {
+  background-color: #4b5563 !important;
+}
+
+.dark .bg-gray-400 {
+  background-color: #6b7280 !important;
+}
+
+.dark .bg-gray-500 {
+  background-color: #9ca3af !important;
+}
+
+.dark .bg-gray-600 {
+  background-color: #4b5563 !important;
+}
+
+.dark .bg-gray-700 {
+  background-color: #374151 !important;
+}
+
+.dark .bg-gray-800 {
+  background-color: #1f2937 !important;
+}
+
+.dark .bg-gray-900 {
+  background-color: #111827 !important;
+}
+
+/* Specific page background overrides */
+.dark .orders-page {
+  background-color: #111827 !important;
+}
+
+.dark .revenue-container {
+  background-color: #111827 !important;
+}
+
+.dark .product-analysis-page {
+  background-color: #111827 !important;
+}
+
+.main-content-wrapper, .orders-page, .customer-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  min-height: 100vh;
+  background: transparent !important;
+}
+.dark .main-content-wrapper {
+  background: #111827 !important;
+  min-height: 100vh;
+}
+
+.orders-page,
+.customer-page {
+  min-height: 100vh;
+  height: 100%;
+  background: #f7f8fa;
+}
+.dark .orders-page,
+.dark .customer-page {
+  background: #111827 !important;
+}
+
+/* Card and component dark mode styles */
+.dark .card, .dark .bg-white {
+  background-color: #1e293b !important;
+  color: #f1f5f9 !important;
+  border-color: #334155 !important;
+}
+
+.dark .shadow-lg {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2) !important;
+}
+
+.dark .shadow-gray-300\/40 {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Table dark mode styles */
+.dark table {
+  background-color: #1e293b;
+  color: #f1f5f9;
+}
+
+.dark th {
+  background-color: #334155;
+  color: #f1f5f9;
+}
+
+.dark td {
+  border-color: #475569;
+}
+
+/* Button dark mode styles */
+.dark .bg-gray-200 {
+  background-color: #374151 !important;
+  color: #f1f5f9 !important;
+}
+
+.dark .text-gray-700 {
+  color: #f1f5f9 !important;
+}
+
+.dark .hover\:bg-gray-300:hover {
+  background-color: #4b5563 !important;
+}
+
+/* Ant Design dark mode styles */
+.dark .ant-picker {
+  background-color: #374151 !important;
+  border-color: #6b7280 !important;
+  color: #f3f4f6 !important;
+}
+
+.dark .ant-picker-input > input {
+  color: #f3f4f6 !important;
+}
+
+.dark .ant-picker-separator {
+  color: #9ca3af !important;
+}
+
+.dark .ant-picker-suffix {
+  color: #9ca3af !important;
+}
+
+.dark .ant-picker-dropdown {
+  background-color: #374151 !important;
+  border-color: #6b7280 !important;
+}
+
+.dark .ant-picker-panel {
+  background-color: #374151 !important;
+  border-color: #6b7280 !important;
+}
+
+.dark .ant-picker-header {
+  border-bottom-color: #6b7280 !important;
+}
+
+.dark .ant-picker-header button {
+  color: #f3f4f6 !important;
+}
+
+.dark .ant-picker-content th,
+.dark .ant-picker-content td {
+  color: #f3f4f6 !important;
+}
+
+.dark .ant-picker-cell {
+  color: #f3f4f6 !important;
+}
+
+.dark .ant-picker-cell:hover {
+  background-color: #4b5563 !important;
+}
+
+.dark .ant-picker-cell-in-view {
+  color: #f3f4f6 !important;
+}
+
+.dark .ant-picker-cell-selected {
+  background-color: #1e40af !important;
+  color: #f3f4f6 !important;
+}
+
+.dark .ant-picker-cell-today {
+  border-color: #60a5fa !important;
+}
+
+/* Material-UI dark mode overrides */
+.dark .MuiCard-root {
+  background-color: #1e293b !important;
+  color: #f1f5f9 !important;
+  border-color: #334155 !important;
+}
+
+.dark .MuiTableHead-root .MuiTableCell-root {
+  background-color: #334155 !important;
+  color: #f1f5f9 !important;
+  border-color: #475569 !important;
+}
+
+.dark .MuiTableBody-root .MuiTableCell-root {
+  color: #f1f5f9 !important;
+  border-color: #475569 !important;
+}
+
+.dark .MuiTableRow-root:hover {
+  background-color: #374151 !important;
+}
+
+.dark .MuiTablePagination-root {
+  color: #f1f5f9 !important;
+}
+
+.dark .MuiTablePagination-select {
+  color: #f1f5f9 !important;
+}
+
+.dark .MuiTablePagination-selectIcon {
+  color: #f1f5f9 !important;
+}
+
+.dark .MuiIconButton-root {
+  color: #f1f5f9 !important;
+}
+
+.dark .MuiIconButton-root:hover {
+  background-color: #374151 !important;
+}
+
+.dark .MuiToggleButtonGroup-root {
+  background-color: #374151 !important;
+}
+
+.dark .MuiToggleButton-root {
+  color: #f1f5f9 !important;
+  border-color: #6b7280 !important;
+}
+
+.dark .MuiToggleButton-root:hover {
+  background-color: #4b5563 !important;
+}
+
+.dark .MuiToggleButton-root.Mui-selected {
+  background-color: #1e40af !important;
+  color: #f1f5f9 !important;
+}
+
+/* Additional Material-UI component overrides */
+.dark .MuiPaper-root {
+  background-color: #1f2937 !important;
+  color: #f1f5f9 !important;
+}
+
+.dark .MuiTableContainer-root {
+  background-color: #1f2937 !important;
+}
+
+.dark .MuiFormControl-root {
+  background-color: transparent !important;
+}
+
+.dark .MuiInputLabel-root {
+  color: #f1f5f9 !important;
+}
+
+.dark .MuiSelect-root {
+  background-color: #374151 !important;
+  color: #f1f5f9 !important;
+}
+
+.dark .MuiMenuItem-root {
+  background-color: #374151 !important;
+  color: #f1f5f9 !important;
+}
+
+.dark .MuiMenuItem-root:hover {
+  background-color: #4b5563 !important;
+}
+
+.dark .MuiDivider-root {
+  border-color: #6b7280 !important;
+}
+
+.dark .MuiChip-root {
+  background-color: #374151 !important;
+  color: #f1f5f9 !important;
+}
+
+.dark .MuiChip-root.MuiChip-colorPrimary {
+  background-color: #1e40af !important;
+  color: #f1f5f9 !important;
+}
+
+.dark .MuiChip-root.MuiChip-colorSecondary {
+  background-color: #7c3aed !important;
+  color: #f1f5f9 !important;
+}
+
+.dark .MuiChip-root.MuiChip-variantOutlined {
+  border-color: #6b7280 !important;
+  color: #f1f5f9 !important;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
-    color: #ffffff;
+    color: #213547;
     background-color: #ffffff;
   }
   a:hover {

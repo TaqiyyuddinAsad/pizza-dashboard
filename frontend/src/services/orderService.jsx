@@ -1,6 +1,8 @@
+import { API_BASE_URL } from '../config/api.js';
+
 export const fetchOrdersData = async (queryString) => {
   const token = localStorage.getItem('token');
-  return fetch(`http://localhost:8080/orders/chart?${queryString}`, {
+  return fetch(`${API_BASE_URL}/orders/chart?${queryString}`, {
     headers: {
       'Authorization': `Bearer ${token}`
     }

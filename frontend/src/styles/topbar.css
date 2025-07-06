@@ -1,15 +1,14 @@
 .topbar {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   height: 60px;
-  
   padding: 0 2rem;
   background-color: #fff;
   border-bottom: 1px solid #eee;
 }
 
-.user-info {
+.topbar .user-info {
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -28,4 +27,25 @@
   font-weight: 500;
   color: #334155;
   font-size: 14px;
+}
+
+.dark-mode-toggle {
+  margin-left: 1rem;
+  cursor: pointer;
+  border: none;
+  outline: none;
+}
+
+/* Dark mode styles for topbar */
+.dark .topbar {
+  background-color: #1f2937;
+  border-bottom-color: #374151;
+}
+
+.dark .user-info {
+  background-color: #374151;
+}
+
+.dark .username {
+  color: #f3f4f6;
 }

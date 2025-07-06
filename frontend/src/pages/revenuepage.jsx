@@ -52,15 +52,15 @@ const RevenuePage = () => {
   const totalRevenue = data.reduce((sum, d) => sum + Number(d.revenue), 0);
 
   return (
-    <div className="revenue-container">
-      <h1 className="page-title">Finanzen</h1>
+    <div className="revenue-container dark:bg-gray-900">
+      <h1 className="page-title dark:text-gray-100">Finanzen</h1>
       
 
-      <div className="revenue-card">
+      <div className="revenue-card dark:bg-gray-800 dark:border-gray-700">
         <div className="card-header">
           <div className="revenue-summary">
-            <p className="revenue-title">Gesamtumsatz</p>
-            <p className="revenue-value">
+            <p className="revenue-title dark:text-gray-300">Gesamtumsatz</p>
+            <p className="revenue-value dark:text-gray-100">
               {totalRevenue.toLocaleString("de-DE")}€
             </p>
           </div>

@@ -87,9 +87,9 @@ const ChartToggleCard = ({ filters }) => {
   }
 
   return (
-    <Card style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "flex-start" }}>
+    <Card className="dark:bg-gray-800 dark:border-gray-700" style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "flex-start" }}>
       <CardContent style={{ flex: 1, display: "flex", flexDirection: "column", padding: 16 }}>
-        <Typography variant="h6" gutterBottom style={{ marginBottom: 16 }}>{chartTitle}</Typography>
+        <Typography variant="h6" gutterBottom className="dark:text-gray-100" style={{ marginBottom: 16 }}>{chartTitle}</Typography>
         <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginBottom: 20 }}>
           <button
             className={`dashboard-dot ${activeChart === "customers" ? "active" : ""}`}
@@ -106,7 +106,7 @@ const ChartToggleCard = ({ filters }) => {
         </div>
         <div style={{ flex: 1, minHeight: 220, width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           {loading ? (
-            <div>Loading...</div>
+            <div className="dark:text-gray-300">Loading...</div>
           ) : (
             <div style={{ width: '100%', height: 260 }}>
               <Line data={chartData} options={chartOptions} style={{ width: '100%', height: '100%' }} />
@@ -120,7 +120,7 @@ const ChartToggleCard = ({ filters }) => {
 
 const CustomerPage = ({ filters }) => {
   return (
-    <div className="orders-page">
+    <div className="orders-page dark:bg-gray-900">
       <div className="main-content-wrapper">
         {/* TOP ROW: Chart (left) and KPIs (right) */}
         <div className="orders-container">
@@ -133,9 +133,9 @@ const CustomerPage = ({ filters }) => {
         </div>
         {/* MAP FULL WIDTH */}
         <div style={{ width: '100%', marginTop: 32 }}>
-          <Card style={{ width: '100%', height: 600, display: 'flex', flexDirection: 'column', justifyContent: 'center', marginBottom: 32 }}>
+          <Card className="dark:bg-gray-800 dark:border-gray-700" style={{ width: '100%', height: 600, display: 'flex', flexDirection: 'column', justifyContent: 'center', marginBottom: 32 }}>
             <CardContent style={{ padding: 16 }}>
-              <Typography variant="h6" gutterBottom style={{ margin: 24 }}>Standorte & Kunden</Typography>
+              <Typography variant="h6" gutterBottom className="dark:text-gray-100" style={{ margin: 24 }}>Standorte & Kunden</Typography>
               <div style={{ width: '100%', height: 540, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                 <StoreCustomerMap height={540} />
               </div>
@@ -145,9 +145,9 @@ const CustomerPage = ({ filters }) => {
         {/* PIE + TABLE ROW */}
         <div className="dashboard-row" style={{ marginTop: 0 }}>
           <div style={{ flex: 1, minWidth: 0, marginRight: 16 }}>
-            <Card style={{ width: '100%', height: 340, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+            <Card className="dark:bg-gray-800 dark:border-gray-700" style={{ width: '100%', height: 340, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
               <CardContent style={{ padding: 16 }}>
-                <Typography variant="h6" gutterBottom style={{ marginBottom: 16 }}>Kundenumsatz-Verteilung</Typography>
+                <Typography variant="h6" gutterBottom className="dark:text-gray-100" style={{ marginBottom: 16 }}>Kundenumsatz-Verteilung</Typography>
                 <div style={{ width: '100%', height: 220, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                   <div style={{ width: 200, height: 200 }}>
                     <RevenuePieChart filters={filters} />
@@ -157,7 +157,7 @@ const CustomerPage = ({ filters }) => {
             </Card>
           </div>
           <div style={{ flex: 1, minWidth: 0, marginLeft: 16 }}>
-            <Card style={{ width: '100%', display: 'block' }}>
+            <Card className="dark:bg-gray-800 dark:border-gray-700" style={{ width: '100%', display: 'block' }}>
               <CardContent style={{ padding: 16 }}>
                 <InactiveCustomerTable filters={filters} />
               </CardContent>

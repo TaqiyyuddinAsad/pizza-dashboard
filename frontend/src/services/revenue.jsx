@@ -1,12 +1,14 @@
+import { API_BASE_URL } from '../config/api.js';
+
 export const fetchRevenueData = async (queryString) => {
   if (!queryString) throw new Error("No query string provided");
   const token = localStorage.getItem('token');
   console.log('Revenue request - Token:', token ? 'Present' : 'Missing');
   console.log('Revenue request - Token value:', token ? token.substring(0, 20) + '...' : 'None');
-  console.log('Revenue request - URL:', `http://localhost:8080/revenue?${queryString}`);
+  console.log('Revenue request - URL:', `${API_BASE_URL}/revenue?${queryString}`);
   
   try {
-    const res = await fetch(`http://localhost:8080/revenue?${queryString}`, {
+    const res = await fetch(`${API_BASE_URL}/revenue?${queryString}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
