@@ -19,9 +19,7 @@ public class ProductSalesMaterializedService {
     @Autowired
     private ProductSalesMaterializedRepository repository;
     
-    /**
-     * Get bestsellers by orders with pagination and filtering
-     */
+    
     public PaginatedResponse<ProductSalesMaterialized> getBestsellersByOrders(
             String storeId,
             String sku,
@@ -50,9 +48,7 @@ public class ProductSalesMaterializedService {
         return new PaginatedResponse<>(paginatedProducts, totalElements);
     }
     
-    /**
-     * Get worst sellers by orders with pagination and filtering
-     */
+   
     public PaginatedResponse<ProductSalesMaterialized> getWorstSellersByOrders(
             String storeId, 
             LocalDate startDate, 
@@ -80,9 +76,7 @@ public class ProductSalesMaterializedService {
         return new PaginatedResponse<>(paginatedProducts, totalElements);
     }
     
-    /**
-     * Get bestsellers by revenue with pagination and filtering
-     */
+    
     public PaginatedResponse<ProductSalesMaterialized> getBestsellersByRevenue(
             String storeId, 
             LocalDate startDate, 
@@ -110,9 +104,7 @@ public class ProductSalesMaterializedService {
         return new PaginatedResponse<>(paginatedProducts, totalElements);
     }
     
-    /**
-     * Get worst sellers by revenue with pagination and filtering
-     */
+    
     public PaginatedResponse<ProductSalesMaterialized> getWorstSellersByRevenue(
             String storeId, 
             LocalDate startDate, 
@@ -187,30 +179,22 @@ public class ProductSalesMaterializedService {
         return repository.countWorstSellersByFilters(storeId, startDate, endDate, category, productSize);
     }
     
-    /**
-     * Get unique categories from materialized table
-     */
+   
     public List<String> getCategories() {
         return repository.findDistinctCategories();
     }
     
-    /**
-     * Get unique sizes from materialized table
-     */
+    
     public List<String> getSizes() {
         return repository.findDistinctSizes();
     }
     
-    /**
-     * Get unique stores from materialized table
-     */
+    
     public List<String> getStores() {
         return repository.findDistinctStores();
     }
     
-    /**
-     * Get sales summary by store
-     */
+    
     public List<Map<String, Object>> getSalesSummaryByStore(LocalDate startDate, LocalDate endDate) {
         List<Object[]> results = repository.getSalesSummaryByStore(startDate, endDate);
         
@@ -223,15 +207,9 @@ public class ProductSalesMaterializedService {
                 "totalRevenue", row[5]
         )).collect(Collectors.toList());
     }
-    
-    /**
-     * Refresh the materialized table
-     * This would typically be called by a scheduled job
-     */
+
     public void refreshMaterializedTable() {
-        // This would execute the refresh SQL script
-        // In a real implementation, you might use @Scheduled annotation
-        // or call a stored procedure
+        
         System.out.println("Materialized table refresh initiated");
     }
     
@@ -242,8 +220,7 @@ public class ProductSalesMaterializedService {
             Map<String, Object> map = new java.util.HashMap<>();
             map.put("sku", (String) row[0]);
             map.put("name", (String) row[1]);
-            // Debug print
-            System.out.println("[getAllProducts] sizes raw value: " + row[2]);
+            
             if (row[2] instanceof String && row[2] != null && !((String) row[2]).isEmpty()) {
                 map.put("sizes", java.util.Arrays.asList(((String) row[2]).split(",")));
             } else {
