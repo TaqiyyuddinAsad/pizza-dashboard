@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Repository
@@ -49,60 +50,128 @@ public class OrderRepository {
 
     public Map<String, Object> getKpiSummary(LocalDate start, LocalDate end, List<String> stores, List<String> categories, List<String> sizes) {
         boolean hasProductFilter = (categories != null && !categories.isEmpty()) || (sizes != null && !sizes.isEmpty());
+        
+        // Get order-based KPIs (always apply all filters)
+        Map<String, Object> orderKpis = getOrderKpis(start, end, stores, categories, sizes);
+        
+        // Get customer-based KPIs (only apply store filters, not product filters)
+        Map<String, Object> customerKpis = getCustomerKpis(start, end, stores);
+        
+        // Combine results
+        Map<String, Object> result = new HashMap<>();
+        result.putAll(orderKpis);
+        result.putAll(customerKpis);
+        
+        return result;
+    }
+    
+    private Map<String, Object> getOrderKpis(LocalDate start, LocalDate end, List<String> stores, List<String> categories, List<String> sizes) {
+        boolean hasProductFilter = (categories != null && !categories.isEmpty()) || (sizes != null && !sizes.isEmpty());
+        
         StringBuilder sql = new StringBuilder();
         List<Object> params = new ArrayList<>();
         params.add(start);
         params.add(end);
+        
         if (!hasProductFilter) {
             sql.append("SELECT COUNT(DISTINCT o.orderID) AS totalOrders, SUM(o.total) AS revenue, SUM(o.nItems) AS totalItems FROM orders o WHERE o.orderDate BETWEEN ? AND ?");
             if (stores != null && !stores.isEmpty()) {
-                sql.append(" AND o.storeID IN (").append("?,".repeat(stores.size()).replaceAll(", $", "")).append(")");
+                sql.append(" AND o.storeID IN (")
+                   .append(String.join(",", Collections.nCopies(stores.size(), "?")))
+                   .append(")");
                 params.addAll(stores);
             }
         } else {
-            sql.append("SELECT COUNT(DISTINCT o.orderID) AS totalOrders, SUM(p.price) AS revenue, SUM(oi.quantity) AS totalItems FROM orders o ");
+            sql.append("SELECT COUNT(DISTINCT o.orderID) AS totalOrders, SUM(p.price) AS revenue, COUNT(oi.productID) AS totalItems FROM orders o ");
             sql.append("JOIN orderitems oi ON o.orderID = oi.orderID ");
             sql.append("JOIN products p ON oi.productID = p.SKU ");
             sql.append("WHERE o.orderDate BETWEEN ? AND ?");
             if (stores != null && !stores.isEmpty()) {
-                sql.append(" AND o.storeID IN (").append("?,".repeat(stores.size()).replaceAll(", $", "")).append(")");
+                sql.append(" AND o.storeID IN (")
+                   .append(String.join(",", Collections.nCopies(stores.size(), "?")))
+                   .append(")");
                 params.addAll(stores);
             }
             if (categories != null && !categories.isEmpty()) {
-                sql.append(" AND p.Category IN (").append("?,".repeat(categories.size()).replaceAll(", $", "")).append(")");
+                String placeholders = String.join(",", Collections.nCopies(categories.size(), "?"));
+                sql.append(" AND p.Category IN (").append(placeholders).append(")");
                 params.addAll(categories);
             }
             if (sizes != null && !sizes.isEmpty()) {
-                sql.append(" AND p.Size IN (").append("?,".repeat(sizes.size()).replaceAll(", $", "")).append(")");
+                String placeholders = String.join(",", Collections.nCopies(sizes.size(), "?"));
+                sql.append(" AND p.Size IN (").append(placeholders).append(")");
                 params.addAll(sizes);
             }
         }
-        Map<String, Object> result = jdbcTemplate.queryForMap(sql.toString(), params.toArray());
+        
+        Map<String, Object> result;
+        try {
+            result = jdbcTemplate.queryForMap(sql.toString(), params.toArray());
+        } catch (Exception e) {
+            result = new HashMap<>();
+            result.put("totalOrders", 0);
+            result.put("revenue", 0.0);
+            result.put("totalItems", 0);
+        }
+        
+        // Calculate average order value
+        Double revenue = ((Number) result.get("revenue")).doubleValue();
+        Integer totalOrders = ((Number) result.get("totalOrders")).intValue();
+        Double avgOrderValue = totalOrders > 0 ? revenue / totalOrders : 0.0;
+        
+        Map<String, Object> orderKpis = new HashMap<>();
+        orderKpis.put("Revenue", revenue);
+        orderKpis.put("Avg Order Value", avgOrderValue);
+        orderKpis.put("Total Orders", totalOrders);
+        orderKpis.put("Total Items", ((Number) result.get("totalItems")).intValue());
+        
+        return orderKpis;
+    }
+    
+    private Map<String, Object> getCustomerKpis(LocalDate start, LocalDate end, List<String> stores) {
+        Map<String, Object> customerKpis = new HashMap<>();
+        
         // 1. Average days between first and second order
         Double avgDaysBetweenOrders = 0.0;
         try {
-            avgDaysBetweenOrders = jdbcTemplate.queryForObject(
-                "SELECT AVG(diff) FROM (\n" +
+            StringBuilder avgDaysSql = new StringBuilder();
+            List<Object> avgDaysParams = new ArrayList<>();
+            
+            avgDaysSql.append("SELECT AVG(diff) FROM (\n" +
                 "  SELECT DATEDIFF(MIN(CASE WHEN rn=2 THEN orderDate END), MIN(CASE WHEN rn=1 THEN orderDate END)) AS diff\n" +
                 "  FROM (\n" +
-                "    SELECT customerID, orderDate, ROW_NUMBER() OVER (PARTITION BY customerID ORDER BY orderDate) rn\n" +
-                "    FROM orders\n" +
-                "    WHERE orderDate BETWEEN ? AND ?\n" +
-                "  ) t\n" +
+                "    SELECT o.customerID, o.orderDate, ROW_NUMBER() OVER (PARTITION BY o.customerID ORDER BY o.orderDate) rn\n" +
+                "    FROM orders o");
+            
+            avgDaysSql.append(" WHERE o.orderDate BETWEEN ? AND ?");
+            avgDaysParams.add(start);
+            avgDaysParams.add(end);
+            
+            if (stores != null && !stores.isEmpty()) {
+                avgDaysSql.append(" AND o.storeID IN (").append(String.join(",", Collections.nCopies(stores.size(), "?"))).append(")");
+                avgDaysParams.addAll(stores);
+            }
+            
+            avgDaysSql.append("  ) t\n" +
                 "  WHERE rn IN (1,2)\n" +
                 "  GROUP BY customerID\n" +
                 "  HAVING COUNT(*) > 1\n" +
-                ") x",
-                Double.class, start, end
-            );
+                ") x");
+            
+            avgDaysBetweenOrders = jdbcTemplate.queryForObject(avgDaysSql.toString(), Double.class, avgDaysParams.toArray());
             if (avgDaysBetweenOrders == null) avgDaysBetweenOrders = 0.0;
-        } catch (Exception e) { avgDaysBetweenOrders = 0.0; }
-        result.put("AvgDaysBetweenOrders", avgDaysBetweenOrders);
-        // 2. Average delivery distance (Haversine formula)
+        } catch (Exception e) { 
+            avgDaysBetweenOrders = 0.0; 
+        }
+        customerKpis.put("AvgDaysBetweenOrders", avgDaysBetweenOrders);
+        
+        // 2. Average delivery distance
         Double avgDeliveryDistance = 0.0;
         try {
-            avgDeliveryDistance = jdbcTemplate.queryForObject(
-                "SELECT AVG(\n" +
+            StringBuilder avgDistanceSql = new StringBuilder();
+            List<Object> avgDistanceParams = new ArrayList<>();
+            
+            avgDistanceSql.append("SELECT AVG(\n" +
                 "  6371 * 2 * ASIN(SQRT(\n" +
                 "    POWER(SIN(RADIANS((c.latitude - s.latitude)/2)),2) +\n" +
                 "    COS(RADIANS(s.latitude)) * COS(RADIANS(c.latitude)) *\n" +
@@ -111,58 +180,113 @@ public class OrderRepository {
                 ") AS distance\n" +
                 "FROM orders o\n" +
                 "JOIN customers c ON o.customerID = c.customerID\n" +
-                "JOIN stores s ON o.storeID = s.storeID\n" +
-                "WHERE o.orderDate BETWEEN ? AND ?",
-                Double.class, start, end
-            );
+                "JOIN stores s ON o.storeID = s.storeID");
+            
+            avgDistanceSql.append(" WHERE o.orderDate BETWEEN ? AND ?");
+            avgDistanceParams.add(start);
+            avgDistanceParams.add(end);
+            
+            if (stores != null && !stores.isEmpty()) {
+                avgDistanceSql.append(" AND o.storeID IN (").append(String.join(",", Collections.nCopies(stores.size(), "?"))).append(")");
+                avgDistanceParams.addAll(stores);
+            }
+            
+            avgDeliveryDistance = jdbcTemplate.queryForObject(avgDistanceSql.toString(), Double.class, avgDistanceParams.toArray());
             if (avgDeliveryDistance == null) avgDeliveryDistance = 0.0;
-        } catch (Exception e) { avgDeliveryDistance = 0.0; }
-        result.put("AvgDeliveryDistance", avgDeliveryDistance);
-        // 3. Repeat order share: percentage of orders from repeat customers
-        Double repeatOrderShare = 0.0;
+        } catch (Exception e) { 
+            avgDeliveryDistance = 0.0; 
+        }
+        customerKpis.put("AvgDeliveryDistance", avgDeliveryDistance);
+        
+        // 3. Repeat customer rate (Option 2)
+        Double repeatCustomerRate = 0.0;
         try {
-            repeatOrderShare = jdbcTemplate.queryForObject(
-                "SELECT 100.0 * SUM(CASE WHEN c.order_count > 1 THEN c.o_count ELSE 0 END) / NULLIF(SUM(c.o_count),0)\n" +
-                "FROM (\n" +
-                "  SELECT customerID, COUNT(*) AS o_count\n" +
-                "  FROM orders\n" +
-                "  WHERE orderDate BETWEEN ? AND ?\n" +
-                "  GROUP BY customerID\n" +
-                ") c\n",
-                Double.class, start, end
-            );
-            if (repeatOrderShare == null) repeatOrderShare = 0.0;
-        } catch (Exception e) { repeatOrderShare = 0.0; }
-        result.put("RepeatRate", repeatOrderShare);
-        // Defensive: ensure all expected keys are present
-        if (!result.containsKey("Avg Order Value")) result.put("Avg Order Value", 0.0);
-        if (!result.containsKey("Total Orders")) result.put("Total Orders", 0);
-        if (!result.containsKey("Total Items")) result.put("Total Items", 0);
-        if (!result.containsKey("Revenue")) result.put("Revenue", 0.0);
-        // Build result map with frontend-expected keys
-        Map<String, Object> frontendResult = new HashMap<>();
-        frontendResult.put("Revenue", result.getOrDefault("revenue", 0.0));
-        frontendResult.put("Avg Order Value", result.getOrDefault("Avg Order Value", 0.0));
-        frontendResult.put("Total Orders", result.getOrDefault("totalOrders", 0));
-        frontendResult.put("Total Items", result.getOrDefault("totalItems", 0));
-        frontendResult.put("AvgDaysBetweenOrders", result.getOrDefault("AvgDaysBetweenOrders", 0.0));
-        frontendResult.put("AvgDeliveryDistance", result.getOrDefault("AvgDeliveryDistance", 0.0));
-        frontendResult.put("RepeatRate", result.getOrDefault("RepeatRate", 0.0));
-        return frontendResult;
+            StringBuilder repeatSql = new StringBuilder();
+            List<Object> repeatParams = new ArrayList<>();
+            repeatSql.append("SELECT 100.0 * COUNT(*) / NULLIF((SELECT COUNT(DISTINCT customerID) FROM orders WHERE orderDate BETWEEN ? AND ?");
+            repeatParams.add(start);
+            repeatParams.add(end);
+            if (stores != null && !stores.isEmpty()) {
+                repeatSql.append(" AND storeID IN (").append(String.join(",", Collections.nCopies(stores.size(), "?"))).append(")");
+                repeatParams.addAll(stores);
+            }
+            repeatSql.append("), 0) FROM (SELECT customerID FROM orders WHERE orderDate BETWEEN ? AND ?");
+            repeatParams.add(start);
+            repeatParams.add(end);
+            if (stores != null && !stores.isEmpty()) {
+                repeatSql.append(" AND storeID IN (").append(String.join(",", Collections.nCopies(stores.size(), "?"))).append(")");
+                repeatParams.addAll(stores);
+            }
+            repeatSql.append(" GROUP BY customerID HAVING COUNT(*) > 1) repeaters");
+            repeatCustomerRate = jdbcTemplate.queryForObject(repeatSql.toString(), Double.class, repeatParams.toArray());
+            if (repeatCustomerRate == null) repeatCustomerRate = 0.0;
+        } catch (Exception e) { 
+            repeatCustomerRate = 0.0; 
+        }
+        customerKpis.put("RepeatRate", repeatCustomerRate);
+        
+        // 4. Durchschnittliche Gesamtkunden (wie in der Chart)
+        try {
+            // Berechne für jede Periode die Anzahl der distinct customers
+            String periodExpr;
+            long days = ChronoUnit.DAYS.between(start, end) + 1;
+            long years = ChronoUnit.YEARS.between(start.withDayOfYear(1), end.withDayOfYear(1)) + 1;
+            if (days <= 31) {
+                periodExpr = "DATE(orderDate)";
+            } else if (years <= 2) {
+                periodExpr = "DATE_FORMAT(orderDate, '%Y-%m')";
+            } else {
+                periodExpr = "YEAR(orderDate)";
+            }
+            StringBuilder avgCustomersSql = new StringBuilder();
+            avgCustomersSql.append("SELECT AVG(cnt) FROM (")
+                .append("SELECT ").append(periodExpr).append(" AS period, COUNT(DISTINCT customerID) AS cnt FROM orders WHERE orderDate BETWEEN ? AND ? ");
+            List<Object> avgCustomersParams = new ArrayList<>();
+            avgCustomersParams.add(start);
+            avgCustomersParams.add(end);
+            if (stores != null && !stores.isEmpty()) {
+                avgCustomersSql.append("AND storeID IN (")
+                    .append(String.join(",", Collections.nCopies(stores.size(), "?")))
+                    .append(") ");
+                avgCustomersParams.addAll(stores);
+            }
+            avgCustomersSql.append("GROUP BY period) t");
+            Double avgCustomers = jdbcTemplate.queryForObject(avgCustomersSql.toString(), Double.class, avgCustomersParams.toArray());
+            if (avgCustomers == null) avgCustomers = 0.0;
+            customerKpis.put("Durchschnittliche Gesamtkunden", avgCustomers.intValue());
+        } catch (Exception e) {
+            customerKpis.put("Durchschnittliche Gesamtkunden", 0);
+        }
+        
+        return customerKpis;
     }
 
-    public List<RankingEntry> getProductRanking(LocalDate start, LocalDate end) {
-        String sql = """
-            SELECT product, SUM(orders) AS total_orders
+    public List<RankingEntry> getProductRanking(LocalDate start, LocalDate end, String store) {
+        StringBuilder sql = new StringBuilder();
+        List<Object> params = new ArrayList<>();
+        
+        sql.append("""
+            SELECT product_name, SUM(orders) AS total_orders
             FROM product_orders_daily
             WHERE day BETWEEN ? AND ?
-            GROUP BY product
+        """);
+        params.add(start);
+        params.add(end);
+        
+        if (store != null && !store.trim().isEmpty()) {
+            sql.append(" AND storeID = ?");
+            params.add(store);
+        }
+        
+        sql.append("""
+            GROUP BY product_name
             ORDER BY total_orders DESC
             LIMIT 5
-        """;
-        return jdbcTemplate.query(sql, new Object[]{start, end}, (rs, rowNum) ->
+        """);
+        
+        return jdbcTemplate.query(sql.toString(), params.toArray(), (rs, rowNum) ->
             new RankingEntry(
-                rs.getString("product"),
+                rs.getString("product_name"),
                 rs.getInt("total_orders")
             )
         );

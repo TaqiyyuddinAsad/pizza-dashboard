@@ -122,13 +122,30 @@ export const getAllProducts = async () => {
     }
 };
 
-export const getProductPerformanceAfterLaunch = async (sku, days, size, storeId) => {
+export const getProductPerformanceAfterLaunch = async (sku, days, filters = {}) => {
     try {
         const params = new URLSearchParams();
         params.append('sku', sku);
         params.append('days', days);
-        if (size) params.append('size', size);
-        if (storeId) params.append('storeId', storeId);
+        if (filters.startDate) params.append('startDate', filters.startDate);
+        if (filters.endDate) params.append('endDate', filters.endDate);
+        if (filters.category && filters.category.length > 0) {
+            filters.category.forEach(cat => params.append('category', cat));
+        }
+        // Fix: size as string(s), not [object Object]
+        if (filters.size) {
+            if (Array.isArray(filters.size)) {
+                filters.size.forEach(sz => {
+                    if (typeof sz === 'string') params.append('size', sz);
+                });
+            } else if (typeof filters.size === 'string') {
+                params.append('size', filters.size);
+            }
+        }
+        // Only send a single storeId for performance endpoint
+        if (filters.stores && filters.stores.length > 0 && typeof filters.stores[0] === 'string') {
+            params.append('storeId', filters.stores[0]);
+        }
         const url = `${API_BASE_URL_FULL}/materialized/performance?${params}`;
         const response = await fetch(url, { headers: getAuthHeader() });
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);

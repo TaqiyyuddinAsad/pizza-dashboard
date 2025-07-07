@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ToggleButtonGroup, ToggleButton } from '@mui/material';
+import { useQuery } from '@tanstack/react-query';
 // import FilterBar from "../components/filterbar"; // Removed, now global
 import ProductBestsellerList from "../components/ProductBestsellerList";
 import ProductCombinationsList from "../components/ProductCombinationsList";
@@ -11,6 +12,7 @@ import { getBestsellersByOrders, getBestsellersByRevenue, getProductCombinations
 import { useContext } from 'react';
 import { FilterContext } from '../layout/layout';
 import CategoryRevenuePieChart from "../components/CategoryRevenuePieChart";
+import ProductStoreLeaderboard from "../components/ProductStoreLeaderboard";
 
 const defaultStart = "2020-01-01";
 const defaultEnd = "2020-02-01";
@@ -20,29 +22,21 @@ const ProductsPage = () => {
   // Pagination state
   const [bestsellerPage, setBestsellerPage] = useState(0);
   const [bestsellerRowsPerPage, setBestsellerRowsPerPage] = useState(5);
-  const [bestsellerTotal, setBestsellerTotal] = useState(0);
   const [combPage, setCombPage] = useState(0);
   const [combRowsPerPage, setCombRowsPerPage] = useState(5);
-  const [combTotal, setCombTotal] = useState(0);
-
-  const [bestsellers, setBestsellers] = useState([]);
-  const [combinations, setCombinations] = useState([]);
-  const [performance, setPerformance] = useState([]);
-  const [categorySales, setCategorySales] = useState([]);
-  const [pieBySize, setPieBySize] = useState([]);
   const [showPerformance, setShowPerformance] = useState(true);
   const [sortBy, setSortBy] = useState('orders'); // 'orders' or 'revenue'
   const [sortOrder, setSortOrder] = useState('best'); // 'best' or 'worst'
   const [daysAfterLaunch, setDaysAfterLaunch] = useState(30); // default 30 days
   const [selectedProduct, setSelectedProduct] = useState("");
-  const [productList, setProductList] = useState([]);
   const [pendingProduct, setPendingProduct] = useState("");
   const [pendingDays, setPendingDays] = useState(30);
   const [applyTrigger, setApplyTrigger] = useState(0);
   const [pendingSize, setPendingSize] = useState("");
   const [selectedSize, setSelectedSize] = useState("");
 
-  // Fetch product list for selector
+  // Fetch product list for selector (not paginated, can stay as useEffect)
+  const [productList, setProductList] = useState([]);
   useEffect(() => {
     getAllProducts()
       .then(products => {
@@ -57,138 +51,31 @@ const ProductsPage = () => {
         }
       })
       .catch(() => setProductList([]));
-  }, []); // Only run once on mount
+  }, []);
 
   // Ensure pendingProduct and pendingSize are valid for the current productList and filters
   useEffect(() => {
     if (productList.length > 0) {
-      // If the current pendingProduct is not in the new productList, reset to first product
       const productSkus = productList.map(p => p.sku);
       if (!productSkus.includes(pendingProduct)) {
         setPendingProduct(productList[0].sku);
         setPendingSize(productList[0].sizes && productList[0].sizes.length > 0 ? productList[0].sizes[0] : '');
       } else {
-        // If the current pendingSize is not available for the selected product, reset to first size
         const selectedProductObj = productList.find(p => p.sku === pendingProduct);
         if (selectedProductObj && selectedProductObj.sizes && !selectedProductObj.sizes.includes(pendingSize)) {
           setPendingSize(selectedProductObj.sizes[0]);
         }
       }
     }
-    // Do NOT auto-apply!
-    // Only update pending values if they are invalid for the new context
-  }, [
-    productList,
-    filters.start,
-    filters.end,
-    filters.stores ? filters.stores.join(',') : '',
-    filters.categories ? filters.categories.join(',') : '',
-    filters.sizes ? filters.sizes.join(',') : ''
-  ]);
+  }, [productList, filters.start, filters.end, filters.stores ? filters.stores.join(',') : '', filters.categories ? filters.categories.join(',') : '', filters.sizes ? filters.sizes.join(',') : '']);
 
-  // Fetch data on filter or pagination change
-  useEffect(() => {
-    if (!filters.start || !filters.end) return;
-    const storeFilter = (filters.stores && filters.stores.length === 1) ? [filters.stores[0]] : [];
-    const serviceFilters = {
-      startDate: filters.start,
-      endDate: filters.end,
-      store: storeFilter,
-      category: filters.categories,
-      size: filters.sizes
-    };
-    let fetchFn;
-    if (sortBy === 'orders') {
-      fetchFn = getBestsellersByOrders;
-    } else {
-      fetchFn = getBestsellersByRevenue;
-    }
-    fetchFn(serviceFilters, bestsellerPage, bestsellerRowsPerPage)
-      .then(res => {
-        let data = Array.isArray(res.data) ? res.data : [];
-        
-        // If we want worst sellers, reverse the data
-        if (sortOrder === 'worst') {
-          data = data.reverse();
-        }
-        
-        setBestsellers(
-          data.map(row => ({
-            name: row.productName,
-            price: row.productPrice,
-            size: row.productSize,
-            orders: row.totalOrders,
-            revenue: row.totalRevenue,
-            category: row.productCategory,
-            store: row.storeId,
-            storeCity: row.storeCity,
-            storeState: row.storeState
-          }))
-        );
-        setBestsellerTotal(res.total || 0);
-      })
-      .catch(() => {
-        setBestsellers([]);
-        setBestsellerTotal(0);
-      });
-    getProductCombinations(serviceFilters, combPage, combRowsPerPage)
-      .then(res => {
-        setCombinations(Array.isArray(res.data) ? res.data : []);
-        setCombTotal(res.total || 0);
-      })
-      .catch(() => {
-        setCombinations([]);
-        setCombTotal(0);
-      });
-    setCategorySales([]);
-    setPieBySize([]);
-  }, [
-    filters.start,
-    filters.end,
-    filters.stores ? filters.stores.join(',') : '',
-    filters.categories ? filters.categories.join(',') : '',
-    filters.sizes ? filters.sizes.join(',') : '',
-    bestsellerPage,
-    bestsellerRowsPerPage,
-    sortBy,
-    sortOrder,
-    combPage,
-    combRowsPerPage
-  ]);
-
-  // Fetch sales by size pie chart data when filters change
-  useEffect(() => {
-    const serviceFilters = {
-      startDate: filters.start,
-      endDate: filters.end,
-      store: filters.stores,
-    };
-    getSalesBySizePie(serviceFilters)
-      .then(res => setPieBySize(res || []))
-      .catch(() => setPieBySize([]));
-  }, [filters.start, filters.end, filters.stores ? filters.stores.join(',') : '']);
-
-  // When apply is clicked, update selectedProduct, daysAfterLaunch, and selectedSize
-  const handleApply = () => {
-    setSelectedProduct(pendingProduct);
-    setDaysAfterLaunch(pendingDays);
-    setSelectedSize(pendingSize);
-    setApplyTrigger(t => t + 1);
-  };
-
-  // Fetch performance data for selected product, size, days after launch
-  useEffect(() => {
-    if (showPerformance && selectedProduct && filters && filters.start && filters.end) {
-      const storeId = (filters.stores && filters.stores.length === 1) ? filters.stores[0] : undefined;
-      getProductPerformanceAfterLaunch(selectedProduct, daysAfterLaunch, selectedSize, storeId)
-        .then(res => setPerformance(res || []))
-        .catch(() => setPerformance([]));
-    }
-  }, [showPerformance, selectedProduct, daysAfterLaunch, selectedSize, filters.start, filters.end, filters.stores ? filters.stores.join(',') : '', filters.categories ? filters.categories.join(',') : '', filters.sizes ? filters.sizes.join(',') : '', applyTrigger]);
-
-  // Fetch category sales by revenue
-  useEffect(() => {
-    if (!showPerformance && filters && filters.start && filters.end) {
+  // Bestseller query (orders or revenue)
+  const bestsellerQueryKey = [
+    'bestsellers', sortBy, sortOrder, filters.start, filters.end, filters.stores, filters.categories, filters.sizes, bestsellerPage, bestsellerRowsPerPage
+  ];
+  const bestsellerQuery = useQuery({
+    queryKey: bestsellerQueryKey,
+    queryFn: async () => {
       const storeFilter = (filters.stores && filters.stores.length === 1) ? [filters.stores[0]] : [];
       const serviceFilters = {
         startDate: filters.start,
@@ -197,18 +84,132 @@ const ProductsPage = () => {
         category: filters.categories,
         size: filters.sizes
       };
-      getBestsellersByRevenue(serviceFilters, 0, 1000)
-        .then(res => {
-          const byCategory = {};
-          (res.data || []).forEach(row => {
-            if (!byCategory[row.productCategory]) byCategory[row.productCategory] = 0;
-            byCategory[row.productCategory] += row.totalRevenue;
-          });
-          setCategorySales(Object.entries(byCategory).map(([category, revenue]) => ({ category, revenue })));
-        })
-        .catch(() => setCategorySales([]));
-    }
-  }, [showPerformance, filters.start, filters.end, filters.stores ? filters.stores.join(',') : '', filters.categories ? filters.categories.join(',') : '', filters.sizes ? filters.sizes.join(',') : '']);
+      let fetchFn = sortBy === 'orders' ? getBestsellersByOrders : getBestsellersByRevenue;
+      const res = await fetchFn(serviceFilters, bestsellerPage, bestsellerRowsPerPage);
+      let data = Array.isArray(res.data) ? res.data : [];
+      if (sortOrder === 'worst') data = data.reverse();
+      return {
+        bestsellers: data.map(row => ({
+          name: row.productName,
+          price: row.productPrice,
+          size: row.productSize,
+          orders: row.totalOrders,
+          revenue: row.totalRevenue,
+          category: row.productCategory,
+          store: row.storeId,
+          storeCity: row.storeCity,
+          storeState: row.storeState
+        })),
+        total: res.total || 0
+      };
+    },
+    keepPreviousData: true,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  // Product combinations query
+  const combinationsQueryKey = [
+    'combinations', filters.start, filters.end, filters.stores, filters.categories, filters.sizes, combPage, combRowsPerPage
+  ];
+  const combinationsQuery = useQuery({
+    queryKey: combinationsQueryKey,
+    queryFn: async () => {
+      const serviceFilters = {
+        startDate: filters.start,
+        endDate: filters.end,
+        store: filters.stores,
+        category: filters.categories,
+        size: filters.sizes
+      };
+      const res = await getProductCombinations(serviceFilters, combPage, combRowsPerPage);
+      return {
+        combinations: Array.isArray(res.data) ? res.data : [],
+        total: res.total || 0
+      };
+    },
+    keepPreviousData: true,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  // Pie by size query
+  const pieBySizeQueryKey = [
+    'pieBySize', filters.start, filters.end, filters.stores
+  ];
+  const pieBySizeQuery = useQuery({
+    queryKey: pieBySizeQueryKey,
+    queryFn: async () => {
+      const serviceFilters = {
+        startDate: filters.start,
+        endDate: filters.end,
+        store: filters.stores,
+      };
+      return await getSalesBySizePie(serviceFilters);
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
+  // Kombinierter Dependency-String für Chart-Query
+  const performanceDeps = JSON.stringify({
+    showPerformance,
+    selectedProduct,
+    daysAfterLaunch,
+    selectedSize,
+    filters: {
+      start: filters.start,
+      end: filters.end,
+      stores: filters.stores,
+      categories: filters.categories,
+      sizes: filters.sizes
+    },
+    applyTrigger
+  });
+
+  const performanceQuery = useQuery({
+    queryKey: ['performance', performanceDeps],
+    queryFn: async () => {
+      if (showPerformance && selectedProduct && filters && filters.start && filters.end) {
+        return await getProductPerformanceAfterLaunch(selectedProduct, daysAfterLaunch, {
+          startDate: filters.start,
+          endDate: filters.end,
+          stores: filters.stores,
+          category: filters.categories,
+          size: filters.sizes
+        });
+      }
+      return [];
+    },
+    enabled: showPerformance && !!selectedProduct && !!filters.start && !!filters.end,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  // Fetch category sales by revenue
+  const categorySalesQueryKey = [
+    'categorySales', showPerformance, filters.start, filters.end, filters.stores, filters.categories, filters.sizes
+  ];
+  const categorySalesQuery = useQuery({
+    queryKey: categorySalesQueryKey,
+    queryFn: async () => {
+      if (!showPerformance && filters && filters.start && filters.end) {
+        const storeFilter = (filters.stores && filters.stores.length === 1) ? [filters.stores[0]] : [];
+        const serviceFilters = {
+          startDate: filters.start,
+          endDate: filters.end,
+          store: storeFilter,
+          category: filters.categories,
+          size: filters.sizes
+        };
+        const res = await getBestsellersByRevenue(serviceFilters, 0, 1000);
+        const byCategory = {};
+        (res.data || []).forEach(row => {
+          if (!byCategory[row.productCategory]) byCategory[row.productCategory] = 0;
+          byCategory[row.productCategory] += row.totalRevenue;
+        });
+        return Object.entries(byCategory).map(([category, revenue]) => ({ category, revenue }));
+      }
+      return [];
+    },
+    staleTime: 5 * 60 * 1000,
+  });
 
   const formatDate = (dateStr) => {
     return new Date(dateStr).toLocaleDateString('de-DE');
@@ -275,14 +276,13 @@ const ProductsPage = () => {
     <div className="main-content dark:bg-gray-900" style={{ maxWidth: 1400, margin: '0 auto', padding: '32px 32px 0 32px', minHeight: '100vh' }}>
       <div className="product-analysis-page">
         {/* Material UI toggles for both tables */}
-        <div className="dark:bg-gray-800 dark:border-gray-700" style={{ 
+        <div className="bg-white dark:bg-gray-800 dark:border-gray-700" style={{ 
           display: 'flex', 
           gap: '2rem', 
           marginBottom: '1.5rem', 
           marginTop: '2rem',
           alignItems: 'center', 
           justifyContent: 'center',
-          background: '#fff',
           borderRadius: 16,
           padding: '1rem',
           boxShadow: '0 4px 24px rgba(0,0,0,0.10)'
@@ -328,46 +328,36 @@ const ProductsPage = () => {
             </ToggleButton>
           </ToggleButtonGroup>
         </div>
-        {/* Applied filters summary bar */}
-        <div className="dark:text-gray-300" style={{ 
-          marginBottom: '1.5rem', 
-          fontWeight: 500, 
-          fontSize: '1.1rem', 
-          color: '#222',
-          textAlign: 'center' 
-        }}>
-          {getTableTypeLabel()} | {getDateRangeLabel()} | {getStoreLabel()} {getCategoryLabel()} {getSizeLabel()}
-        </div>
         {/* Top section: tables */}
         <div className="top-section" style={{ display: "flex", gap: "2rem", marginBottom: '2rem', justifyContent: 'center', width: '100%' }}>
           <div style={{ flex: 1, minWidth: 0 }}>
             <ProductBestsellerList
-              data={bestsellers || []}
-              total={bestsellerTotal}
+              data={bestsellerQuery.data?.bestsellers || []}
+              total={bestsellerQuery.data?.total || 0}
               page={bestsellerPage}
               rowsPerPage={bestsellerRowsPerPage}
               onPageChange={setBestsellerPage}
               onRowsPerPageChange={setBestsellerRowsPerPage}
               filters={filters}
-              dateRange={getDateRangeLabel()}
-              storeLabel={getStoreLabel()}
+              appliedFilters={`${sortOrder === 'best' ? 'Best Sellers' : 'Worst Sellers'} | ${getDateRangeLabel()} |${getStoreLabel()}${getCategoryLabel()}${getSizeLabel()}`}
+              sortOrder={sortOrder}
             />
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <ProductCombinationsList
               data={
                 sortOrder === 'best'
-                  ? combinations.slice().sort((a, b) => b.count - a.count)
-                  : combinations.slice().sort((a, b) => a.count - b.count)
+                  ? combinationsQuery.data?.combinations.slice().sort((a, b) => b.count - a.count)
+                  : combinationsQuery.data?.combinations.slice().sort((a, b) => a.count - b.count)
               }
-              total={combTotal}
+              total={combinationsQuery.data?.total || 0}
               page={combPage}
               rowsPerPage={combRowsPerPage}
               onPageChange={setCombPage}
               onRowsPerPageChange={setCombRowsPerPage}
               filters={filters}
-              dateRange={getDateRangeLabel()}
-              storeLabel={getStoreLabel()}
+              appliedFilters={`${sortOrder === 'best' ? 'Beliebteste Kombinationen' : 'Unbeliebteste Kombinationen'} | ${getDateRangeLabel()} |${getStoreLabel()}${getCategoryLabel()}${getSizeLabel()}`}
+              sortOrder={sortOrder}
             />
           </div>
         </div>
@@ -376,14 +366,13 @@ const ProductsPage = () => {
           {/* Left: Chart card with toggle above */}
           <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '2rem' }}>
             {/* Toggle and filters above card */}
-            <div className="dark:bg-gray-800 dark:border-gray-700" style={{ 
+            <div className="bg-white dark:bg-gray-800 dark:border-gray-700" style={{ 
               marginBottom: '1rem', 
               display: 'flex', 
               alignItems: 'center', 
               gap: '1rem', 
               color: '#222', 
               flexWrap: 'wrap',
-              background: '#fff',
               borderRadius: 12,
               padding: '1rem',
               boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
@@ -391,7 +380,7 @@ const ProductsPage = () => {
               <ChartSliderToggle value={showPerformance} onChange={setShowPerformance} />
               {showPerformance && (
                 <>
-                  <span className="dark:text-gray-300">Produkt:</span>
+                  <span className="text-black dark:text-gray-300">Produkt:</span>
                   <select
                     value={pendingProduct}
                     onChange={e => {
@@ -408,7 +397,7 @@ const ProductsPage = () => {
                       </option>
                     ))}
                   </select>
-                  <span className="dark:text-gray-300">Größe:</span>
+                  <span className="text-black dark:text-gray-300">Größe:</span>
                   <select
                     value={pendingSize}
                     onChange={e => setPendingSize(e.target.value)}
@@ -419,7 +408,7 @@ const ProductsPage = () => {
                       <option key={size} value={size}>{size}</option>
                     ))}
                   </select>
-                  <span className="dark:text-gray-300">Tage nach Launch:</span>
+                  <span className="text-black dark:text-gray-300">Tage nach Launch:</span>
                   <select
                     value={pendingDays}
                     onChange={e => setPendingDays(Number(e.target.value))}
@@ -431,7 +420,12 @@ const ProductsPage = () => {
                     ))}
                   </select>
                   <button
-                    onClick={handleApply}
+                    onClick={() => {
+                      setSelectedProduct(pendingProduct);
+                      setSelectedSize(pendingSize);
+                      setDaysAfterLaunch(pendingDays);
+                      setApplyTrigger(t => t + 1);
+                    }}
                     style={{
                       marginLeft: 8,
                       padding: '4px 12px',
@@ -451,24 +445,24 @@ const ProductsPage = () => {
                 </>
               )}
             </div>
-            <div className="dark:bg-gray-800 dark:border-gray-700" style={{ background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.10)', padding: 24, minHeight: 380, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', width: '100%' }}>
+            <div className="bg-white dark:bg-gray-800 dark:border-gray-700" style={{ borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.10)', padding: 24, minHeight: 380, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', width: '100%' }}>
               {/* Chart title */}
-              <div className="dark:text-gray-100" style={{ fontSize: 20, fontWeight: 600, color: '#111', marginBottom: 12, textAlign: 'left' }}>
+              <div className="text-black dark:text-gray-100" style={{ fontSize: 20, fontWeight: 600, marginBottom: 12, textAlign: 'left' }}>
                 {showPerformance ? 'Performance nach Launch' : 'Umsatz nach Kategorie'}
               </div>
               {showPerformance ? (
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
                     <div>
-                      <span className="dark:text-gray-300" style={{ fontSize: 15, fontWeight: 400, color: '#555' }}>
+                      <span className="text-black dark:text-white" style={{ fontSize: 15, fontWeight: 400, color: '#555' }}>
                         {getStoreLabel()} {selectedSize ? `| Size: ${selectedSize}` : ''} {selectedProduct ? `| Produkt: ${(productList.find(p => p.sku === selectedProduct)?.name) || selectedProduct}` : ''} {daysAfterLaunch ? `| Tage: ${daysAfterLaunch}` : ''}
                       </span>
                     </div>
                     <span style={{ fontSize: 18, fontWeight: 500, color: '#1976d2' }}>
-                      Umsatz: {performance.reduce((sum, row) => sum + (parseFloat(row.revenue) || 0), 0).toLocaleString('de-DE', { style: 'currency', currency: 'EUR' })}
+                      Umsatz: {performanceQuery.data?.reduce((sum, row) => sum + (parseFloat(row.revenue) || 0), 0).toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
                     </span>
                   </div>
-                  <ProductPerformanceChart data={performance || []} />
+                  <ProductPerformanceChart data={performanceQuery.data || []} />
                 </div>
               ) : (
                 <CategorySalesBarChart
@@ -485,12 +479,13 @@ const ProductsPage = () => {
                 />
               )}
             </div>
+            <ProductStoreLeaderboard products={productList} filters={filters} />
           </div>
           {/* Right: Pie chart card with title above chart */}
           <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-            <div className="dark:bg-gray-800 dark:border-gray-700" style={{ background: '#fff', borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.10)', padding: 24, minHeight: 380, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', width: '100%' }}>
-              <div className="dark:text-gray-100" style={{ fontSize: 20, fontWeight: 600, color: '#111', marginBottom: 12, textAlign: 'center' }}>Verkaufsanteile nach Pizzagröße</div>
-              <ProductSizePieChart data={pieBySize || []} filters={filters} />
+            <div className="bg-white dark:bg-gray-800 dark:border-gray-700" style={{ borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.10)', padding: 24, minHeight: 380, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', width: '100%' }}>
+              <div className="text-black dark:text-gray-100" style={{ fontSize: 20, fontWeight: 600, marginBottom: 12, textAlign: 'center' }}>Verkaufsanteile nach Pizzagröße</div>
+              <ProductSizePieChart data={pieBySizeQuery.data || []} filters={filters} />
             </div>
           </div>
         </div>

@@ -7,6 +7,10 @@ import CustomerPage from './pages/customerpage.jsx';
 import ProductPage from './pages/productsPage.jsx';
 import './index.css';
 import React, { useEffect, useState } from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+
+const queryClient = new QueryClient();
 
 // Add token expiration check function
 const isTokenExpired = (token) => {
@@ -31,20 +35,9 @@ function ProtectedRoute({ children }) {
       return;
     }
 
-    // Call a protected endpoint to check JWT token
-    fetch('http://192.168.0.167:8080/api/auth/testauth', {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    })
-      .then(res => {
-        setAuth(res.ok);
-        setLoading(false);
-      })
-      .catch(() => {
-        setAuth(false);
-        setLoading(false);
-      });
+    // Token exists and is not expired, consider user authenticated
+    setAuth(true);
+    setLoading(false);
   }, []);
 
   if (loading) return null; // or a loading spinner
@@ -53,39 +46,42 @@ function ProtectedRoute({ children }) {
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<LoginPage />} />
-        <Route path="/umsatz" element={
-          <ProtectedRoute>
-            <Layout>
-              <RevenuePage />
-            </Layout>
-          </ProtectedRoute>
-        } />
-        <Route path="/bestellungen" element={
-          <ProtectedRoute>
-            <Layout>
-              <OrdersPage />
-            </Layout>
-          </ProtectedRoute>
-        } />
-        <Route path="/kunden" element={
-          <ProtectedRoute>
-            <Layout>
-              <CustomerPage />
-            </Layout>
-          </ProtectedRoute>
-        } />
-        <Route path="/waren" element={
-          <ProtectedRoute>
-            <Layout>
-              <ProductPage />
-            </Layout>
-          </ProtectedRoute>
-        } />
-      </Routes>
-    </BrowserRouter>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<LoginPage />} />
+          <Route path="/umsatz" element={
+            <ProtectedRoute>
+              <Layout>
+                <RevenuePage />
+              </Layout>
+            </ProtectedRoute>
+          } />
+          <Route path="/bestellungen" element={
+            <ProtectedRoute>
+              <Layout>
+                <OrdersPage />
+              </Layout>
+            </ProtectedRoute>
+          } />
+          <Route path="/kunden" element={
+            <ProtectedRoute>
+              <Layout>
+                <CustomerPage />
+              </Layout>
+            </ProtectedRoute>
+          } />
+          <Route path="/waren" element={
+            <ProtectedRoute>
+              <Layout>
+                <ProductPage />
+              </Layout>
+            </ProtectedRoute>
+          } />
+        </Routes>
+        <ReactQueryDevtools initialIsOpen={false} />
+      </BrowserRouter>
+    </QueryClientProvider>
   );
 }
 

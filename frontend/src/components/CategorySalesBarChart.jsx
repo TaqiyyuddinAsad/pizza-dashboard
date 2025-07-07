@@ -73,7 +73,7 @@ const CategorySalesBarChart = ({ fetchCategorySalesTimeline, filters, filterSumm
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
         <span style={{ fontSize: 20, fontWeight: 600, color: '#111' }}>Umsatz nach Kategorie</span>
         <span style={{ fontSize: 18, fontWeight: 500, color: '#222' }}>
-          Umsatz: {totalRevenue.toLocaleString('de-DE', { style: 'currency', currency: 'EUR' })}
+          Umsatz: {totalRevenue.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
         </span>
       </div>
       {filterSummary && (

@@ -18,22 +18,23 @@ const Topbar = ({ username, onMenuToggle }) => {
         <FiMenu className="w-5 h-5" />
       </button>
       
-      {/* Desktop user info */}
-      <div className="user-info hidden md:flex">
+      {/* Desktop user info (removed) */}
+      {/* <div className="user-info hidden md:flex">
         <img src={avatar} alt="Avatar" className="avatar" />
         <span className="username">{username}</span>
-      </div>
+      </div> */}
       
-      {/* Mobile user info */}
-      <div className="user-info md:hidden">
+      {/* Mobile user info (removed) */}
+      {/* <div className="user-info md:hidden">
         <img src={avatar} alt="Avatar" className="avatar" />
         <span className="username">{username}</span>
-      </div>
+      </div> */}
       
       <button
         onClick={toggleDarkMode}
         className="dark-mode-toggle bg-gray-200 dark:bg-gray-600 p-2 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors duration-200"
         title={darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+        style={{ marginLeft: 'auto', marginRight: 8 }}
       >
         {darkMode ? (
           // Sun icon for light mode
@@ -47,6 +48,10 @@ const Topbar = ({ username, onMenuToggle }) => {
           </svg>
         )}
       </button>
+      <div className="user-info flex items-center" style={{ marginLeft: 8 }}>
+        <img src={avatar} alt="Avatar" className="avatar" style={{ border: '2px solid #a78bfa', borderRadius: '50%', width: 32, height: 32, marginRight: 8 }} />
+        <span className="username" style={{ fontWeight: 600, fontSize: 16 }}>{username}</span>
+      </div>
     </div>
   );
 };

@@ -210,7 +210,6 @@ public class ProductSalesMaterializedService {
 
     public void refreshMaterializedTable() {
         
-        System.out.println("Materialized table refresh initiated");
     }
     
     public List<Map<String, Object>> getAllProducts() {

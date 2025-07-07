@@ -13,7 +13,6 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -25,14 +24,9 @@ public class AuthController {
     @PostMapping("/login")
     
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        System.out.println("Received login: username=" + request.getUsername() + ", password=" + request.getPassword());
-        // Debug: Try to fetch user from UserDetailsService
         try {
             org.springframework.security.core.userdetails.UserDetails user = userDetailsService.loadUserByUsername(request.getUsername());
-            System.out.println("UserDetailsService found user: " + user.getUsername());
-            System.out.println("User password: " + user.getPassword());
         } catch (Exception ex) {
-            System.out.println("UserDetailsService could not find user: " + ex.getMessage());
         }
         try {
             Authentication auth = authenticationManager.authenticate(
@@ -43,7 +37,6 @@ public class AuthController {
             String token = com.example.pizzadash.config.JwtUtil.generateToken(userDetails.getUsername());
             return ResponseEntity.ok(Collections.singletonMap("token", token));
         } catch (Exception e) {
-            System.out.println("Authentication failed: " + e.getClass().getName() + ": " + e.getMessage());
             e.printStackTrace();
             return ResponseEntity.status(401).body("Invalid credentials");
         }

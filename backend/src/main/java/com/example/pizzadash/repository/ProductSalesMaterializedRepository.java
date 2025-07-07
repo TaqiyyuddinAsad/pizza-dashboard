@@ -211,4 +211,18 @@ public interface ProductSalesMaterializedRepository extends JpaRepository<Produc
         @Param("storeId") String storeId,
         @Param("size") String size
     );
+
+    @Query(value = "SELECT p.store_id, p.store_city, SUM(p.total_orders) as orders, SUM(p.total_revenue) as revenue " +
+           "FROM product_bestsellers_store_materialized p " +
+           "WHERE p.product_sku = :sku " +
+           "AND (:size IS NULL OR p.product_size = :size) " +
+           "AND p.sale_date >= :startDate AND p.sale_date <= :endDate " +
+           "GROUP BY p.store_id, p.store_city " +
+           "ORDER BY revenue DESC", nativeQuery = true)
+    List<Object[]> findStoresForProductByRevenue(
+        @Param("sku") String sku,
+        @Param("size") String size,
+        @Param("startDate") LocalDate startDate,
+        @Param("endDate") LocalDate endDate
+    );
 } 

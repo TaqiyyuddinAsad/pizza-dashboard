@@ -1,6 +1,10 @@
 {
   "dependencies": {
     "@cursorify/react": "^0.0.43",
-    "chart.js": "^4.4.9"
+    "@tanstack/react-query": "^5.81.5",
+    "@tanstack/react-query-devtools": "^5.81.5",
+    "chart.js": "^4.4.9",
+    "framer-motion": "^12.23.0",
+    "mysql2": "^3.14.1"
   }
 }

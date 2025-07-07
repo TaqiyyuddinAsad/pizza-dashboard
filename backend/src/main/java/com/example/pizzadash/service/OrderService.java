@@ -25,11 +25,17 @@ public class OrderService {
     }
 
     public Map<String, Object> getKpiSummary(LocalDate start, LocalDate end, List<String> stores, List<String> categories, List<String> sizes) {
-        return orderRepository.getKpiSummary(start, end, stores, categories, sizes);
+        try {
+            Map<String, Object> result = orderRepository.getKpiSummary(start, end, stores, categories, sizes);
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
     }
 
-    public List<RankingEntry> getProductRanking(LocalDate start, LocalDate end) {
-        return orderRepository.getProductRanking(start, end);
+    public List<RankingEntry> getProductRanking(LocalDate start, LocalDate end, String store) {
+        return orderRepository.getProductRanking(start, end, store);
     }
 
     public List<StoreRankingEntry> getStoreRanking(LocalDate start, LocalDate end) {

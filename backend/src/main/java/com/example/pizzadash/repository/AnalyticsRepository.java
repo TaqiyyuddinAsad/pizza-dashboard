@@ -8,6 +8,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 @Repository
 public class AnalyticsRepository {
@@ -16,39 +22,54 @@ public class AnalyticsRepository {
     private JdbcTemplate jdbcTemplate;
 
     public List<CustomerCountDTO> getCustomerCount(String start, String end, String groupBy, List<String> categories, List<String> sizes, List<String> stores) {
-        String dateExpr = groupBy != null && groupBy.equalsIgnoreCase("week") ? "YEARWEEK(o.orderDate)" : "DATE_FORMAT(o.orderDate, '%Y-%m')";
-        StringBuilder sql = new StringBuilder(
-                "SELECT " + dateExpr + " AS period, COUNT(DISTINCT o.customerID) AS totalCustomers " +
-                "FROM orders o " +
-                "JOIN orderitems oi ON o.orderID = oi.orderID " +
-                "JOIN products p ON oi.productID = p.SKU " +
-                "WHERE o.orderDate BETWEEN ? AND ? "
-        );
-        if (categories != null && !categories.isEmpty()) sql.append("AND p.Category IN (").append(toInSql(categories.size())).append(") ");
-        if (sizes != null && !sizes.isEmpty()) sql.append("AND p.Size IN (").append(toInSql(sizes.size())).append(") ");
-        if (stores != null && !stores.isEmpty()) sql.append("AND o.storeID IN (").append(toInSql(stores.size())).append(") ");
+        LocalDate startDate = LocalDate.parse(start);
+        LocalDate endDate = LocalDate.parse(end);
+        long days = ChronoUnit.DAYS.between(startDate, endDate) + 1;
+        long months = ChronoUnit.MONTHS.between(startDate.withDayOfMonth(1), endDate.withDayOfMonth(1)) + 1;
+        long years = ChronoUnit.YEARS.between(startDate.withDayOfYear(1), endDate.withDayOfYear(1)) + 1;
+        String periodExpr;
+        if (days <= 31) {
+            periodExpr = "DATE(orderDate)";
+        } else if (years <= 2) {
+            periodExpr = "DATE_FORMAT(orderDate, '%Y-%m')";
+        } else {
+            periodExpr = "YEAR(orderDate)";
+        }
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT ").append(periodExpr).append(" AS period, COUNT(DISTINCT customerID) AS totalCustomers FROM orders WHERE orderDate BETWEEN ? AND ? ");
+        if (stores != null && !stores.isEmpty()) {
+            sql.append("AND storeID IN (").append(toInSql(stores.size())).append(") ");
+        }
         sql.append("GROUP BY period ORDER BY period");
-
-        Object[] params = buildParams(start, end, categories, sizes, stores);
+        Object[] params = buildParams(start, end, null, null, stores);
         return jdbcTemplate.query(sql.toString(), params, (rs, i) ->
                 new CustomerCountDTO(rs.getString("period"), rs.getInt("totalCustomers")));
     }
 
     public List<RevenuePerCustomerDTO> getRevenuePerCustomer(String start, String end, String groupBy, List<String> categories, List<String> sizes, List<String> stores) {
-        String dateExpr = groupBy != null && groupBy.equalsIgnoreCase("week") ? "YEARWEEK(o.orderDate)" : "DATE_FORMAT(o.orderDate, '%Y-%m')";
-        StringBuilder sql = new StringBuilder(
-                "SELECT " + dateExpr + " AS period, SUM(o.total) / COUNT(DISTINCT o.customerID) AS avgRevenuePerCustomer " +
-                "FROM orders o " +
-                "JOIN orderitems oi ON o.orderID = oi.orderID " +
-                "JOIN products p ON oi.productID = p.SKU " +
-                "WHERE o.orderDate BETWEEN ? AND ? "
-        );
-        if (categories != null && !categories.isEmpty()) sql.append("AND p.Category IN (").append(toInSql(categories.size())).append(") ");
-        if (sizes != null && !sizes.isEmpty()) sql.append("AND p.Size IN (").append(toInSql(sizes.size())).append(") ");
-        if (stores != null && !stores.isEmpty()) sql.append("AND o.storeID IN (").append(toInSql(stores.size())).append(") ");
+        if ((categories != null && !categories.isEmpty()) || (sizes != null && !sizes.isEmpty())) {
+            throw new UnsupportedOperationException("Category/size filters not supported with materialized customer_kpi_daily table");
+        }
+        LocalDate startDate = LocalDate.parse(start);
+        LocalDate endDate = LocalDate.parse(end);
+        long days = ChronoUnit.DAYS.between(startDate, endDate) + 1;
+        long months = ChronoUnit.MONTHS.between(startDate.withDayOfMonth(1), endDate.withDayOfMonth(1)) + 1;
+        long years = ChronoUnit.YEARS.between(startDate.withDayOfYear(1), endDate.withDayOfYear(1)) + 1;
+        String periodExpr;
+        if (days <= 31) {
+            periodExpr = "DATE(day)";
+        } else if (years <= 2) {
+            periodExpr = "DATE_FORMAT(day, '%Y-%m')";
+        } else {
+            periodExpr = "YEAR(day)";
+        }
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT ").append(periodExpr).append(" AS period, AVG(avg_revenue_per_customer) AS avgRevenuePerCustomer FROM customer_kpi_daily WHERE day BETWEEN ? AND ? ");
+        if (stores != null && !stores.isEmpty()) {
+            sql.append("AND storeID IN (").append(toInSql(stores.size())).append(") ");
+        }
         sql.append("GROUP BY period ORDER BY period");
-
-        Object[] params = buildParams(start, end, categories, sizes, stores);
+        Object[] params = buildParams(start, end, null, null, stores);
         return jdbcTemplate.query(sql.toString(), params, (rs, i) ->
                 new RevenuePerCustomerDTO(rs.getString("period"), rs.getDouble("avgRevenuePerCustomer")));
     }
@@ -65,11 +86,15 @@ public class AnalyticsRepository {
         params.add(start);
         params.add(end);
         if (stores != null && !stores.isEmpty()) {
-            sql.append(" AND o.storeID IN (").append("?,".repeat(stores.size()).replaceAll(",$", "")).append(")");
+            sql.append(" AND o.storeID IN (")
+               .append(String.join(",", java.util.Collections.nCopies(stores.size(), "?")))
+               .append(")");
             params.addAll(stores);
         }
         if (sizes != null && !sizes.isEmpty()) {
-            sql.append(" AND p.Size IN (").append("?,".repeat(sizes.size()).replaceAll(",$", "")).append(")");
+            sql.append(" AND p.Size IN (")
+               .append(String.join(",", java.util.Collections.nCopies(sizes.size(), "?")))
+               .append(")");
             params.addAll(sizes);
         }
         sql.append(" GROUP BY p.Category ORDER BY quantity DESC");
@@ -99,7 +124,9 @@ public class AnalyticsRepository {
         params.add(start);
         params.add(end);
         if (stores != null && !stores.isEmpty()) {
-            sql.append(" AND o.storeID IN (").append("?,".repeat(stores.size()).replaceAll(",$", "")).append(")");
+            sql.append(" AND o.storeID IN (")
+               .append(String.join(",", java.util.Collections.nCopies(stores.size(), "?")))
+               .append(")");
             params.addAll(stores);
         }
         sql.append(" GROUP BY combination ORDER BY orders DESC LIMIT ? OFFSET ?");
@@ -130,7 +157,9 @@ public class AnalyticsRepository {
         params.add(start);
         params.add(end);
         if (stores != null && !stores.isEmpty()) {
-            sql.append(" AND o.storeID IN (").append("?,".repeat(stores.size()).replaceAll(",$", "")).append(")");
+            sql.append(" AND o.storeID IN (")
+               .append(String.join(",", java.util.Collections.nCopies(stores.size(), "?")))
+               .append(")");
             params.addAll(stores);
         }
         sql.append(" GROUP BY week_since_launch ORDER BY week_since_launch");
@@ -158,7 +187,9 @@ public class AnalyticsRepository {
         params.add(start);
         params.add(end);
         if (stores != null && !stores.isEmpty()) {
-            sql.append(" AND o.storeID IN (").append("?,".repeat(stores.size()).replaceAll(",$", "")).append(")");
+            sql.append(" AND o.storeID IN (")
+               .append(String.join(",", java.util.Collections.nCopies(stores.size(), "?")))
+               .append(")");
             params.addAll(stores);
         }
         sql.append(" GROUP BY p.Size");
@@ -200,15 +231,21 @@ public class AnalyticsRepository {
         params.add(start);
         params.add(end);
         if (stores != null && !stores.isEmpty()) {
-            sql.append(" AND o.storeID IN (").append("?,".repeat(stores.size()).replaceAll(",$", "")).append(")");
+            sql.append(" AND o.storeID IN (")
+               .append(String.join(",", java.util.Collections.nCopies(stores.size(), "?")))
+               .append(")");
             params.addAll(stores);
         }
         if (categories != null && !categories.isEmpty()) {
-            sql.append(" AND p.Category IN (").append("?,".repeat(categories.size()).replaceAll(",$", "")).append(")");
+            sql.append(" AND p.Category IN (")
+               .append(String.join(",", java.util.Collections.nCopies(categories.size(), "?")))
+               .append(")");
             params.addAll(categories);
         }
         if (sizes != null && !sizes.isEmpty()) {
-            sql.append(" AND p.Size IN (").append("?,".repeat(sizes.size()).replaceAll(",$", "")).append(")");
+            sql.append(" AND p.Size IN (")
+               .append(String.join(",", java.util.Collections.nCopies(sizes.size(), "?")))
+               .append(")");
             params.addAll(sizes);
         }
         sql.append(" GROUP BY p.SKU, p.name, p.price, p.Size ");
@@ -242,15 +279,21 @@ public class AnalyticsRepository {
         params.add(start);
         params.add(end);
         if (stores != null && !stores.isEmpty()) {
-            sql.append(" AND o.storeID IN (").append("?,".repeat(stores.size()).replaceAll(",$", "")).append(")");
+            sql.append(" AND o.storeID IN (")
+               .append(String.join(",", java.util.Collections.nCopies(stores.size(), "?")))
+               .append(")");
             params.addAll(stores);
         }
         if (categories != null && !categories.isEmpty()) {
-            sql.append(" AND p.Category IN (").append("?,".repeat(categories.size()).replaceAll(",$", "")).append(")");
+            sql.append(" AND p.Category IN (")
+               .append(String.join(",", java.util.Collections.nCopies(categories.size(), "?")))
+               .append(")");
             params.addAll(categories);
         }
         if (sizes != null && !sizes.isEmpty()) {
-            sql.append(" AND p.Size IN (").append("?,".repeat(sizes.size()).replaceAll(",$", "")).append(")");
+            sql.append(" AND p.Size IN (")
+               .append(String.join(",", java.util.Collections.nCopies(sizes.size(), "?")))
+               .append(")");
             params.addAll(sizes);
         }
         return jdbcTemplate.queryForObject(sql.toString(), params.toArray(), Integer.class);
@@ -271,7 +314,9 @@ public class AnalyticsRepository {
         params.add(start);
         params.add(end);
         if (stores != null && !stores.isEmpty()) {
-            sql.append(" AND o.storeID IN (").append("?,".repeat(stores.size()).replaceAll(",$", "")).append(")");
+            sql.append(" AND o.storeID IN (")
+               .append(String.join(",", java.util.Collections.nCopies(stores.size(), "?")))
+               .append(")");
             params.addAll(stores);
         }
         sql.append(" GROUP BY CONCAT(p1.Name, ' (', p1.Size, ') + ', p2.Name, ' (', p2.Size, ')')) t");
@@ -316,9 +361,132 @@ public class AnalyticsRepository {
             else seg3++;
         }
         List<com.example.pizzadash.dto.RevenueSegmentDTO> result = new java.util.ArrayList<>();
-        result.add(new com.example.pizzadash.dto.RevenueSegmentDTO("≤15€", seg1));
-        result.add(new com.example.pizzadash.dto.RevenueSegmentDTO("15€–50€", seg2));
-        result.add(new com.example.pizzadash.dto.RevenueSegmentDTO(">50€", seg3));
+        result.add(new com.example.pizzadash.dto.RevenueSegmentDTO("≤15$", seg1));
+        result.add(new com.example.pizzadash.dto.RevenueSegmentDTO("15$–50$", seg2));
+        result.add(new com.example.pizzadash.dto.RevenueSegmentDTO(">50$", seg3));
         return result;
+    }
+
+    public List<com.example.pizzadash.dto.ProductBestsellerDTO> getProductsByFlexibleFilter(
+            String start, String end, 
+            String productNamePattern, 
+            String size, 
+            List<String> stores, 
+            List<String> categories) {
+        
+        StringBuilder sql = new StringBuilder(
+            "SELECT p.SKU, p.Name, p.Price, p.Size, COUNT(*) AS orders, SUM(p.Price) AS revenue " +
+            "FROM orders o " +
+            "JOIN orderitems oi ON o.orderID = oi.orderID " +
+            "JOIN products p ON oi.productID = p.SKU " +
+            "WHERE o.orderDate BETWEEN ? AND ? "
+        );
+        
+        List<Object> params = new ArrayList<>();
+        params.add(start);
+        params.add(end);
+        
+        // Add product name filter (flexible matching)
+        if (productNamePattern != null && !productNamePattern.trim().isEmpty()) {
+            sql.append(" AND (p.Name LIKE ? OR p.Name LIKE ? OR p.Name LIKE ?) ");
+            params.add("%" + productNamePattern.toLowerCase() + "%");
+            params.add("%" + productNamePattern.toUpperCase() + "%");
+            params.add("%" + productNamePattern + "%");
+        }
+        
+        // Add size filter (flexible matching)
+        if (size != null && !size.trim().isEmpty()) {
+            sql.append(" AND (p.Size = ? OR p.Size = ? OR p.Size = ?) ");
+            params.add(size.toLowerCase());
+            params.add(size.toUpperCase());
+            params.add(size);
+        }
+        
+        // Add store filter
+        if (stores != null && !stores.isEmpty()) {
+            sql.append(" AND o.storeID IN (")
+               .append(String.join(",", Collections.nCopies(stores.size(), "?")))
+               .append(")");
+            params.addAll(stores);
+        }
+        
+        // Add category filter
+        if (categories != null && !categories.isEmpty()) {
+            sql.append(" AND p.Category IN (")
+               .append(String.join(",", Collections.nCopies(categories.size(), "?")))
+               .append(")");
+            params.addAll(categories);
+        }
+        
+        sql.append(" GROUP BY p.SKU, p.Name, p.Price, p.Size ");
+        sql.append(" ORDER BY orders DESC ");
+        
+        return jdbcTemplate.query(
+            sql.toString(),
+            params.toArray(),
+            (rs, rowNum) -> new com.example.pizzadash.dto.ProductBestsellerDTO(
+                rs.getString("SKU"),
+                rs.getString("Name"),
+                rs.getDouble("Price"),
+                rs.getString("Size"),
+                rs.getInt("orders"),
+                rs.getDouble("revenue")
+            )
+        );
+    }
+
+    public List<Map<String, Object>> getProductSearchResults(
+            String start, String end, 
+            String searchTerm, 
+            List<String> stores) {
+        
+        StringBuilder sql = new StringBuilder(
+            "SELECT p.SKU, p.Name, p.Size, p.Category, p.Price, " +
+            "COUNT(*) AS order_count, SUM(p.Price) AS total_revenue " +
+            "FROM orders o " +
+            "JOIN orderitems oi ON o.orderID = oi.orderID " +
+            "JOIN products p ON oi.productID = p.SKU " +
+            "WHERE o.orderDate BETWEEN ? AND ? "
+        );
+        
+        List<Object> params = new ArrayList<>();
+        params.add(start);
+        params.add(end);
+        
+        // Flexible search across product name, category, and size
+        if (searchTerm != null && !searchTerm.trim().isEmpty()) {
+            sql.append(" AND (p.Name LIKE ? OR p.Category LIKE ? OR p.Size LIKE ?) ");
+            String searchPattern = "%" + searchTerm + "%";
+            params.add(searchPattern);
+            params.add(searchPattern);
+            params.add(searchPattern);
+        }
+        
+        // Add store filter
+        if (stores != null && !stores.isEmpty()) {
+            sql.append(" AND o.storeID IN (")
+               .append(String.join(",", Collections.nCopies(stores.size(), "?")))
+               .append(")");
+            params.addAll(stores);
+        }
+        
+        sql.append(" GROUP BY p.SKU, p.Name, p.Size, p.Category, p.Price ");
+        sql.append(" ORDER BY order_count DESC ");
+        
+        return jdbcTemplate.query(
+            sql.toString(),
+            params.toArray(),
+            (rs, rowNum) -> {
+                Map<String, Object> result = new HashMap<>();
+                result.put("sku", rs.getString("SKU"));
+                result.put("name", rs.getString("Name"));
+                result.put("size", rs.getString("Size"));
+                result.put("category", rs.getString("Category"));
+                result.put("price", rs.getDouble("Price"));
+                result.put("orderCount", rs.getInt("order_count"));
+                result.put("totalRevenue", rs.getDouble("total_revenue"));
+                return result;
+            }
+        );
     }
 }

@@ -11,6 +11,11 @@ import com.example.pizzadash.dto.ProductPieDTO;
 import com.example.pizzadash.dto.ProductSummaryDTO;
 import com.example.pizzadash.dto.CategorySalesDTO;
 import com.example.pizzadash.dto.PaginatedResponse;
+import com.example.pizzadash.dto.StoreProductSalesDTO;
+import com.example.pizzadash.repository.ProductSalesMaterializedRepository;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Map;
 
 @Service
 public class ProductService {
@@ -41,5 +46,32 @@ public class ProductService {
     }
     public List<CategorySalesDTO> getCategorySales(String start, String end, List<String> stores, List<String> sizes) {
         return analyticsRepository.getCategorySales(start, end, stores, sizes);
+    }
+
+    public List<ProductBestsellerDTO> getProductsByFlexibleFilter(String start, String end, String productNamePattern, String size, List<String> stores, List<String> categories) {
+        return analyticsRepository.getProductsByFlexibleFilter(start, end, productNamePattern, size, stores, categories);
+    }
+
+    public List<Map<String, Object>> getProductSearchResults(String start, String end, String searchTerm, List<String> stores) {
+        return analyticsRepository.getProductSearchResults(start, end, searchTerm, stores);
+    }
+
+    @Autowired
+    private ProductSalesMaterializedRepository productSalesMaterializedRepository;
+
+    public List<StoreProductSalesDTO> getBestStoresForProduct(String sku, String size, String start, String end) {
+        LocalDate startDate = LocalDate.parse(start);
+        LocalDate endDate = LocalDate.parse(end);
+        List<Object[]> rows = productSalesMaterializedRepository.findStoresForProductByRevenue(sku, size, startDate, endDate);
+        List<StoreProductSalesDTO> result = new ArrayList<>();
+        for (Object[] row : rows) {
+            result.add(new StoreProductSalesDTO(
+                (String) row[0], // storeId
+                (String) row[1], // storeCity
+                ((Number) row[2]).intValue(), // orders
+                ((Number) row[3]).doubleValue() // revenue
+            ));
+        }
+        return result;
     }
 }

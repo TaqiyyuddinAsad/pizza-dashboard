@@ -15,7 +15,7 @@ const AverageRevenueCard = ({ filters }) => {
     };
     const queryString = new URLSearchParams(params).toString();
 
-    fetch(`http://localhost:8080/api/analytics/revenue-per-customer?${queryString}`)
+          fetch(`http://localhost:8080/api/customers/revenue-per-customer?${queryString}`)
       .then(res => {
         if (!res.ok) throw new Error("Fehler beim Laden der Umsatzdaten");
         return res.json();

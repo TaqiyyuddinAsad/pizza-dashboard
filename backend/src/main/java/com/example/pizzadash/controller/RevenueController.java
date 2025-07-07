@@ -29,19 +29,18 @@ public class RevenueController {
 public List<RevenueDTO> getRevenue(
     @RequestParam String start,
     @RequestParam String end,
-    @RequestParam(required = false) List<String> stores,
+    @RequestParam(required = false) String stores,
     @RequestParam(required = false) String categories,
     @RequestParam(required = false) String sizes,
     @RequestHeader Map<String, String> headers
 ) {
-   
-
-    LocalDate startDate = LocalDate.parse(start);
-    LocalDate endDate = LocalDate.parse(end);
+    LocalDate startDate = LocalDate.parse(start.trim());
+    LocalDate endDate = LocalDate.parse(end.trim());
+    List<String> storesList = splitCsv(stores);
     List<String> categoryList = splitCsv(categories);
     List<String> sizeList = splitCsv(sizes);
     try {
-        return revenueService.getRevenueFiltered(startDate, endDate, stores, categoryList, sizeList);
+        return revenueService.getRevenueFiltered(startDate, endDate, storesList, categoryList, sizeList);
     } catch (Exception e) {
         System.err.println("[RevenueController] Exception: " + e.getClass().getName() + ": " + e.getMessage());
         e.printStackTrace();
@@ -50,10 +49,8 @@ public List<RevenueDTO> getRevenue(
 }
 
 private List<String> splitCsv(String csv) {
-    if (csv == null || csv.isEmpty()) {
-        return new java.util.ArrayList<>();
-    }
-    return java.util.Arrays.asList(csv.split(","));
+    if (csv == null || csv.isBlank()) return java.util.Collections.emptyList();
+    return java.util.Arrays.stream(csv.split(",")).map(String::trim).filter(s -> !s.isEmpty()).toList();
 }
 
 }

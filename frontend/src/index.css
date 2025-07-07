@@ -12,7 +12,7 @@
 
   
   color: #213547;
-  background-color: #ffffff;
+  background-color: #fff;
   
 
   font-synthesis: none;
@@ -112,7 +112,7 @@ body {
 }
 
 html, body, #root {
-  background: #111827 !important;
+  background: #fff !important;
   min-height: 100vh;
   width: 100vw;
   overflow-x: hidden;
@@ -203,12 +203,14 @@ h1 {
   background-color: #111827 !important;
 }
 
-.main-content-wrapper, .orders-page, .customer-page {
+.orders-page,
+.customer-page,
+.main-content-wrapper {
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
   min-height: 100vh;
-  background: transparent !important;
+  background-color: #fff !important;
 }
 .dark .main-content-wrapper {
   background: #111827 !important;

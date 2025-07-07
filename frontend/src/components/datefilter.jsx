@@ -14,11 +14,12 @@ const DateFilter = ({ onDateChange }) => {
         defaultValue={[defaultStart, defaultEnd]}
         format="YYYY-MM-DD"
         allowClear={false}
-        className="dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
+        className="dark-datefilter"
+        popupClassName="dark-datefilter-popup"
         style={{
-          width: '100%',
+          width: '240px',
           minWidth: '200px',
-          maxWidth: '300px',
+          maxWidth: '260px',
         }}
         size="small"
         onChange={(dates, dateStrings) => {

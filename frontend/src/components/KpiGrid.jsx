@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { KpiCard } from "./KpiCard";
 import { fetchKpiData } from "../services/kpiservice";
 import { ChevronUpIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
-import { FaRedo, FaClock, FaMapMarkerAlt, FaEuroSign, FaShoppingCart, FaTag } from "react-icons/fa";
+import { FaRedo, FaClock, FaMapMarkerAlt, FaDollarSign, FaShoppingCart, FaTag } from "react-icons/fa";
 
 export default function KpiGrid({ filters }) {
   const [kpis, setKpis] = useState(null);
@@ -46,13 +46,13 @@ export default function KpiGrid({ filters }) {
       subtitle: "Ø Lieferentfernung"
     },
     {
-      title: "Ø Bestellwert",
-      price: kpis["Avg Order Value"] != null ? `${kpis["Avg Order Value"].toFixed(2)}€` : "-",
+      title: "Durchschnittliche Gesamtkunden",
+      price: kpis["Durchschnittliche Gesamtkunden"] != null ? kpis["Durchschnittliche Gesamtkunden"].toLocaleString() : "-",
       percentage: "",
-      icon: <FaEuroSign style={{ color: "#22c55e", fontSize: 22 }} />, // grün
-      bgColor: "bg-green-300",
-      accentColor: "#22c55e",
-      subtitle: "Ø Bestellwert"
+      icon: <FaShoppingCart style={{ color: "#6366f1", fontSize: 22 }} />, // blau-lila
+      bgColor: "bg-indigo-200",
+      accentColor: "#6366f1",
+      subtitle: "Ø distinct Kunden pro Periode"
     },
     {
       title: "Wiederkehrerquote",

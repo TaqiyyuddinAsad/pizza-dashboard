@@ -2,6 +2,7 @@ import React, { useState, createContext, memo, useMemo, useEffect } from 'react'
 import Sidebar from '../components/sidebar.jsx';
 import Topbar from '../components/Topbar.jsx';
 import FilterBar from '../components/filterbar.jsx';
+import { getCurrentUsername } from '../utils/auth.js';
 import '../styles/Layout.css';
 
 export const FilterContext = createContext();
@@ -70,7 +71,7 @@ const Layout = memo(({ children }) => {
           </div>
           
           <div className="main-area">
-            <Topbar username="Admin" onMenuToggle={toggleSidebar} />
+            <Topbar username={getCurrentUsername()} onMenuToggle={toggleSidebar} />
             <div>
               <div style={{ marginTop: 90, marginBottom: 16, borderRadius: 16, maxWidth: 1100, marginLeft: 'auto', marginRight: 'auto', boxShadow: '0 2px 12px 0 rgba(0,0,0,0.08)' }}>
                 <FilterBar onApplyFilters={setFilters} />

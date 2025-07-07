@@ -72,9 +72,9 @@ const ProductBestsellerList = () => {
                 <br />
                 <span style={{ fontSize: "0.85rem", color: "#666" }}>{p.size}</span>
               </td>
-              <td>{p.price.toFixed(2)} €</td>
+              <td>{p.price.toFixed(2)} $</td>
               <td>{p.orders}</td>
-              <td>{p.revenue.toFixed(0)} €</td>
+              <td>{p.revenue.toFixed(0)} $</td>
             </tr>
           ))}
         </tbody>

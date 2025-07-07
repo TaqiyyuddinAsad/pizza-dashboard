@@ -40,7 +40,6 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, UserDetailsService userDetailsService) throws Exception {
-        System.out.println("[SecurityConfig] Building security filter chain");
         http
             .csrf(csrf -> csrf.disable())
             .cors(withDefaults())
@@ -49,15 +48,18 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/auth/login").permitAll()
+
+                .requestMatchers("/filters").authenticated()
                 .requestMatchers("/kpi").authenticated()
                 .requestMatchers("/orders/chart").authenticated()
                 .requestMatchers("/orders/times").authenticated()
                 .requestMatchers("/api/materialized/**").authenticated()
+                .requestMatchers("/api/products/**").authenticated()
+                .requestMatchers("/api/stores/**").authenticated()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(new JwtAuthenticationFilter(userDetailsService), UsernamePasswordAuthenticationFilter.class);
         
-        System.out.println("[SecurityConfig] Security filter chain built successfully");
         return http.build();
     }
 } 

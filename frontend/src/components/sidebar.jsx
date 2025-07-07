@@ -49,7 +49,6 @@ export const Sidebar = memo(({ onToggle }) => {
           to="/waren"
           selected={selected}
           setSelected={handleNavClick}
-          notifs={3}
         />
         <Option
           Icon={FiMonitor}

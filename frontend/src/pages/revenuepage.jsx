@@ -40,7 +40,7 @@ const RevenuePage = () => {
     labels: data.map((entry) => entry.label),
     datasets: [
       {
-        label: "Umsatz (€)",
+        label: "Umsatz ($)",
         data: data.map((entry) => entry.revenue),
         borderColor: "#8b5cf6",
         backgroundColor: "rgba(139, 92, 246, 0.1)",
@@ -61,7 +61,7 @@ const RevenuePage = () => {
           <div className="revenue-summary">
             <p className="revenue-title dark:text-gray-300">Gesamtumsatz</p>
             <p className="revenue-value dark:text-gray-100">
-              {totalRevenue.toLocaleString("de-DE")}€
+              {totalRevenue.toLocaleString("de-DE")}$
             </p>
           </div>
 

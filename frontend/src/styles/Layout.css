@@ -165,3 +165,103 @@
     padding: 12px 16px;
   }
 }
+
+/* Light mode (default) for datefilter: ensure white background and dark text */
+.dark-datefilter,
+.dark-datefilter .ant-picker-input > input {
+  background-color: #fff !important;
+  color: #1e293b !important;
+  border-color: #e5e7eb !important;
+}
+.dark-datefilter .ant-picker-suffix,
+.dark-datefilter .ant-picker-clear {
+  color: #6366f1 !important;
+}
+.dark-datefilter-popup,
+.dark-datefilter-popup .ant-picker-panel {
+  background-color: #fff !important;
+  color: #1e293b !important;
+}
+.dark-datefilter-popup .ant-picker-cell {
+  color: #1e293b !important;
+}
+.dark-datefilter-popup .ant-picker-cell-in-view {
+  color: #1e293b !important;
+}
+.dark-datefilter-popup .ant-picker-cell-selected {
+  background-color: #6366f1 !important;
+  color: #fff !important;
+}
+.dark-datefilter-popup .ant-picker-cell-range-start,
+.dark-datefilter-popup .ant-picker-cell-range-end {
+  background-color: #6366f1 !important;
+  color: #fff !important;
+}
+.dark-datefilter-popup .ant-picker-cell-range-hover,
+.dark-datefilter-popup .ant-picker-cell-range-hover-start,
+.dark-datefilter-popup .ant-picker-cell-range-hover-end {
+  background-color: #e0e7ff !important;
+  color: #1e293b !important;
+}
+.dark-datefilter-popup .ant-picker-header {
+  background-color: #fff !important;
+  color: #1e293b !important;
+  border-bottom: 1px solid #e5e7eb !important;
+}
+.dark-datefilter-popup .ant-picker-content th {
+  color: #6366f1 !important;
+}
+
+/* Only override for dark mode below */
+.dark .dark-datefilter,
+.dark .dark-datefilter .ant-picker-input > input {
+  background-color: #1e293b !important;
+  color: #f1f5f9 !important;
+  border-color: #374151 !important;
+}
+.dark .dark-datefilter .ant-picker-suffix,
+.dark .dark-datefilter .ant-picker-clear {
+  color: #a5b4fc !important;
+}
+.dark .dark-datefilter-popup,
+.dark .dark-datefilter-popup .ant-picker-panel {
+  background-color: #1e293b !important;
+  color: #f1f5f9 !important;
+}
+.dark .dark-datefilter-popup .ant-picker-cell {
+  color: #f1f5f9 !important;
+}
+.dark .dark-datefilter-popup .ant-picker-cell-in-view {
+  color: #f1f5f9 !important;
+}
+.dark .dark-datefilter-popup .ant-picker-cell-selected {
+  background-color: #6366f1 !important;
+  color: #fff !important;
+}
+.dark .dark-datefilter-popup .ant-picker-cell-range-start,
+.dark .dark-datefilter-popup .ant-picker-cell-range-end {
+  background-color: #6366f1 !important;
+  color: #fff !important;
+}
+.dark .dark-datefilter-popup .ant-picker-cell-range-hover,
+.dark .dark-datefilter-popup .ant-picker-cell-range-hover-start,
+.dark .dark-datefilter-popup .ant-picker-cell-range-hover-end {
+  background-color: #312e81 !important;
+  color: #fff !important;
+}
+.dark .dark-datefilter-popup .ant-picker-header {
+  background-color: #1e293b !important;
+  color: #f1f5f9 !important;
+  border-bottom: 1px solid #374151 !important;
+}
+.dark .dark-datefilter-popup .ant-picker-content th {
+  color: #a5b4fc !important;
+}
+
+/* Ensure .bg-white and filterbar are always white in light mode */
+.bg-white,
+.filterbar,
+.bg-white .ant-picker-panel {
+  background-color: #fff !important;
+  color: #1e293b !important;
+}

@@ -1,12 +1,12 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Card, CardContent, Typography, Box, Divider, Chip
 } from "@mui/material";
 
 const borderStyles = [
-  { bg: "#fff9e1", border: "2px solid #ffe082" }, // Gold
+  { bg: "#fffbe7", border: "2px solid #ffe082" }, // Lighter Gold
   { bg: "#efefef", border: "2px solid #bdbdbd" }, // Silber
-  { bg: "#ffe7db", border: "2px solid #ffab91" }, // Bronze
+  { bg: "#fff2e6", border: "2px solid #ffab91" }, // Lighter Bronze
   { bg: "#fafbfc", border: "2px solid #e0e0e0" },
   { bg: "#fafbfc", border: "2px solid #e0e0e0" },
 ];
@@ -25,20 +25,30 @@ export default function Leaderboard({
   TrendIcon = () => null,
   showRankBefore = false
 }) {
-  // Detect dark mode from the document
-  const isDark = typeof window !== 'undefined' && document.documentElement.classList.contains('dark');
+  // Reactively detect dark mode
+  const [isDark, setIsDark] = useState(() => typeof window !== 'undefined' && document.documentElement.classList.contains('dark'));
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const observer = new MutationObserver(() => {
+      setIsDark(document.documentElement.classList.contains('dark'));
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    return () => observer.disconnect();
+  }, []);
+
   const styles = isDark ? darkBorderStyles : borderStyles;
 
   return (
     <Card className="dark:bg-gray-800 dark:border-gray-700" sx={{ maxWidth: 600, margin: "32px auto", borderRadius: 4, boxShadow: 5, border: "none", background: "none" }}>
       <CardContent>
-        <Typography variant="h6" fontWeight="bold" className="dark:text-gray-100" sx={{ mb: 2 }}>
+        <Typography variant="h6" fontWeight="bold" className="dark:text-gray-100 text-black" sx={{ mb: 2 }} style={{ color: '#111' }}>
           {title}
         </Typography>
         <Divider className="dark:border-gray-600" sx={{ mb: 2 }} />
         <Box>
           {data.length === 0 ? (
-            <Typography className="dark:text-gray-300" color="text.secondary">Keine Daten.</Typography>
+            <Typography className="dark:text-gray-300 text-black" color="text.secondary" style={{ color: '#111' }}>Keine Daten.</Typography>
           ) : (
             data.map((item, i) => (
               <Box
@@ -84,25 +94,25 @@ export default function Leaderboard({
                   />
                 </Box>
                 <Box sx={{ flex: 1, ml: 2 }}>
-                  <Typography className="dark:text-gray-100" fontWeight="bold">{item.label}</Typography>
+                  <Typography className="dark:text-gray-100 text-black" fontWeight="bold" style={{ color: isDark ? '#fff' : '#111' }}>{item.label}</Typography>
                   {showRankBefore && (
                     <Typography
-                      className={isDark ? undefined : "dark:text-gray-300"}
+                      className={isDark ? 'dark:text-white' : 'text-black'}
                       variant="body2"
                       color="text.secondary"
-                      sx={{ fontSize: 13, color: isDark ? '#fff' : undefined }}
+                      sx={{ fontSize: 13, color: isDark ? '#fff' : '#111' }}
                     >
                       {item.rankBefore
-                        ? `(vorher: ${item.rankBefore})`
+                        ? <span className={isDark ? 'dark:text-white' : 'text-black'} style={{ color: isDark ? '#fff' : '#111' }}>(vorher: {item.rankBefore})</span>
                         : i === 0 && item.trend === "new"
-                        ? <span style={{ color: isDark ? '#fff' : undefined }}>Neu im Ranking</span>
+                        ? <span className={isDark ? 'dark:text-white' : 'text-black'} style={{ color: isDark ? '#fff' : '#111' }}>Neu im Ranking</span>
                         : ""}
                     </Typography>
                   )}
                 </Box>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: 80, justifyContent: "flex-end" }}>
                   {item.trend && <TrendIcon trend={item.trend} />}
-                  <Typography className="dark:text-gray-100" fontWeight="medium">{item.value.toLocaleString()}x</Typography>
+                  <Typography className="dark:text-gray-100 text-black" fontWeight="medium" style={{ color: isDark ? '#fff' : '#111' }}>{item.value.toLocaleString()}x</Typography>
                 </Box>
               </Box>
             ))

@@ -1,12 +1,27 @@
 import React from "react";
 import { Card, CardContent, Typography, Table, TableHead, TableRow, TableCell, TableBody, TablePagination } from "@mui/material";
 
-const ProductCombinationsList = ({ data, total, page, rowsPerPage, onPageChange, onRowsPerPageChange, dateRange, storeLabel }) => (
+const ProductCombinationsList = ({ data, total, page, rowsPerPage, onPageChange, onRowsPerPageChange, appliedFilters, sortOrder = 'best' }) => (
   <Card className="dark:bg-gray-800 dark:border-gray-700" sx={{ marginBottom: 2 }}>
     <CardContent>
-      <Typography variant="h6" gutterBottom className="dark:text-gray-100">
-        Beliebteste Kombinationen {dateRange ? `| ${dateRange}` : ''} {storeLabel ? `| ${storeLabel}` : ''}
-      </Typography>
+      {appliedFilters && (
+        <div
+          className="dark:text-gray-300 bg-white dark:bg-gray-800 dark:border-gray-700"
+          style={{
+            marginBottom: '1rem',
+            fontWeight: 500,
+            fontSize: '1.1rem',
+            color: '#222',
+            textAlign: 'center',
+            borderRadius: 12,
+            padding: '0.75rem 1.5rem',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+            border: '1px solid #e5e7eb'
+          }}
+        >
+          {appliedFilters}
+        </div>
+      )}
       <Table>
         <TableHead>
           <TableRow>

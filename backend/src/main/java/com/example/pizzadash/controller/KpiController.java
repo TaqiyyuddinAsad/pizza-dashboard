@@ -23,26 +23,28 @@ public class KpiController {
         @RequestParam(required = false) String categories,
         @RequestParam(required = false) String sizes
     ) {
-        System.out.println("🎯 KPI Controller called!");
-        System.out.println("  Start: " + start);
-        System.out.println("  End: " + end);
-        System.out.println("  Stores: " + stores);
-        System.out.println("  Categories: " + categories);
-        System.out.println("  Sizes: " + sizes);
-        
-       LocalDate startDate = LocalDate.parse(start.trim());
-       LocalDate endDate = LocalDate.parse(end.trim());
-        List<String> storeList = split(stores);
-        List<String> categoryList = split(categories);
-        List<String> sizeList = split(sizes);
+        LocalDate startDate = LocalDate.parse(start.trim());
+        LocalDate endDate = LocalDate.parse(end.trim());
+        List<String> storeList = splitCsv(stores);
+        List<String> categoryList = splitCsv(categories);
+        List<String> sizeList = splitCsv(sizes);
 
-        Map<String, Object> result = orderService.getKpiSummary(startDate, endDate, storeList, categoryList, sizeList);
-        System.out.println("🎯 KPI Controller returning result: " + result);
-        return result;
+        try {
+            Map<String, Object> result = orderService.getKpiSummary(startDate, endDate, storeList, categoryList, sizeList);
+            if (result == null) {
+                result = new HashMap<>();
+            }
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+            Map<String, Object> errorResult = new HashMap<>();
+            errorResult.put("error", e.getMessage());
+            return errorResult;
+        }
     }
 
-    private List<String> split(String raw) {
-        if (raw == null || raw.isBlank()) return Collections.emptyList();
-        return Arrays.stream(raw.split(",")).map(String::trim).filter(s -> !s.isEmpty()).toList();
+    private List<String> splitCsv(String csv) {
+        if (csv == null || csv.isBlank()) return Collections.emptyList();
+        return Arrays.stream(csv.split(",")).map(String::trim).filter(s -> !s.isEmpty()).toList();
     }
 }
