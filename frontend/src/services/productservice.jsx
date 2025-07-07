@@ -1,7 +1,6 @@
 import { API_BASE_URL } from '../config/api.js';
 const API_BASE_URL_FULL = `${API_BASE_URL}/api`;
 
-
 export const getBestsellersByOrders = async (filters, page = 0, pageSize = 10) => {
     try {
         const params = new URLSearchParams();
@@ -22,8 +21,6 @@ export const getBestsellersByOrders = async (filters, page = 0, pageSize = 10) =
     }
 };
 
-
-
 export const getBestsellersByRevenue = async (filters, page = 0, pageSize = 10) => {
     try {
         const params = new URLSearchParams();
@@ -43,8 +40,6 @@ export const getBestsellersByRevenue = async (filters, page = 0, pageSize = 10) 
         throw error;
     }
 };
-
-
 
 export const getCategories = async () => {
     try {
@@ -85,19 +80,17 @@ export const getStores = async () => {
     }
 };
 
-
 export const getProductCombinations = async (filters, page = 0, pageSize = 10) => {
     try {
         const params = new URLSearchParams();
         if (filters.startDate) params.append('start', filters.startDate);
         if (filters.endDate) params.append('end', filters.endDate);
         if (filters.store && filters.store.length > 0 && filters.store[0] !== undefined && filters.store[0] !== null && filters.store[0] !== "") {
-            // Backend expects 'stores' as a list (can be multiple params)
             filters.store.forEach(storeId => {
                 if (storeId) params.append('stores', storeId);
             });
         }
-        params.append('page', page + 1); // backend is 1-based
+        params.append('page', page + 1);
         params.append('size', pageSize);
 
         const response = await fetch(`${API_BASE_URL_FULL}/products/combinations?${params}`, { headers: getAuthHeader() });
@@ -132,7 +125,6 @@ export const getProductPerformanceAfterLaunch = async (sku, days, filters = {}) 
         if (filters.category && filters.category.length > 0) {
             filters.category.forEach(cat => params.append('category', cat));
         }
-        // Fix: size as string(s), not [object Object]
         if (filters.size) {
             if (Array.isArray(filters.size)) {
                 filters.size.forEach(sz => {
@@ -142,7 +134,6 @@ export const getProductPerformanceAfterLaunch = async (sku, days, filters = {}) 
                 params.append('size', filters.size);
             }
         }
-        // Only send a single storeId for performance endpoint
         if (filters.stores && filters.stores.length > 0 && typeof filters.stores[0] === 'string') {
             params.append('storeId', filters.stores[0]);
         }

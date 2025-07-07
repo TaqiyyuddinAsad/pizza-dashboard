@@ -28,7 +28,6 @@
   min-width: 0;
 }
 
-/* Dark mode overrides for chart and KPI wrappers */
 .dark .orders-chart-wrapper,
 .dark .orders-kpi-wrapper {
   background-color: #1f2937 !important;
@@ -45,12 +44,10 @@
   background: #fafbfc;
 }
 
-/* Dark mode override for orders page */
 .dark .orders-page {
   background: #111827 !important;
 }
-
-/* Main Content Wrapper */
+  
 .main-content-wrapper {
   width: 100%;
   max-width: 1200px;

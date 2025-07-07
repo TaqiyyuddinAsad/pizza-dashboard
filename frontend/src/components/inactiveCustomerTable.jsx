@@ -21,7 +21,7 @@ const InactiveCustomerTable = ({ filters }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [loading, setLoading] = useState(true);
-  const [sortOrder, setSortOrder] = useState('oldest'); // 'oldest' | 'newest'
+  const [sortOrder, setSortOrder] = useState('oldest');
 
   useEffect(() => {
     setLoading(true);

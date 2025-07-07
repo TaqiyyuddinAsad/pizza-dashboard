@@ -1,6 +1,5 @@
 package com.example.pizzadash.dto;
 
-import java.time.LocalDate;
 
 public class CustomerCountDTO {
     private String period;

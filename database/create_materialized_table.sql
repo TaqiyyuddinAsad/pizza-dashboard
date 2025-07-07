@@ -1,10 +1,6 @@
--- Create the materialized table for product sales analysis
--- Run this script in your MySQL database
 
--- Drop the old table if it exists
 DROP TABLE IF EXISTS product_bestsellers_store_materialized;
 
--- Create new materialized table with store and time support
 CREATE TABLE product_bestsellers_store_materialized (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     product_sku VARCHAR(10) NOT NULL,
@@ -19,8 +15,7 @@ CREATE TABLE product_bestsellers_store_materialized (
     total_orders INT DEFAULT 0,
     total_revenue DECIMAL(10,2) DEFAULT 0.00,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
-    -- Indexes for fast filtering and sorting
+
     INDEX idx_store_date (store_id, sale_date),
     INDEX idx_category_size_store_date (product_category, product_size, store_id, sale_date),
     INDEX idx_size_store_date (product_size, store_id, sale_date),
@@ -31,7 +26,7 @@ CREATE TABLE product_bestsellers_store_materialized (
     UNIQUE KEY unique_product_store_date (product_sku, product_size, store_id, sale_date)
 );
 
--- Populate with daily aggregated data per store
+
 INSERT INTO product_bestsellers_store_materialized (
     product_sku, 
     product_name, 
@@ -64,6 +59,6 @@ JOIN stores s ON o.storeID = s.storeID
 WHERE o.orderDate IS NOT NULL
 GROUP BY p.SKU, p.Name, p.Category, p.Size, p.Price, o.storeID, s.city, s.state, DATE(o.orderDate);
 
--- Verify the table was created and populated
+
 SELECT COUNT(*) as total_rows FROM product_bestsellers_store_materialized;
 SELECT COUNT(DISTINCT product_sku) as unique_products FROM product_bestsellers_store_materialized; 

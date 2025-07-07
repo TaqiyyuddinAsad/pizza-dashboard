@@ -36,11 +36,9 @@ const CategorySalesBarChart = ({ fetchCategorySalesTimeline, filters, filterSumm
   if (loading) return <div>Lade Daten...</div>;
   if (!data || data.length === 0) return <div>Keine Daten</div>;
 
-  // Get all unique periods and categories
   const periods = Array.from(new Set(data.map(row => row.period)));
   const categories = Array.from(new Set(data.map(row => row.category)));
 
-  // Build datasets for grouped bar chart
   const datasets = categories.map((cat, idx) => ({
     label: cat,
     data: periods.map(period => {
@@ -64,8 +62,7 @@ const CategorySalesBarChart = ({ fetchCategorySalesTimeline, filters, filterSumm
       y: { beginAtZero: true },
     },
   };
-
-  // Total revenue for all periods/categories
+  
   const totalRevenue = data.reduce((sum, row) => sum + (parseFloat(row.revenue) || 0), 0);
 
   return (

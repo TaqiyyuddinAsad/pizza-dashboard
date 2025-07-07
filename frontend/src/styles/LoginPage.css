@@ -1,4 +1,4 @@
-/* Layout */
+
 .login-page {
   display: flex;
   height: 100vh;
@@ -6,7 +6,6 @@
   font-family: Arial, sans-serif;
 }
 
-/* Left side (form) */
 .login-left {
   flex: 1;
   background-color: #ffffff;
@@ -60,7 +59,6 @@
   cursor: pointer;
 }
 
-/* Right side (logo area) */
 .login-right {
   flex: 1;
   background-color: #A6ABC8;

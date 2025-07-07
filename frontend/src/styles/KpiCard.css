@@ -37,15 +37,15 @@
 }
 
 .kpi-change.green {
-  color: #10b981; /* Tailwind emerald-500 */
+  color: #10b981;
 }
 
 .kpi-change.red {
-  color: #ef4444; /* Tailwind red-500 */
+  color: #ef4444; 
 }
 
 .kpi-price {
   font-size: 24px;
   font-weight: bold;
-  color: #1f2937; /* Tailwind gray-800 */
+  color: #1f2937;
 }

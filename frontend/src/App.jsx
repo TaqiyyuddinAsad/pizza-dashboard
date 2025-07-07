@@ -35,12 +35,11 @@ function ProtectedRoute({ children }) {
       return;
     }
 
-    // Token exists and is not expired, consider user authenticated
     setAuth(true);
     setLoading(false);
   }, []);
 
-  if (loading) return null; // or a loading spinner
+  if (loading) return null; 
   return auth ? children : <Navigate to="/" replace />;
 }
 

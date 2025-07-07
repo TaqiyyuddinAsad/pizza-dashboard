@@ -9,7 +9,6 @@
   margin-bottom: 24px;
 }
 
-/* Dark mode override for page title */
 .dark .page-title {
   color: #a78bfa;
 }
@@ -25,13 +24,11 @@
   gap: 24px;
 }
 
-/* Dark mode override for revenue card */
 .dark .revenue-card {
   background-color: #1f2937 !important;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2) !important;
 }
 
-/* FLEX header inside card */
 .card-header {
   display: flex;
   justify-content: space-between;
@@ -40,7 +37,6 @@
   width: 80%;
 }
 
-/* left side = label + number */
 .revenue-summary {
   display: flex;
   flex-direction: column;
@@ -53,7 +49,6 @@
   margin: 0;
 }
 
-/* Dark mode override for revenue title */
 .dark .revenue-title {
   color: #a78bfa;
 }
@@ -65,12 +60,10 @@
   margin-top: 4px;
 }
 
-/* Dark mode override for revenue value */
 .dark .revenue-value {
   color: #f1f5f9;
 }
 
-/* right side = filters */
 .filters {
   display: flex;
   gap: 12px;
@@ -86,7 +79,6 @@
   color: #333;
 }
 
-/* Dark mode override for filters select */
 .dark .filters select {
   background-color: #374151 !important;
   border-color: #6b7280 !important;

@@ -102,7 +102,6 @@ SELECT
 FROM product_bestsellers_store_materialized
 GROUP BY product_sku, product_name, product_category, product_size, product_price, store_id, store_city, store_state;
 
--- Create a view for time-filtered store bestsellers
 CREATE OR REPLACE VIEW bestsellers_store_time_view AS
 SELECT 
     product_sku,

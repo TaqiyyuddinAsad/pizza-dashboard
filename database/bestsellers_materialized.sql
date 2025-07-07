@@ -1,9 +1,6 @@
--- Create a better materialized table for bestsellers (no duplicates)
 
--- Drop the old table if it exists
 DROP TABLE IF EXISTS product_bestsellers_materialized;
 
--- Create new materialized table for bestsellers
 CREATE TABLE product_bestsellers_materialized (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     product_sku VARCHAR(10) NOT NULL,
@@ -17,7 +14,6 @@ CREATE TABLE product_bestsellers_materialized (
     stores_sold_in INT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     
-    -- Indexes for fast filtering and sorting
     INDEX idx_category_size (product_category, product_size),
     INDEX idx_size (product_size),
     INDEX idx_category (product_category),
@@ -26,7 +22,6 @@ CREATE TABLE product_bestsellers_materialized (
     UNIQUE KEY unique_product (product_sku, product_size)
 );
 
--- Populate with aggregated data (one row per product/size combination)
 INSERT INTO product_bestsellers_materialized (
     product_sku, 
     product_name, 
@@ -54,7 +49,6 @@ JOIN products p ON oi.productID = p.SKU
 WHERE o.orderDate IS NOT NULL
 GROUP BY p.SKU, p.Name, p.Category, p.Size, p.Price;
 
--- Create a view for easy querying
 CREATE OR REPLACE VIEW bestsellers_view AS
 SELECT 
     *,
@@ -64,7 +58,6 @@ SELECT
     ROW_NUMBER() OVER (PARTITION BY product_category ORDER BY total_orders DESC) as rank_by_category_orders
 FROM product_bestsellers_materialized;
 
--- Create a view for worst sellers
 CREATE OR REPLACE VIEW worstsellers_view AS
 SELECT 
     *,

@@ -13,11 +13,11 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOriginPatterns("*") // Allow all origins for production flexibility
+                        .allowedOriginPatterns("*")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         .allowCredentials(true)
-                        .maxAge(3600); // Cache preflight requests for 1 hour
+                        .maxAge(3600);
             }
         };
     }

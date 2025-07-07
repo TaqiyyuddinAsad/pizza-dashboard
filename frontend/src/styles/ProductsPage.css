@@ -19,7 +19,7 @@
   justify-content: space-between;
 }
 
-/* Dark mode override for products dashboard card */
+
 .dark .products-dashboard-card {
   background: #1f2937 !important;
   box-shadow: 0 4px 24px rgba(0,0,0,0.3) !important;

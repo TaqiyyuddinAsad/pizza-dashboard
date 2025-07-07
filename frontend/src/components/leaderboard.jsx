@@ -4,17 +4,17 @@ import {
 } from "@mui/material";
 
 const borderStyles = [
-  { bg: "#fffbe7", border: "2px solid #ffe082" }, // Lighter Gold
-  { bg: "#efefef", border: "2px solid #bdbdbd" }, // Silber
-  { bg: "#fff2e6", border: "2px solid #ffab91" }, // Lighter Bronze
+  { bg: "#fffbe7", border: "2px solid #ffe082" },
+  { bg: "#efefef", border: "2px solid #bdbdbd" },
+  { bg: "#fff2e6", border: "2px solid #ffab91" },
   { bg: "#fafbfc", border: "2px solid #e0e0e0" },
   { bg: "#fafbfc", border: "2px solid #e0e0e0" },
 ];
 
 const darkBorderStyles = [
-  { bg: "#2d2a19", border: "2px solid #fbbf24" }, // Gold (dark gold)
-  { bg: "#3a3d42", border: "2px solid #e5e7eb" }, // Silver (brighter silver)
-  { bg: "#3b2321", border: "2px solid #fb923c" }, // Bronze (dark coral)
+  { bg: "#2d2a19", border: "2px solid #fbbf24" },
+  { bg: "#3a3d42", border: "2px solid #e5e7eb" },
+  { bg: "#3b2321", border: "2px solid #fb923c" },
   { bg: "#23272e", border: "2px solid #6b7280" },
   { bg: "#23272e", border: "2px solid #6b7280" },
 ];

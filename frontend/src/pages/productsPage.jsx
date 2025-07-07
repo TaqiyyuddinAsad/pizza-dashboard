@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ToggleButtonGroup, ToggleButton } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
-// import FilterBar from "../components/filterbar"; // Removed, now global
 import ProductBestsellerList from "../components/ProductBestsellerList";
 import ProductCombinationsList from "../components/ProductCombinationsList";
 import ProductPerformanceChart from "../components/productPerformanceChart";
@@ -19,7 +18,6 @@ const defaultEnd = "2020-02-01";
 
 const ProductsPage = () => {
   const { filters } = useContext(FilterContext);
-  // Pagination state
   const [bestsellerPage, setBestsellerPage] = useState(0);
   const [bestsellerRowsPerPage, setBestsellerRowsPerPage] = useState(5);
   const [combPage, setCombPage] = useState(0);
@@ -35,7 +33,6 @@ const ProductsPage = () => {
   const [pendingSize, setPendingSize] = useState("");
   const [selectedSize, setSelectedSize] = useState("");
 
-  // Fetch product list for selector (not paginated, can stay as useEffect)
   const [productList, setProductList] = useState([]);
   useEffect(() => {
     getAllProducts()
@@ -43,17 +40,16 @@ const ProductsPage = () => {
         setProductList(products);
         if (!pendingProduct && products.length > 0) {
           setPendingProduct(products[0].sku);
-          setSelectedProduct(products[0].sku); // Set initial selected product
+          setSelectedProduct(products[0].sku);
         }
         if (!pendingSize && products.length > 0 && products[0].sizes && products[0].sizes.length > 0) {
           setPendingSize(products[0].sizes[0]);
-          setSelectedSize(products[0].sizes[0]); // Set initial selected size
+          setSelectedSize(products[0].sizes[0]);
         }
       })
       .catch(() => setProductList([]));
   }, []);
 
-  // Ensure pendingProduct and pendingSize are valid for the current productList and filters
   useEffect(() => {
     if (productList.length > 0) {
       const productSkus = productList.map(p => p.sku);
@@ -69,7 +65,6 @@ const ProductsPage = () => {
     }
   }, [productList, filters.start, filters.end, filters.stores ? filters.stores.join(',') : '', filters.categories ? filters.categories.join(',') : '', filters.sizes ? filters.sizes.join(',') : '']);
 
-  // Bestseller query (orders or revenue)
   const bestsellerQueryKey = [
     'bestsellers', sortBy, sortOrder, filters.start, filters.end, filters.stores, filters.categories, filters.sizes, bestsellerPage, bestsellerRowsPerPage
   ];
@@ -107,7 +102,6 @@ const ProductsPage = () => {
     staleTime: 5 * 60 * 1000,
   });
 
-  // Product combinations query
   const combinationsQueryKey = [
     'combinations', filters.start, filters.end, filters.stores, filters.categories, filters.sizes, combPage, combRowsPerPage
   ];
@@ -131,7 +125,6 @@ const ProductsPage = () => {
     staleTime: 5 * 60 * 1000,
   });
 
-  // Pie by size query
   const pieBySizeQueryKey = [
     'pieBySize', filters.start, filters.end, filters.stores
   ];
@@ -148,7 +141,6 @@ const ProductsPage = () => {
     staleTime: 5 * 60 * 1000,
   });
 
-  // Kombinierter Dependency-String für Chart-Query
   const performanceDeps = JSON.stringify({
     showPerformance,
     selectedProduct,
@@ -182,7 +174,6 @@ const ProductsPage = () => {
     staleTime: 5 * 60 * 1000,
   });
 
-  // Fetch category sales by revenue
   const categorySalesQueryKey = [
     'categorySales', showPerformance, filters.start, filters.end, filters.stores, filters.categories, filters.sizes
   ];
@@ -275,7 +266,6 @@ const ProductsPage = () => {
   return (
     <div className="main-content dark:bg-gray-900" style={{ maxWidth: 1400, margin: '0 auto', padding: '32px 32px 0 32px', minHeight: '100vh' }}>
       <div className="product-analysis-page">
-        {/* Material UI toggles for both tables */}
         <div className="bg-white dark:bg-gray-800 dark:border-gray-700" style={{ 
           display: 'flex', 
           gap: '2rem', 
@@ -328,7 +318,6 @@ const ProductsPage = () => {
             </ToggleButton>
           </ToggleButtonGroup>
         </div>
-        {/* Top section: tables */}
         <div className="top-section" style={{ display: "flex", gap: "2rem", marginBottom: '2rem', justifyContent: 'center', width: '100%' }}>
           <div style={{ flex: 1, minWidth: 0 }}>
             <ProductBestsellerList
@@ -361,11 +350,8 @@ const ProductsPage = () => {
             />
           </div>
         </div>
-        {/* Bottom section: charts */}
         <div className="bottom-section" style={{ display: "flex", gap: "2rem", marginTop: "2rem", justifyContent: 'center', width: '100%' }}>
-          {/* Left: Chart card with toggle above */}
           <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-            {/* Toggle and filters above card */}
             <div className="bg-white dark:bg-gray-800 dark:border-gray-700" style={{ 
               marginBottom: '1rem', 
               display: 'flex', 
@@ -446,7 +432,6 @@ const ProductsPage = () => {
               )}
             </div>
             <div className="bg-white dark:bg-gray-800 dark:border-gray-700" style={{ borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.10)', padding: 24, minHeight: 380, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', width: '100%' }}>
-              {/* Chart title */}
               <div className="text-black dark:text-gray-100" style={{ fontSize: 20, fontWeight: 600, marginBottom: 12, textAlign: 'left' }}>
                 {showPerformance ? 'Performance nach Launch' : 'Umsatz nach Kategorie'}
               </div>
@@ -481,7 +466,6 @@ const ProductsPage = () => {
             </div>
             <ProductStoreLeaderboard products={productList} filters={filters} />
           </div>
-          {/* Right: Pie chart card with title above chart */}
           <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '2rem' }}>
             <div className="bg-white dark:bg-gray-800 dark:border-gray-700" style={{ borderRadius: 16, boxShadow: '0 4px 24px rgba(0,0,0,0.10)', padding: 24, minHeight: 380, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center', width: '100%' }}>
               <div className="text-black dark:text-gray-100" style={{ fontSize: 20, fontWeight: 600, marginBottom: 12, textAlign: 'center' }}>Verkaufsanteile nach Pizzagröße</div>

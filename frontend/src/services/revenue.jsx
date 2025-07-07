@@ -19,7 +19,6 @@ export const fetchRevenueData = async (queryString) => {
     
     if (res.status === 401) {
       console.log('Unauthorized - checking if token is expired');
-      // Only clear token if it's actually expired
       const token = localStorage.getItem('token');
       if (token) {
         try {

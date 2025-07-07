@@ -24,7 +24,6 @@ const Layout = memo(({ children }) => {
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Apply dark mode class to document
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add('dark');
@@ -42,14 +41,12 @@ const Layout = memo(({ children }) => {
     setSidebarOpen(!sidebarOpen);
   };
 
-  // Close sidebar when clicking outside on mobile
   const handleMainClick = () => {
     if (window.innerWidth <= 768 && sidebarOpen) {
       setSidebarOpen(false);
     }
   };
 
-  // Memoize context values to prevent unnecessary re-renders
   const filterContextValue = useMemo(() => ({ filters, setFilters }), [filters]);
   const darkModeContextValue = useMemo(() => ({ darkMode, toggleDarkMode }), [darkMode]);
 
@@ -57,15 +54,13 @@ const Layout = memo(({ children }) => {
     <FilterContext.Provider value={filterContextValue}>
       <DarkModeContext.Provider value={darkModeContextValue}>
         <div className="app-layout">
-          {/* Mobile overlay */}
           {sidebarOpen && (
             <div 
               className="mobile-overlay"
               onClick={() => setSidebarOpen(false)}
             />
           )}
-          
-          {/* Sidebar */}
+              
           <div className={`sidebar-container ${sidebarOpen ? 'sidebar-open' : ''}`}>
             <Sidebar onToggle={toggleSidebar} />
           </div>

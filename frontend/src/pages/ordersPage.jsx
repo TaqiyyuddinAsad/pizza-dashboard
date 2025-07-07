@@ -20,7 +20,6 @@ const OrdersPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Memoize chartFilters to prevent unnecessary re-renders
   const chartFilters = useMemo(() => ({
     start: filters.start || "2020-06-01",
     end: filters.end || "2020-07-01",
@@ -29,12 +28,10 @@ const OrdersPage = () => {
     sizes: filters.sizes || [],
   }), [filters.start, filters.end, filters.stores, filters.categories, filters.sizes]);
   
-  // Load essential data first (Chart and KPIs)
   useEffect(() => {
     console.log('ordersPage filters:', filters);
     if (!filters.start || !filters.end) return;
 
-    // Only show loading for non-essential data
     setLoading(true);
     setError(null);
 
@@ -47,7 +44,6 @@ const OrdersPage = () => {
     };
 
     console.log('Calling getBestsellersByOrders with:', filters);
-    // Load secondary data (rankings and order times) with delay
     setTimeout(() => {
       Promise.allSettled([
         fetch(`http://localhost:8080/api/products/ranking?start=${filters.start}&end=${filters.end}`, {
@@ -87,12 +83,11 @@ const OrdersPage = () => {
       .finally(() => {
         setLoading(false);
       });
-    }, 100); // Small delay to let main content render first
+    }, 100);
   }, [filters]);
 
   return (
    <div className="orders-page dark:bg-gray-900">
-  {/* OBERSTE REIHE: Chart und KPIs - Load immediately */}
   <div className="orders-container">
     <div className="orders-chart-wrapper">
       <OrdersChart filters={chartFilters} />
@@ -101,8 +96,7 @@ const OrdersPage = () => {
       <KpiGridOrders filters={chartFilters} />
     </div>
   </div>
-  
-  {/* ZWEITE REIHE: 3er-Grid für Leaderboards & Pie - Load with delay */}
+        
   <div className="dashboard-row" style={{
     display: "flex",
     minHeight: "600px",

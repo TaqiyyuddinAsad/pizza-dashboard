@@ -1,4 +1,4 @@
-/* General layout */
+
 .app-layout {
   display: flex;
   width: 100vw;
@@ -6,7 +6,6 @@
   position: relative;
 }
 
-/* Mobile overlay */
 .mobile-overlay {
   position: fixed;
   top: 0;
@@ -18,13 +17,11 @@
   display: none;
 }
 
-/* Sidebar container */
 .sidebar-container {
   position: relative;
   z-index: 40;
 }
 
-/* Sidebar */
 .sidebar {
   width: 240px;
   background-color: #f5f6fa;
@@ -38,12 +35,10 @@
   transition: transform 0.3s ease-in-out;
 }
 
-/* Dark mode override for sidebar */
 .dark .sidebar {
   background-color: #1f2937 !important;
 }
 
-/* Mobile sidebar behavior */
 @media (max-width: 768px) {
   .sidebar {
     transform: translateX(-100%);
@@ -90,7 +85,6 @@
   min-height: 100vh;
 }
 
-/* Topbar */
 .topbar {
   height: 60px;
   background-color: white;
@@ -108,13 +102,11 @@
   z-index: 20;
 }
 
-/* Dark mode override for topbar */
 .dark .topbar {
   background-color: #1f2937 !important;
   border-bottom-color: #374151 !important;
 }
 
-/* Mobile topbar */
 @media (max-width: 768px) {
   .topbar {
     left: 0;
@@ -122,7 +114,6 @@
   }
 }
 
-/* Main content */
 .main-content {
   flex-grow: 1;
   padding: 0 32px 32px 32px;
@@ -131,12 +122,10 @@
   min-height: calc(100vh - 60px);
 }
 
-/* Dark mode override for main content */
 .dark .main-content {
   background-color: #111827 !important;
 }
 
-/* Fixed FilterBar (now normal flow) */
 .filterbar-fixed {
   position: static;
   padding: 16px 32px;
@@ -145,7 +134,6 @@
 .dark .filterbar-fixed {
 }
 
-/* Responsive breakpoints */
 @media (max-width: 1024px) {
   .main-content {
     padding: 96px 24px 24px 24px;
@@ -166,7 +154,6 @@
   }
 }
 
-/* Light mode (default) for datefilter: ensure white background and dark text */
 .dark-datefilter,
 .dark-datefilter .ant-picker-input > input {
   background-color: #fff !important;
@@ -212,7 +199,6 @@
   color: #6366f1 !important;
 }
 
-/* Only override for dark mode below */
 .dark .dark-datefilter,
 .dark .dark-datefilter .ant-picker-input > input {
   background-color: #1e293b !important;
@@ -257,8 +243,7 @@
 .dark .dark-datefilter-popup .ant-picker-content th {
   color: #a5b4fc !important;
 }
-
-/* Ensure .bg-white and filterbar are always white in light mode */
+  
 .bg-white,
 .filterbar,
 .bg-white .ant-picker-panel {
