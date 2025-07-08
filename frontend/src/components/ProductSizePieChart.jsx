@@ -54,4 +54,4 @@ const ProductSizePieChart = ({ data }) => {
   );
 };
 
-export default ProductSizePieChart; 
+export default React.memo(ProductSizePieChart); 

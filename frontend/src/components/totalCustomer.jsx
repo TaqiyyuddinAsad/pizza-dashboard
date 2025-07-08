@@ -101,4 +101,4 @@ const TotalCustomersCard = ({ onClick }) => {
   );
 };
 
-export default TotalCustomersCard;
+export default React.memo(TotalCustomersCard);

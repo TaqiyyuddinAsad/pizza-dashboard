@@ -160,4 +160,4 @@ const FilterBar = memo(({ onApplyFilters }) => {
 
 FilterBar.displayName = 'FilterBar';
 
-export default FilterBar;
+export default React.memo(FilterBar);

@@ -27,4 +27,4 @@ const CategoryRevenuePieChart = ({ data }) => {
   );
 };
 
-export default CategoryRevenuePieChart; 
+export default React.memo(CategoryRevenuePieChart); 

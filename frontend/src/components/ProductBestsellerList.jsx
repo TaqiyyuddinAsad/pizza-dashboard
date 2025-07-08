@@ -63,4 +63,4 @@ const ProductBestsellerList = ({ data, total, page, rowsPerPage, onPageChange, o
   </Card>
 );
 
-export default ProductBestsellerList; 
+export default React.memo(ProductBestsellerList); 

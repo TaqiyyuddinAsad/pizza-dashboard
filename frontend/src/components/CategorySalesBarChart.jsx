@@ -81,4 +81,4 @@ const CategorySalesBarChart = ({ fetchCategorySalesTimeline, filters, filterSumm
   );
 };
 
-export default CategorySalesBarChart; 
+export default React.memo(CategorySalesBarChart); 

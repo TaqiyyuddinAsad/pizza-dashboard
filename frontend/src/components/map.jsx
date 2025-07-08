@@ -18,7 +18,7 @@ const customerIcon = new L.Icon({
   iconAnchor: [9, 9]
 });
 
-export default function StoreCustomerMap({ height = 340 }) {
+function map({ height = 340 }) {
   const [stores, setStores] = useState([]);
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -104,3 +104,5 @@ export default function StoreCustomerMap({ height = 340 }) {
     </div>
   );
 }
+
+export default React.memo(map);

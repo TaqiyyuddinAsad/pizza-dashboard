@@ -62,4 +62,4 @@ const ProductPerformanceChart = ({ data }) => {
   );
 };
 
-export default ProductPerformanceChart;
+export default React.memo(ProductPerformanceChart);

@@ -88,4 +88,4 @@ const ProductBestsellerList = () => {
   );
 };
 
-export default ProductBestsellerList;
+export default React.memo(ProductBestsellerList);

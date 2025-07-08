@@ -143,4 +143,4 @@ const MultiSelectFilter = ({ label, options, selectedValues, onChange }) => {
   );
 };
 
-export default MultiSelectFilter;
+export default React.memo(MultiSelectFilter);

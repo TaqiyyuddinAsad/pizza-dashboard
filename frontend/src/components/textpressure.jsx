@@ -1,3 +1,4 @@
+import React from 'react';
 import { useEffect, useRef, useState } from 'react';
 
 const TextPressure = ({
@@ -201,7 +202,7 @@ const TextPressure = ({
   );
 };
 
-export default TextPressure;
+export default React.memo(TextPressure);
 
 
 

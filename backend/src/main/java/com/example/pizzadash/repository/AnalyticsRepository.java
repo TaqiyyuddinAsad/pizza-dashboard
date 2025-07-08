@@ -204,7 +204,6 @@ public class AnalyticsRepository {
         );
     }
 
-    // Helper methods
     private static String toInSql(int n) { return String.join(",", java.util.Collections.nCopies(n, "?")); }
     private static Object[] buildParams(String start, String end, List<String> categories, List<String> sizes, List<String> stores) {
         java.util.List<Object> out = new java.util.ArrayList<>();

@@ -4,7 +4,7 @@ import { fetchKpiData } from "../services/kpiservice";
 import { ChevronUpIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
 import { FaRedo, FaClock, FaMapMarkerAlt, FaDollarSign, FaShoppingCart, FaTag } from "react-icons/fa";
 
-export default function KpiGrid({ filters }) {
+function KpiGrid({ filters }) {
   const [kpis, setKpis] = useState(null);
 
   useEffect(() => {
@@ -73,3 +73,5 @@ export default function KpiGrid({ filters }) {
     </div>
   );
 }
+
+export default React.memo(KpiGrid);

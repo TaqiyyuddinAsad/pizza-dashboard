@@ -56,4 +56,4 @@ const AverageRevenueCard = ({ filters }) => {
   );
 };
 
-export default AverageRevenueCard;
+export default React.memo(AverageRevenueCard);

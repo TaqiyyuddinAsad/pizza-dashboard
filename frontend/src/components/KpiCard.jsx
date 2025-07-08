@@ -1,3 +1,4 @@
+import React from 'react';
 
 export function KpiCard({ title, percentage, price, icon, bgColor, accentColor, titleStyle = {}, valueStyle = {} }) {
   return (
@@ -19,3 +20,5 @@ export function KpiCard({ title, percentage, price, icon, bgColor, accentColor, 
     </div>
   );
 }
+
+export default React.memo(KpiCard);

@@ -77,4 +77,4 @@ const RevenuePieChart = ({ filters }) => {
   );
 };
 
-export default RevenuePieChart;
+export default React.memo(RevenuePieChart);

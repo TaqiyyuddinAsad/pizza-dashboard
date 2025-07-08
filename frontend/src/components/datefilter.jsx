@@ -35,4 +35,4 @@ const DateFilter = ({ onDateChange }) => {
   );
 };
 
-export default DateFilter;
+export default React.memo(DateFilter);

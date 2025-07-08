@@ -143,4 +143,4 @@ Option.displayName = 'Option';
 TitleSection.displayName = 'TitleSection';
 Logo.displayName = 'Logo';
 
-export default Sidebar;
+export default React.memo(Sidebar);

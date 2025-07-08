@@ -19,7 +19,7 @@ const darkBorderStyles = [
   { bg: "#23272e", border: "2px solid #6b7280" },
 ];
 
-export default function Leaderboard({
+function Leaderboard({
   data,
   title,
   TrendIcon = () => null,
@@ -122,3 +122,5 @@ export default function Leaderboard({
     </Card>
   );
 }
+
+export default React.memo(Leaderboard);

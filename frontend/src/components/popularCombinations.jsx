@@ -77,4 +77,4 @@ const PopularCombinations = () => {
   );
 };
 
-export default PopularCombinations;
+export default React.memo(PopularCombinations);

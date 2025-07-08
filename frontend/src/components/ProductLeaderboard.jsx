@@ -1,5 +1,6 @@
 import Leaderboard from "./leaderboard";
 import { TrendIcon } from "./trendicon";
+import React from "react";
 
 // Helper function to format product names
 const formatProductName = (product) => {
@@ -27,7 +28,9 @@ const formatProductName = (product) => {
 };
 
 // fetchProductRanking gibt [{ product, orders, rankNow, rankBefore, trend }]
-export default function ProductLeaderboard({ ranking, storeFilter }) {
+export default React.memo(ProductLeaderboard);
+
+function ProductLeaderboard({ ranking, storeFilter }) {
   console.log('ProductLeaderboard received ranking:', ranking); // Debug log
   
   const data = ranking.map(x => ({

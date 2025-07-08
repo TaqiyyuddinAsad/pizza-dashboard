@@ -98,4 +98,4 @@ const OrdersChart = memo(({ filters }) => {
 
 OrdersChart.displayName = 'OrdersChart';
 
-export default OrdersChart;
+export default React.memo(OrdersChart);

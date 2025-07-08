@@ -1,8 +1,9 @@
 import Leaderboard from "./Leaderboard";
 import { TrendIcon } from "./trendicon";
+import React from "react";
 
 // fetchStoreRanking gibt [{ store, orders, rankNow, rankBefore, trend }]
-export default function StoreLeaderboard({ ranking }) {
+function StoreLeaderboard({ ranking }) {
   const data = ranking.map(x => ({
     label: x.store,
     value: x.orders,
@@ -18,3 +19,5 @@ export default function StoreLeaderboard({ ranking }) {
     />
   );
 }
+
+export default React.memo(StoreLeaderboard);

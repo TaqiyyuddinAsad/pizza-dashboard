@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import pizzaCursor from '../assets/pizza-cursor.png';
+import React from 'react';
 
 const PizzaCursor = () => {
   const [pos, setPos] = useState({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
@@ -44,4 +45,4 @@ const PizzaCursor = () => {
   );
 };
 
-export default PizzaCursor; 
+export default React.memo(PizzaCursor); 

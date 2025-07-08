@@ -57,4 +57,4 @@ const ProductCombinationsList = ({ data, total, page, rowsPerPage, onPageChange,
   </Card>
 );
 
-export default ProductCombinationsList; 
+export default React.memo(ProductCombinationsList); 

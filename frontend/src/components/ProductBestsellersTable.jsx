@@ -238,4 +238,4 @@ const ProductBestsellersTable = ({ filters }) => {
   );
 };
 
-export default ProductBestsellersTable;
+export default React.memo(ProductBestsellersTable);

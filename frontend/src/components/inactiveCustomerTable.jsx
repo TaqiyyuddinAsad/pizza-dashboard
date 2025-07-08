@@ -133,4 +133,4 @@ const InactiveCustomerTable = ({ filters }) => {
   );
 };
 
-export default InactiveCustomerTable;
+export default React.memo(InactiveCustomerTable);

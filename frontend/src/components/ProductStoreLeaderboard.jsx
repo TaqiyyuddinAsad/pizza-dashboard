@@ -18,7 +18,9 @@ function useProductStoreLeaderboard({ sku, start, end }) {
   });
 }
 
-export default function ProductStoreLeaderboard({ products, filters }) {
+export default React.memo(ProductStoreLeaderboard);
+
+function ProductStoreLeaderboard({ products, filters }) {
   const [selectedProduct, setSelectedProduct] = useState(products[0]?.sku || "");
   const selectedProductObj = useMemo(() => products.find(p => p.sku === selectedProduct) || {}, [products, selectedProduct]);
   const sizesForProduct = selectedProductObj.sizes || [];

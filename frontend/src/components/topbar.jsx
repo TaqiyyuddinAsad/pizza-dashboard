@@ -56,4 +56,4 @@ const Topbar = ({ username, onMenuToggle }) => {
   );
 };
 
-export default Topbar;
+export default React.memo(Topbar);
