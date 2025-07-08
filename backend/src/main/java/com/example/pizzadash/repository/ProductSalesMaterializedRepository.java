@@ -225,4 +225,21 @@ public interface ProductSalesMaterializedRepository extends JpaRepository<Produc
         @Param("startDate") LocalDate startDate,
         @Param("endDate") LocalDate endDate
     );
+
+    @Query(value = "SELECT " +
+           "p.product_sku, p.product_name, p.product_category, p.product_size, p.product_price, " +
+           "SUM(p.total_orders) as total_orders, SUM(p.total_revenue) as total_revenue " +
+           "FROM product_bestsellers_store_materialized p " +
+           "WHERE (:startDate IS NULL OR p.sale_date >= :startDate) " +
+           "AND (:endDate IS NULL OR p.sale_date <= :endDate) " +
+           "AND (:category IS NULL OR p.product_category = :category) " +
+           "AND (:size IS NULL OR p.product_size = :size) " +
+           "GROUP BY p.product_sku, p.product_name, p.product_category, p.product_size, p.product_price " +
+           "ORDER BY SUM(p.total_orders) DESC",
+           nativeQuery = true)
+    List<Object[]> findBestsellersByOrdersAggregatedNative(
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            @Param("category") String category,
+            @Param("size") String size);
 } 

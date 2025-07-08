@@ -86,7 +86,7 @@ public class OrderService {
                 rankBefore = prevIndex + 1;
                 trend = prevIndex > i ? "up" : prevIndex < i ? "down" : "same";
             }
-            result.add(new StoreDTO(item.store, item.orders, i + 1, rankBefore, trend));
+            result.add(new StoreDTO(item.storeID, item.store, item.orders, i + 1, rankBefore, trend));
         }
         return result;
     }

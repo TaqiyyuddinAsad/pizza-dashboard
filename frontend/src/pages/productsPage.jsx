@@ -65,13 +65,23 @@ const ProductsPage = () => {
     }
   }, [productList, filters.start, filters.end, filters.stores ? filters.stores.join(',') : '', filters.categories ? filters.categories.join(',') : '', filters.sizes ? filters.sizes.join(',') : '']);
 
+  // Add state for store selection warning
+  const [storeSelectionWarning, setStoreSelectionWarning] = useState(false);
+
+  // Bestseller Query
   const bestsellerQueryKey = [
     'bestsellers', sortBy, sortOrder, filters.start, filters.end, filters.stores, filters.categories, filters.sizes, bestsellerPage, bestsellerRowsPerPage
   ];
+  const isNoStoreSelected = !filters.stores || filters.stores.length === 0;
+  const isSingleStore = filters.stores && filters.stores.length === 1;
+  const isMultiStore = filters.stores && filters.stores.length > 1;
+  useEffect(() => {
+    setStoreSelectionWarning(isMultiStore);
+  }, [filters.stores]);
   const bestsellerQuery = useQuery({
     queryKey: bestsellerQueryKey,
     queryFn: async () => {
-      const storeFilter = (filters.stores && filters.stores.length === 1) ? [filters.stores[0]] : [];
+      const storeFilter = isSingleStore ? [filters.stores[0]] : (isNoStoreSelected ? undefined : []); // undefined means all stores
       const serviceFilters = {
         startDate: filters.start,
         endDate: filters.end,
@@ -100,8 +110,10 @@ const ProductsPage = () => {
     },
     keepPreviousData: true,
     staleTime: 5 * 60 * 1000,
+    enabled: isNoStoreSelected || isSingleStore,
   });
 
+  // Combinations Query
   const combinationsQueryKey = [
     'combinations', filters.start, filters.end, filters.stores, filters.categories, filters.sizes, combPage, combRowsPerPage
   ];
@@ -111,7 +123,7 @@ const ProductsPage = () => {
       const serviceFilters = {
         startDate: filters.start,
         endDate: filters.end,
-        store: filters.stores,
+        store: isSingleStore ? filters.stores : (isNoStoreSelected ? undefined : []), // undefined means all stores
         category: filters.categories,
         size: filters.sizes
       };
@@ -123,6 +135,7 @@ const ProductsPage = () => {
     },
     keepPreviousData: true,
     staleTime: 5 * 60 * 1000,
+    enabled: isNoStoreSelected || isSingleStore,
   });
 
   const pieBySizeQueryKey = [
@@ -320,6 +333,11 @@ const ProductsPage = () => {
         </div>
         <div className="top-section" style={{ display: "flex", gap: "2rem", marginBottom: '2rem', justifyContent: 'center', width: '100%' }}>
           <div style={{ flex: 1, minWidth: 0 }}>
+            {storeSelectionWarning && (
+              <div style={{ color: 'red', marginBottom: 8, fontWeight: 500 }}>
+                Please select only one store to view bestsellers.
+              </div>
+            )}
             <ProductBestsellerList
               data={bestsellerQuery.data?.bestsellers || []}
               total={bestsellerQuery.data?.total || 0}
@@ -333,6 +351,11 @@ const ProductsPage = () => {
             />
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
+            {storeSelectionWarning && (
+              <div style={{ color: 'red', marginBottom: 8, fontWeight: 500 }}>
+                Please select only one store to view product combinations.
+              </div>
+            )}
             <ProductCombinationsList
               data={
                 sortOrder === 'best'

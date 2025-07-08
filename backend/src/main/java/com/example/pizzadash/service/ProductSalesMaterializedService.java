@@ -29,22 +29,30 @@ public class ProductSalesMaterializedService {
             String productSize,
             int page,
             int pageSize) {
-        
-        List<Object[]> results = repository.findBestsellersByOrdersNative(
-                storeId, sku, startDate, endDate, category, productSize);
-        
-        List<ProductSalesMaterialized> products = convertToProductSalesMaterialized(results);
-        
+        List<Object[]> results;
+        boolean aggregate = (storeId == null || storeId.isEmpty());
+        if (aggregate) {
+            // Aggregate across all stores
+            results = repository.findBestsellersByOrdersAggregatedNative(
+                startDate, endDate, category, productSize
+            );
+        } else {
+            // Per-store
+            results = repository.findBestsellersByOrdersNative(
+                storeId, sku, startDate, endDate, category, productSize
+            );
+        }
+        List<ProductSalesMaterialized> products = aggregate
+            ? convertToProductSalesMaterializedAggregated(results)
+            : convertToProductSalesMaterialized(results);
         // Manual pagination
         int totalElements = products.size();
         int startIndex = page * pageSize;
         int endIndex = Math.min(startIndex + pageSize, totalElements);
-        
         List<ProductSalesMaterialized> paginatedProducts = new ArrayList<>();
         if (startIndex < totalElements) {
             paginatedProducts = products.subList(startIndex, endIndex);
         }
-        
         return new PaginatedResponse<>(paginatedProducts, totalElements);
     }
     
@@ -160,6 +168,33 @@ public class ProductSalesMaterializedService {
             products.add(product);
         }
         
+        return products;
+    }
+    
+    /**
+     * Convert Object[] results to ProductSalesMaterialized entities (aggregated, no store fields)
+     */
+    private List<ProductSalesMaterialized> convertToProductSalesMaterializedAggregated(List<Object[]> results) {
+        List<ProductSalesMaterialized> products = new ArrayList<>();
+        for (Object[] row : results) {
+            ProductSalesMaterialized product = new ProductSalesMaterialized();
+            product.setProductSku((String) row[0]);
+            product.setProductName((String) row[1]);
+            product.setProductCategory((String) row[2]);
+            product.setProductSize((String) row[3]);
+            product.setProductPrice((BigDecimal) row[4]);
+            product.setStoreId(null);
+            product.setStoreCity(null);
+            product.setStoreState(null);
+            // Handle BigDecimal to Integer conversion for total_orders
+            if (row[5] instanceof BigDecimal) {
+                product.setTotalOrders(((BigDecimal) row[5]).intValue());
+            } else {
+                product.setTotalOrders((Integer) row[5]);
+            }
+            product.setTotalRevenue((BigDecimal) row[6]);
+            products.add(product);
+        }
         return products;
     }
     

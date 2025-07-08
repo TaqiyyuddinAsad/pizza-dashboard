@@ -5,7 +5,7 @@ import React from "react";
 // fetchStoreRanking gibt [{ store, orders, rankNow, rankBefore, trend }]
 function StoreLeaderboard({ ranking }) {
   const data = ranking.map(x => ({
-    label: x.store,
+    label: `${x.store} (${x.storeID})`,
     value: x.orders,
     trend: x.trend, // Wenn du Trends mitberechnen willst!
     rankBefore: x.rankBefore,

@@ -24,7 +24,7 @@ function KpiGrid({ filters }) {
       });
   }, [filters]);
 
-  if (kpis === null) return <div style={{color: 'red'}}>Fehler beim Laden der KPIs.</div>;
+  if (kpis === null) return <div style={{color: 'red'}}>KPIs werden geladen.</div>;
 
   const cardProps = [
     {

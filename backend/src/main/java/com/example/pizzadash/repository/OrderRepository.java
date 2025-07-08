@@ -16,7 +16,7 @@ public class OrderRepository {
 
     public List<OrdersDTO> getOrdersGroupedByWeekday(LocalDate start, LocalDate end, List<String> stores, List<String> categories, List<String> sizes) {
         StringBuilder sql = new StringBuilder("""
-            SELECT DAYNAME(o.orderDate) AS label, COUNT(*) AS orders
+            SELECT DAYNAME(o.orderDate) AS label, COUNT(DISTINCT o.orderID) AS orders
             FROM orders o
             JOIN orderitems oi ON o.orderID = oi.orderID
             JOIN products p ON oi.productID = p.SKU
@@ -294,16 +294,17 @@ public class OrderRepository {
 
     public List<StoreRankingEntry> getStoreRanking(LocalDate start, LocalDate end) {
         String sql = """
-            SELECT s.city AS store, COUNT(*) AS orders
+            SELECT s.storeID AS storeID, s.city AS store, COUNT(*) AS orders
             FROM orders o
             JOIN stores s ON o.storeID = s.storeID
             WHERE o.orderDate BETWEEN ? AND ?
-            GROUP BY s.city
+            GROUP BY s.storeID, s.city
             ORDER BY orders DESC
             LIMIT 5
         """;
         return jdbcTemplate.query(sql, new Object[]{start, end}, (rs, rowNum) ->
             new StoreRankingEntry(
+                rs.getString("storeID"),
                 rs.getString("store"),
                 rs.getInt("orders")
             )
